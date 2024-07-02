@@ -1,0 +1,614 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+{% load custom_filters %}
+                <div class="w-full">
+                    <div class="w-full max-myMob:flex-col max-myMob:items-start max-myMob:gap-4 max-md:mt-10">
+                        <div class="flex items-center gap-4">
+                            <!-- <button type="button" class="p-2 text-2xl text-white rounded-full bg-myBlack"><i class="flex justify-center fi fi-rr-arrow-small-left"></i></button> -->
+                            <h1 class="text-3xl font-bold">Loan Details</h1>
+                        </div>
+                    </div>
+                    <div class="flex items-start w-full gap-8 mt-7 max-md:flex-col max-myMob:flex-col ">
+                        <div class="w-7/12 max-md:w-full">
+                            <div id="openPopup2" class="cursor-pointer p-6 text-white bg-[#475C6C] rounded-3xl">
+                                <div class="flex flex-wrap items-end justify-between space-y-2">
+                                    <div class=""> 
+                                        <h1 class="text-xl font-bold">{{loan.client.full_name}}</h1>
+                                    </div>
+                                    <div>
+                                        <p>{{loan.client.nin}}</p>
+                                    </div>
+                                    {% comment %} <div class="space-x-2">
+                                        <button class="text-white hover:text-slate-500"><i class="fi fi-sr-user-pen"></i></button>
+                                        <button class="text-white hover:text-slate-500"><i class="fi fi-sr-trash"></i></button>
+                                    </div> {% endcomment %}
+                                </div>
+                                <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
+                                    <div>
+                                        <h1>{{loan.loan_product}}</h1>
+                                        <p class="text-xl font-bold">{{loan.given_amount}}</p>
+                                    </div>
+                                    <div>
+                                        <p>{{loan.interest_rate}}%</p>
+                                    </div>
+                                    <div>
+                                        <p>{{loan.loan_term}} {{loan.loan_term_type_of_period}} ({{loan.payment_frequency}})</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
+                                    <div>
+                                        <h1>Total Loan Value</h1>
+                                       <p class="text-xl font-bold">{{ loan.account_interest|add:loan.given_amount }}</p>
+
+                                    </div>
+                                    <div>
+                                        <h1>Acc Interest</h1>
+                                        <p class="text-xl font-bold">{{loan.account_interest}}</p>
+                                    </div>
+                                    <div>
+                                        <h1>Installment</h1>
+                                        <p class="text-xl font-bold">{{loan.installment}}</p>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="mt-8">
+                                <h1 class="text-xl font-bold">Security</h1>
+                                <h2 class="text-xl">{{loan.security_type}}</h2>
+                                <h1> {{loan.security_description}} </h1>
+                                {% comment %} <div class="grid w-full grid-cols-5 gap-4 mt-4">
+                                    <img src="{% static "/img/bg.png" %}" alt="" srcset="" class="object-cover bg-cover w-28 h-28 rounded-xl" onclick="openPopup('{% static "/img/bg.png" %}')">
+                                    <img src="{% static "/img/shot.png" %}" alt="" srcset="" class="object-cover h-28 w-28 rounded-xl" onclick="openPopup('{% static "/img/shot.png" %}')">
+                                </div>
+                                <div id="imagePopup" class="z-50 hidden fixed top-0 left-0 w-full h-full bg-black backdrop-blur-sm bg-opacity-75 items-center justify-center">
+                                    <img id="popupImage" class="mx-auto h-screen max-md:w-full max-md:h-auto" src="" alt="Popup Image">
+                                    <button class="absolute top-2 right-2 text-white" onclick="closePopup()">Close</button>
+                                  </div> {% endcomment %}
+                            </div>
+                            <div class="mt-8 space-y-6">
+                                <div class="flex items-center justify-between">
+                                    <h1 class="text-xl font-bold">Documents</h1>
+                                    <button type="button" id="openPopup3" class="p-2 text-xs text-white rounded-full bg-myBlack"><i class="flex justify-center fi fi-sr-plus"></i></button>
+                                </div>
+                                <div class="space-y-2">
+                                    {% for doc in docs%}
+                                    <div onclick="showDocument('{{ doc.id }}')" class="flex items-center gap-2 p-4 bg-gray-200 rounded-lg cursor-pointer">
+                                        <i class="text-2xl leading-3 text-blue-500 fi fi-sr-document"></i>
+                                        <p>{{doc.title}}</p>
+                                    </div>
+                                    <!-- view document popup  -->
+                                    <div id="popup_{{ doc.id }}" onclick="hideDocument('{{ doc.id }}')" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+                                        <div class="relative w-10/12 overflow-y-auto bg-white h-5/6 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+                                            <button id="closePopup_{{doc.id}}" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+                                            <div class="w-full p-6">
+                                                <h1 class="mb-4 text-2xl font-bold">{{doc.title}}</h1>
+                                                <iframe src="http://127.0.0.1:8000{{doc.document.url}}" frameborder="0" class="w-full h-screen"></iframe>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    {% comment %} <div id="openPopup4" class="flex items-center gap-2 p-4 bg-gray-200 rounded-lg cursor-pointer">
+                                        <i class="text-2xl leading-3 text-blue-500 fi fi-sr-document"></i>
+                                        <p>This is the document title</p>
+                                    </div>
+                                    <div class="flex items-center gap-2 p-4 bg-gray-200 rounded-lg">
+                                        <i class="text-2xl leading-3 text-blue-500 fi fi-sr-document"></i>
+                                        <p>This is the document title</p>
+                                    </div> {% endcomment %}
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="w-5/12 max-md:w-full max-md:mt-8">
+                            <h1 class="text-2xl font-bold">Payments</h1>
+                            <!-- <div class="flex items-center gap-3 overflow-x-scroll mt-7">
+                                <button id="tab1" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn active">History</button>
+                                <button id="tab2" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn">Plans</button>
+                            </div> -->
+                            <div id="content1" class="tabContent">
+                                <div class="mt-4 space-y-2">
+                                    {% if arreas != 0%}
+                                    <div class="text-center text-white bg-myRed">
+                                        <p class="italic flex items-center justify-center"><i class="fi fi-sr-triangle-warning leading-3 mr-2"></i> Loan has arrears of {{arreas}} days</p>
+                                    </div>
+                                    {% endif %}
+                                    <div id="openPopup5" class="flex items-center justify-between p-3 bg-gray-200 cursor-pointer rounded-xl">
+                                        <div>
+                                            <p class="tetx-gray-700">Total Loan:</p>
+                                            {% comment %} <p class="tetx-gray-700">Month's Accumulated Increment:</p>
+                                            <p class="tetx-gray-700">Total Accumulated:</p> {% endcomment %}
+                                        </div>
+                                        <div class="">
+                                            <p class="font-bold">UGX {{loan.given_amount|add:loan.account_interest}}</p>
+                                            {% comment %} <p class="font-bold">UGX 750,000</p> {% endcomment %}
+                                            {% comment %} <p class="font-bold">UGX 14,000,000</p> {% endcomment %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 gap-5 mt-4">
+                                    {% for deposit in deposits%}
+                                    <div onclick="showPaymentPopup('{{deposit.id}}')" class="py-4 border-b-2 border-dashed cursor-pointer border-b-gray-300">
+                                        <p class="mb-2 italic">{{deposit.deposited_at}}</p> 
+                                        <div class="flex flex-wrap items-center justify-between">
+                                         <div class="">
+                                             <h1 class="">paid</h1>
+                                             <h1 class="text-2xl font-bold">UGX {{deposit.deposit}}</h1>
+                                         </div>
+                                         <div class="">
+                                             <h1 class="">Balance</h1>
+                                             <h1 class="text-2xl font-bold">UGX {{deposit.ammortization.ending_balance}}</h1>
+                                         </div>
+                                        </div>
+                                     </div>
+
+                                     <!--loan payment details popup-->
+                                    <div id="popup_{{deposit.id}}" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+                                        <div class="relative w-[595px] overflow-y-auto bg-white h-4/5 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+                                            <button onclick="hidePaymentPopup('{{deposit.id}}')" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+                                            <div class="w-full p-6">
+                                                <div>
+                                                    <h1 class="text-xl font-bold">{{loan.client.full_name}}</h1>
+                                                    <p>{{loan.nin}}</p>
+                                                </div>
+                                                <div class="flex flex-wrap items-center justify-between mt-6 space-y-2">
+                                                    <div class="">
+                                                        <h1 class="">Total Loan Value</h1>
+                                                        <h1 class="text-xl font-bold">UGX {{loan.given_amount}}</h1>
+                                                    </div>
+                                                    <div class="">
+                                                        <h1 class="">Balance Before Payment</h1>
+                                                        <h1 class="text-xl font-bold">UGX {{deposit.previous_balance}}</h1>
+                                                    </div>
+                                                </div>
+                                                {% comment %} <span class="text-sm font-normal">(Penalty included)</span> {% endcomment %}
+                                                <div class="mt-6 space-y-4">
+                                                    <div class="">
+                                                        <h1 class="italic">Actual Date</h1>
+                                                        <h1 class="">{{deposit.ammortization.payment_date}}</h1>
+                                                    </div>
+                                                    <div class="">
+                                                        <h1 class="italic">Date Of Payment</h1>
+                                                        <h1 class="">{{deposit.deposited_at}}</h1>
+                                                    </div>
+                                                    <div class="">
+                                                        <h1 class="">Paid</h1>
+                                                        <h1 class="text-xl font-bold">UGX {{deposit.deposit}}</h1>
+                                                    </div>
+                                                </div>
+                                                <div class="flex flex-wrap items-center justify-between mt-6 space-y-2">
+                                                    <div class="">
+                                                        <h1 class="">Days delayed</h1>
+                                                        {% if deposit.ammortization%}
+                                                            <h1 class="font-bold">{{ deposit.deposited_at|subtract:deposit.ammortization.payment_date }} Days</h1>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="">
+                                                        <h1 class="">Penalty %</h1>
+                                                        <h1 class="font-bold">0.03%</h1>
+                                                    </div>
+                                                    <div class="">
+                                                        <h1 class="">Penalty</h1>
+                                                        <h1 class="font-bold">UGX 75,000</h1>
+                                                    </div>
+                                                </div>
+                                                <div class="flex flex-wrap items-center justify-between mt-6 space-y-2">
+                                                    <div class="">
+                                                        <h1 class="">Princ. Earned</h1>
+                                                        <h1 class="text-xl font-bold">UGX 225,000</h1>
+                                                    </div>
+                                                    <div class="">
+                                                        <h1 class="">Princ. Balance</h1>
+                                                        <h1 class="text-xl font-bold">UGX 275,000</h1>
+                                                    </div>
+                                                </div>
+                                                <div class="flex flex-wrap items-center justify-between mt-6 space-y-2">
+                                                    <div class="">
+                                                        <h1 class="">Interest Earned</h1>
+                                                        <h1 class="text-xl font-bold">UGX 200,000</h1>
+                                                    </div>
+                                                    <div class="">
+                                                        <h1 class="">Interest Balance</h1>
+                                                        <h1 class="text-xl font-bold">UGX 0</h1>
+                                                    </div>
+                                                </div>
+                                                <div class="flex flex-wrap items-center justify-between pt-4 mt-6 space-y-2 border-t-2 border-gray-200">
+                                                    <div class="">
+                                                        <h1 class="">Balance On Loan</h1>
+                                                        <h1 class="text-xl font-bold">UGX 275,000</h1>
+                                                    </div>
+                                                    <div class="">
+                                                        <h1 class="">Balance On Installment</h1>
+                                                        <h1 class="text-xl font-bold">UGX 275,000</h1>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                     {% endfor %}
+                                     {% comment %} <div class="py-4 border-b-2 border-dashed cursor-pointer border-b-gray-300">
+                                         <p class="mb-2 italic">28 jan 2024</p> 
+                                         <div class="flex flex-wrap items-center justify-between">
+                                          <div class="">
+                                              <h1 class="">paid</h1>
+                                              <h1 class="text-2xl font-bold">UGX 700,000</h1>
+                                          </div>
+                                          <div class="">
+                                              <h1 class="">Balance</h1>
+                                              <h1 class="text-2xl font-bold">UGX 700,000</h1>
+                                          </div>
+                                         </div>
+                                      </div> {% endcomment %}
+                                     {% comment %} <div class="py-4 border-b-2 border-dashed cursor-pointer border-b-gray-300">
+                                         <p class="mb-2 italic">28 jan 2024</p> 
+                                         <div class="flex flex-wrap items-center justify-between">
+                                          <div class="">
+                                              <h1 class="">paid</h1>
+                                              <h1 class="text-2xl font-bold">UGX 700,000</h1>
+                                          </div>
+                                          <div class="">
+                                              <h1 class="">Balance</h1>
+                                              <h1 class="text-2xl font-bold">UGX 700,000</h1>
+                                          </div>
+                                         </div>
+                                      </div> {% endcomment %}
+                                </div>
+                            </div>
+                            <div id="content2" class="grid hidden grid-cols-1 gap-5 mt-7 tabContent">
+                                <div class="py-4 border-b-2 border-b-gray-300">
+                                   <p class="mb-2 italic">28 jan 2024</p> 
+                                   <div class="flex items-center justify-between">
+                                    <div class="">
+                                        <h1 class="">To pay</h1>
+                                        <h1 class="text-2xl font-bold">UGX 350,000</h1>
+                                    </div>
+                                    
+                                   </div>
+                                </div>
+                                <div class="py-4 border-b-2 border-b-gray-300">
+                                    <p class="mb-2 italic">28 jan 2024</p> 
+                                    <div class="flex items-center justify-between">
+                                     <div class="">
+                                         <h1 class="">To pay</h1>
+                                         <h1 class="text-2xl font-bold">UGX 350,000</h1>
+                                     </div>
+                                     
+                                    </div>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+                </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+            </div>
+        </div>
+    </div>                                                                                                                                                                                          
+
+    <!-- full laon details popup -->
+    <div id="popup2" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+        <div class="relative w-[595px] overflow-y-auto bg-white h-4/5 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+            <button id="closePopup2" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+            <div class="w-full p-6">
+                <div>
+                    <div class="flex flex-wrap items-end justify-between">
+                        <div class="flex items-center gap-4"> 
+                            <span class="flex items-center justify-center text-2xl text-white rounded-full w-14 h-14 bg-myBlack">
+                                <i class="leading-3 fi fi-rr-user"></i>
+                            </span>
+                            <span>
+                                <h1 class="text-xl font-bold">{{loan.client.full_name}}</h1>
+                                <p>{{loan.client.nin}}</p>
+                            </span>
+                        </div>
+                        <div>
+                            <p>{{loan.client.nationality}}</p>
+                        </div>
+                    </div>
+                    <div class="p-2 mt-6 text-center bg-gray-200 rounded-full text-myBlack">
+                        <p class="font-myMono">{{loan.client.client_code}}</p>
+                    </div>
+                    <div class="flex items-center justify-center gap-2 mt-6">
+                        <i class="leading-3 fi fi-sr-marker"></i>
+                        <p>{{loan.client.address}}</p>
+                    </div>
+                    <div class="flex items-start justify-between mt-6 divide-x-2 divide-white max-md:overflow-x-auto max-md:gap-6">
+                        <div>
+                            <h1 class="font-bold">D.O.B</h1>
+                            <p>{{loan.client.dob}}</p>
+                        </div>
+                        <div class="pl-3">
+                            <h1 class="font-bold">Gender</h1>
+                            <p>{{loan.client.gender}}</p>
+                        </div>
+                        <div class="pl-3">
+                            <h1 class="font-bold">Business</h1>
+                            <p>{{loan.client.business}}</p>
+                        </div>
+                        <div class="pl-3">
+                            <h1 class="font-bold">Phone No</h1>
+                            <p>{{loan.client.phone}}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-end gap-6 mt-6">
+                        <div>
+                            <h1 class="font-bold">Maried to</h1>
+                            <p>{{loan.client.spouse_name}}</p>
+                        </div>
+                        <p>{{loan.client.spouse_phone}}</p>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
+                        <div>
+                            <h1>{{loan.loan_product}}</h1>
+                            <p class="text-xl font-bold">UGX {{loan.given_amount}}</p>
+                        </div>
+                        <div>
+                            <p>{{loan.interest_rate}}%</p>
+                        </div>
+                        <div>
+                            <p>{{loan.loan_term}} {{loan.loan_term_type_of_period}} (weekly)</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
+                        <div>
+                            <h1>Unit Interest</h1>
+                            <p class="text-xl font-bold">UGX {{loan.unit_interest}}</p>
+                        </div>
+                        <div>
+                            <h1>Acc Interest</h1>
+                            <p class="text-xl font-bold">UGX {{loan.account_interest}}</p>
+                        </div>
+                        <div>
+                            <h1>Total Loan</h1>
+                            <p class="text-xl font-bold">{{ loan.account_interest|add:loan.given_amount }}</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
+                        <div>
+                            <h1>Installment</h1>
+                            <p class="text-xl font-bold">UGX {{loan.installment}}</p>
+                        </div>
+                        {% comment %} <div>
+                            <p>Mubiru Paul</p>
+                        </div>
+                        <div>
+                            <p><i class="mr-2 leading-3 fi fi-rr-calendar-lines-pen"></i>28 Oct 2023</p>
+                        </div> {% endcomment %}
+                    </div> 
+                </div>
+                <div class="flex items-end gap-8 mt-6">
+                    <div>
+                        <h1 class="font-bold">Referee</h1>
+                        <p>{{loan.guarantor}} <span>({{loan.guarantor_relationship}})</span></p>
+                    </div>
+                    <div>
+                        <p>{{loan.guarantor.phone}}</p>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <h1 class="font-bold">Security</h1>
+                    <p>{{loan.security_description}}</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- add document popup -->
+    <div id="popup3" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+        <div class="relative w-3/12 py-4 overflow-y-auto bg-white rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+            <button id="closePopup3" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+            <div class="w-full p-6">
+                <h1 class="mb-10 text-2xl font-bold">Add Document</h1>
+                <form action="/loan/add-doc/{{loan.id}}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="flex flex-col mb-4">
+                        <label for="name">Title</label>
+                        <input required type="text" name="title" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="client" class="font-bold">Add Documents</label>
+                        <input type="file" name="file" id="fileInput" accept=".pdf" class="my-2">
+                        {% comment %} <button onclick="addFile()" class="w-10/12 h-10 text-white rounded-full bg-myBlack">Add Document</button> {% endcomment %}
+                        <ul id="fileList" class="mt-4 truncate"></ul>
+                    </div>
+                    <button type="submit" class="w-10/12 h-10 mt-10 text-white rounded-full bg-myBlack">Add</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- loan calc view popup  -->
+    <div id="popup5" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+        <div class="relative w-8/12 overflow-y-auto bg-white h-5/6 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+            <button id="closePopup5" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+            <div class="w-full p-6">
+                <h1 class="mb-6 text-2xl font-bold">Loan Schedule</h1>
+                <div>
+                    <div class="grid grid-cols-4 gap-4">
+                        <div>
+                            <p class="">Loan Amount</p>
+                            <p class="font-bold">UGX {{loan.given_amount}}</p>
+                        </div>
+                        <div>
+                            <p>Intrest Rate</p>
+                            <p class="font-bold">{{loan.interest_rate}}%</p>
+                        </div>
+                        <div>
+                            <p>Period</p>
+                            <p class="font-bold">{{loan.loan_term }} {{loan.loan_term_type_of_period}} ({{loan.payment_frequency}})</p>
+                        </div>
+                        <div>
+                            <p>Start Date</p>
+                            {% comment %} date in format 2024-03-17 {% endcomment %}
+                            <p class="font-bold">{{ ammortizations.0.payment_date|date:"Y-m-d" }}</p>
+                        </div>
+                        <div>
+                            <p>Instalment</p>
+                            <p class="font-bold">UGX {{loan.installment}}</p>
+                        </div>
+                        <div>
+                            <p>No of payments</p>
+                            <p class="font-bold">{{ ammortizations|length }}</p>
+                        </div>
+                        <div>
+                            <p>Total Intrest</p>
+                            <p class="font-bold">UGX {{loan.account_interest}}</p>
+                        </div>
+                        {% comment %} <div>
+                            <p>Total Loan Cost</p>
+                            <p class="font-bold">UGX {{}}</p>
+                        </div> {% endcomment %}
+                    </div>
+                    <div class="mt-8 w-full">
+                        <table class="w-full">
+                            <thead class="  bg-gray-300 ">
+                                <tr class="">
+                                    <th class="px-6 py-3 text-left">No</th>
+                                    <th class="px-6 py-3 text-left">Payment Date</th>
+                                    {% comment %} <th class="py-3 px-5 text-left">Begining Balance</th>
+                                    <th class="py-3 px-5 text-left">Payment</th> {% endcomment %}
+                                    <th class="px-6 py-3 text-left">Principal</th>
+                                    <th class="px-6 py-3 text-left">Intrest</th>
+                                    <th class="px-6 py-3 text-left">Ending Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ammortization in ammortizations %}
+                                <tr class="border-b dark:bg-gray-800 dark:border-gray-700">
+                                    <td class="py-3 px-5">{{ forloop.counter }}</td>
+                                    <td class="py-3 px-5">{{ammortization.payment_date | date:"Y-m-d"}}</td>
+                                    {% comment %} <td class="py-3 px-5">20,000</td>
+                                    <td class="py-3 px-5">20,000</td> {% endcomment %}
+                                    <td class="py-3 px-5">{{ammortization.principal}}</td>
+                                    <td class="py-3 px-5">{{ammortization.interest}}</td>
+                                    <td class="py-3 px-5">{{ammortization.ending_balance}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+      
+      
+
+    <script>
+        const closeButton = document.getElementById('closePopup');
+        const popup = document.getElementById('popup');
+        const openButton = document.getElementById('openPopup');
+
+        openButton.addEventListener('click', () => {
+            popup.classList.remove('hidden');
+        });
+
+        closeButton.addEventListener('click', () => {
+            popup.classList.add('hidden');
+        });
+    </script>
+
+    <script>
+        const closeButton2 = document.getElementById('closePopup2');
+        const popup2 = document.getElementById('popup2');
+        const openButton2 = document.getElementById('openPopup2');
+
+        openButton2.addEventListener('click', () => {
+            popup2.classList.remove('hidden');
+        });
+
+        closeButton2.addEventListener('click', () => {
+            popup2.classList.add('hidden');
+        });
+    </script>
+    <script>
+        const closeButton3 = document.getElementById('closePopup3');
+        const popup3 = document.getElementById('popup3');
+        const openButton3 = document.getElementById('openPopup3');
+
+        openButton3.addEventListener('click', () => {
+            popup3.classList.remove('hidden');
+        });
+
+        closeButton3.addEventListener('click', () => {
+            popup3.classList.add('hidden');
+        });
+    </script>
+
+<script>
+    function showDocument(docId) {
+        var popupId = "popup_" + docId;
+        var popupElement = document.getElementById(popupId);
+        console.log(popupElement)
+        // If the popup element exists
+        if (popupElement) {
+            // Show the popup by removing the 'hidden' class
+            popupElement.classList.remove("hidden");
+        }
+    }
+
+    function hideDocument(docId) {
+        var popupId = "popup_" + docId;
+        var popupElement = document.getElementById(popupId);
+        console.log(popupElement)
+        // If the popup element exists
+        if (popupElement) {
+            // Show the popup by removing the 'hidden' class
+            popupElement.classList.add("hidden");
+        }
+    }
+</script>
+
+<script>
+    function showPaymentPopup(paymentId) {
+        var popupId = "popup_" + paymentId;
+        var popupElement = document.getElementById(popupId);
+        if (popupElement) {
+            popupElement.classList.remove("hidden");
+        }
+    }
+
+    function hidePaymentPopup(paymentId) {
+        var popupId = "popup_" + paymentId;
+        var popupElement = document.getElementById(popupId);
+        if (popupElement) {
+            popupElement.classList.add("hidden");
+        }
+    }
+</script>
+
+<script>
+    const closeButton5 = document.getElementById('closePopup5');
+    const popup5 = document.getElementById('popup5');
+    const openButton5 = document.getElementById('openPopup5');
+
+    openButton5.addEventListener('click', () => {
+        popup5.classList.remove('hidden');
+    });
+
+    closeButton5.addEventListener('click', () => {
+        popup5.classList.add('hidden');
+    });
+</script>
+
+
+
+<script>
+   function openPopup(imageSrc) {
+  document.getElementById('popupImage').src = imageSrc;
+  document.getElementById('imagePopup').classList.remove('hidden');
+}
+
+function closePopup() {
+  document.getElementById('imagePopup').classList.add('hidden');
+}
+</script>
+
+
+
+{% endblock %}

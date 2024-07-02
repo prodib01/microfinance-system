@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+                <div class="w-full">
+                    <!-- <div class="w-full max-myMob:flex-col max-myMob:items-start max-myMob:gap-4 max-md:mt-10">
+                        <div class="flex items-center gap-4">
+                            <button type="button" id="openPopup" class="p-2 text-2xl text-white rounded-full bg-myBlack"><i class="flex justify-center fi fi-rr-arrow-small-left"></i></button>
+                            <h1 class="text-3xl font-bold">Client</h1>
+                        </div>
+                    </div> -->
+                    <div class="flex items-start w-full gap-8 max-md:flex-col max-myMob:flex-col ">
+                        <div class="w-7/12 max-md:w-full">
+                            <div class="p-6 text-white bg-[#475C6C] rounded-3xl backdrop-filter backdrop-blur-md">
+                                <div class="flex items-end justify-between max-md:flex-wrap">
+                                    <div class="flex items-center gap-4"> 
+                                        <span class="flex items-center justify-center text-2xl text-white rounded-full w-14 h-14 bg-myBlack">
+                                            <i class="leading-3 fi fi-rr-user"></i>
+                                        </span>
+                                        <span>
+                                            <h1 class="text-xl font-bold">{{client.full_name}}</h1>
+                                            <p class="uppercasecd muro">{{client.nin}}</p>
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <p>{{client.address}}</p>
+                                    </div>
+                                </div>
+                               
+                                <!-- <div class="flex items-center justify-center gap-2 mt-6">
+                                    <i class="leading-3 fi fi-sr-marker"></i>
+                                    <p>Kawempe, kampala</p>
+                                </div> -->
+                                <div class="flex items-start justify-between mt-6 max-md:space-y-2 max-md:overflow-x-auto max-md:gap-16">
+                                    <div>
+                                        <h1 class="font-bold">D.O.B</h1>
+                                        <p>{{client.dob}}</p>
+                                    </div>
+                                    <div class="pl-3">
+                                        <h1 class="font-bold">Gender</h1>
+                                        <p>{{client.gender}}</p>
+                                    </div>
+                                    <div class="pl-3">
+                                        <h1 class="font-bold">Business</h1>
+                                        <p>{{client.business}}</p>
+                                    </div>
+                                    <div class="pl-3">
+                                        <h1 class="font-bold">Phone No</h1>
+                                        <p>{{client.phone}}</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap items-end justify-between mt-6">
+                                    <div>
+                                        <h1 class="font-bold">Married to</h1>
+                                        <p>{{client.spouse_name}} ({{client.spouse_phone}})</p>
+                                    </div>
+                                    {% comment %} <div class="space-x-2">
+                                        <button class="text-white hover:text-slate-700"><i class="fi fi-sr-user-pen"></i></button>
+                                        <button class="text-white hover:text-slate-700"><i class="fi fi-sr-trash"></i></button>
+                                    </div> {% endcomment %}
+                                </div>
+                            </div>
+                            <div>
+                                
+                                <div class="flex items-center justify-between py-4 mt-8">
+                                    <p class="text-xl font-bold">Account</p>
+                                    {% comment %} <button type="button" id="openPopup" class="p-2 text-xs text-white rounded-full bg-myBlack"><i class="flex justify-center fi fi-sr-plus"></i></button> {% endcomment %}
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="flex items-end justify-between p-2 bg-gray-100 border border-gray-200 rounded-xl ">
+                                        <div>
+                                            <p class="text-lg font-semibold font-myMono">{{client.client_code}}</p>
+                                            <p class="text-gray-600">UGX {{client.account_balance}}</p>
+                                        </div>
+                                        <div>
+                                            <p>{{active_loans}} Active Loans</p>
+                                        </div>
+                                    </div>
+                                    <!-- {% comment %} <div class="flex items-start justify-between p-2 bg-gray-100 border border-gray-200 rounded-xl">
+                                        <div>
+                                            <p class="text-lg font-semibold font-myMono">MF-54212654</p>
+                                            <p class="text-gray-600">UGX 25,000</p>
+                                        </div>
+                                        <div>
+                                            <p>0 Active Loans</p>
+                                        </div>
+                                    </div>  -->
+                                    <!-- {% endcomment %} -->
+                                </div>
+                                <div class="flex flex-wrap items-center justify-between gap-6 py-4 mt-8 border-t-2 border-gray-100">
+                                    <div class="">
+                                        <h1 class="text-gray-700">Total Loans</h1>
+                                        <p class="text-2xl font-bold">{{total_loans}}</p>
+                                    </div>
+                                    <div class="">
+                                        <h1 class="text-gray-700">Total Active Loans</h1>
+                                        <p class="text-2xl font-bold">{{active_loans}}</p>
+                                    </div>
+                                    <div class="">
+                                        <h1 class="text-gray-700">Total Balance</h1>
+                                        <p class="text-2xl font-bold">UGX {{active_balance}}</p>
+                                    </div>
+                                </div>
+                                <div class="mt-8">
+                                    <p class="mb-2 text-xl font-bold">Guarented To</p>
+                                    <div class="grid grid-cols-2 gap-2 overflow-y-scroll max-h-28">
+                                        {% for loan in all_guaranted_loans%}
+                                        <div class="p-1 bg-gray-200 rounded">
+                                            <p class="font-medium">{{loan.client.full_name}}</p>
+                                            <div class="flex items-center text-sm italic text-gray-500 truncate">
+                                                <p>school fees loan<span class="px-2 font-black">·</span></p>
+                                                <p class="truncate">{{loan.given_amount}}</p>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        {% comment %} <div class="p-1 bg-gray-200 rounded">
+                                            <p class="font-medium">Mukisa John</p>
+                                            <div class="flex items-center text-sm italic text-gray-500 truncate">
+                                                <p>school fees loan<span class="px-2 font-black">·</span></p>
+                                                <p class="truncate">UGX 350,000</p>
+                                            </div>
+                                        </div>
+                                        <div class="p-1 bg-gray-200 rounded">
+                                            <p class="font-medium">Mukisa John</p>
+                                            <div class="flex items-center text-sm italic text-gray-500 truncate">
+                                                <p>school fees loan<span class="px-2 font-black">·</span></p>
+                                                <p class="truncate">UGX 350,000</p>
+                                            </div>
+                                        </div> {% endcomment %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="w-5/12 max-md:w-full max-md:mt-8">
+                            <h1 class="text-4xl font-bold">Loans</h1>
+                            <div class="flex items-center gap-3 overflow-x-scroll mt-7">
+                                <button class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn active" onclick="showAll()">All</button>
+                                <button class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn"  onclick="showApproved()">Active</button>
+                                <button class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn" onclick="showClosed()">Cleared</button>
+                                <button class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn" onclick="showRejected()">Rejected</button>
+                            </div>
+                            <div class="h-screen overflow-y-scroll">
+                            {% for loan in all_loans%}
+                            <div id={{loan.status}}>
+                            <div class="grid grid-cols-1 gap-5 mt-7">
+                                <div class="p-4 bg-white shadow-lg cursor-pointer shadow-gray-300 rounded-2xl hover:border-2 hover:border-gray-100 hover:shadow-none">
+                                    <div class="flex items-start justify-between">
+                                        <div class="">
+                                            <h1 class="italic text-gray-500">{{loan.loan_product.name}}</h1>
+                                            {% if loan.status == "PENDING"%}
+                                            <h1 class="text-2xl font-bold">{{loan.requested_amount}}</h1>
+                                            {% else%}
+                                            <h1 class="text-2xl font-bold">{{loan.given_amount}}</h1>
+                                            {% endif %}
+                                        </div>
+                                        {% if loan.status == "PENDING"%}
+                                        <p> pending </p>
+                                        {% else%}
+                                        <div class="flex items-center justify-center text-white rounded-full w-7 h-7 bg-myGreen">
+                                            <i class="text-xs leading-3 fi fi-rr-chat-arrow-grow"></i>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex items-center justify-between w-full mt-4">
+                                        <p>{{loan.loan_term}} {{loan.loan_term_type_of_period}}</p>
+                                        <p class="flex items-center"><i class="mr-2 leading-3 fi fi-rr-calendar"></i> {{loan.created_at}}</p>
+                                    </div>
+                                </div>   
+                            </div>
+                            </div>
+                            {% endfor %}
+                            </div>
+                        </div>
+                    </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+                </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+            </div>
+        </div>
+    </div>                                                                                                                                                                                          
+
+    <!--add account number popup-->
+    <div id="popup" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+        <div class="relative w-3/12 py-4 overflow-y-auto bg-white rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+            <button id="closePopup" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+            <div class="w-full p-6">
+                <h1 class="mb-10 text-2xl font-bold">Adding Account</h1>
+                <form action="">
+                    <p>Would You like to Add an account to this Person?</p>
+                    <button type="submit" class="w-10/12 h-10 mt-10 text-white rounded-full bg-myBlack">Add</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function showAll() {
+            const approved = document.querySelectorAll('#APPROVED')
+            const rejected = document.querySelectorAll('#REJECTED')
+            const closed = document.querySelectorAll('#CLOSED')
+            const pending = document.querySelectorAll('#PENDING')
+            approved.forEach(approved => {
+                approved.classList.remove('hidden')
+            })
+            rejected.forEach(rejected => {
+                rejected.classList.remove('hidden')
+            })
+            closed.forEach(pending => {
+                pending.classList.remove('hidden')
+            })
+            pending.forEach(pending => {
+                pending.classList.remove('hidden')
+            })
+        }
+
+
+        function showApproved() {
+            const approved = document.querySelectorAll('#APPROVED')
+            const rejected = document.querySelectorAll('#REJECTED')
+            const closed = document.querySelectorAll('#CLOSED')
+            const pending = document.querySelectorAll('#PENDING')
+            approved.forEach(approved => {
+                approved.classList.remove('hidden')
+            })
+            rejected.forEach(rejected => {
+                rejected.classList.add('hidden')
+            })
+            closed.forEach(pending => {
+                pending.classList.add('hidden')
+            })
+            pending.forEach(pending => {
+                pending.classList.add('hidden')
+            })
+        }
+
+        function showRejected() {
+            const approved = document.querySelectorAll('#APPROVED')
+            const rejected = document.querySelectorAll('#REJECTED')
+            const closed = document.querySelectorAll('#CLOSED')
+            const pending = document.querySelectorAll('#PENDING')
+            approved.forEach(approved => {
+                approved.classList.add('hidden')
+            })
+            rejected.forEach(rejected => {
+                rejected.classList.remove('hidden')
+            })
+            closed.forEach(pending => {
+                pending.classList.add('hidden')
+            })
+            pending.forEach(pending => {
+                pending.classList.add('hidden')
+            })
+        }
+
+        function showClosed() {
+            const approved = document.querySelectorAll('#APPROVED')
+            const rejected = document.querySelectorAll('#REJECTED')
+            const closed = document.querySelectorAll('#CLOSED')
+            const pending = document.querySelectorAll('#PENDING')
+            approved.forEach(approved => {
+                approved.classList.add('hidden')
+            })
+            rejected.forEach(rejected => {
+                rejected.classList.add('hidden')
+            })
+            closed.forEach(pending => {
+                pending.classList.remove('hidden')
+            })
+            pending.forEach(pending => {
+                pending.classList.add('hidden')
+            })
+        }
+    </script>
+
+    <script>
+        const closeButton = document.getElementById('closePopup');
+        const popup = document.getElementById('popup');
+        const openButton = document.getElementById('openPopup');
+
+        openButton.addEventListener('click', () => {
+            popup.classList.remove('hidden');
+        });
+
+        closeButton.addEventListener('click', () => {
+            popup.classList.add('hidden');
+        });
+    </script>
+{% endblock %}

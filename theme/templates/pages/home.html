@@ -1,0 +1,876 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+<div class="w-full">
+    <div
+        class="flex items-center justify-between w-full max-myMob:flex-col max-myMob:items-start max-myMob:gap-4 max-md:mt-10">
+        <div>
+            <p id="time"></p>
+            <h1 class="text-xl font-bold capitalize"> {{user.fullname}}</h1>
+        </div>
+        <div class="space-x-3">
+            <button type="button" id="addLoanPopupBtn" class="h-10 px-6 text-white rounded-full bg-myBlack">Add Loan</button>
+            <button type="button" id="depositPopupBtn" class="h-10 px-6 text-white rounded-full bg-myBlack">Add Payment</button>
+            <button type="button" id="calcPopupBtn" class="h-10 px-6 text-white rounded-full bg-myBlack">Calc</button>
+        </div>
+    </div>
+    <div class="grid w-full grid-cols-3 gap-4 mt-10 max-myMob:grid-cols-1">
+        <div class="flex items-start justify-between w-full gap-5 p-4 text-white bg-myBlack rounded-2xl">
+            <div>
+                <p>Active loans</p>
+                <h1 class="text-2xl font-bold">{{approved_loans}}</h1>
+            </div>
+            <div class="bg-[#ffffff33] h-10 w-10 rounded-xl flex justify-center items-center text-xl">
+                <i class="leading-3 fi fi-sr-coins"></i>
+            </div>
+        </div>
+        <div class="flex items-start justify-between w-full gap-5 p-4 text-white myGradient3 rounded-2xl">
+            <div>
+                <p>Loans Size</p>
+                <h1 class="text-2xl font-bold">UGX {{total_amount_approved_loans}} /=</h1>
+            </div>
+            <div class="bg-[#ffffff33] h-10 w-10 rounded-xl flex justify-center items-center text-xl">
+                <i class="leading-3 fi fi-sr-dollar"></i>
+            </div>
+        </div>
+        <div class="flex items-start justify-between w-full gap-5 p-4 text-white myGradient3 rounded-2xl">
+            <div>
+                <p>Given Today</p>
+                <h1 class="text-2xl font-bold">UGX {{total_amount_given_today}}/=</h1>
+            </div>
+            <div class="bg-[#ffffff33] h-10 w-10 rounded-xl flex justify-center items-center text-xl">
+                <i class="leading-3 fi fi-sr-dollar"></i>
+            </div>
+        </div>
+
+    </div>
+    <!-- <div class="container mt-10">
+                        <canvas id="myChart"></canvas>
+                    </div> -->
+
+    <div class="grid w-full grid-cols-3 gap-6 mt-12 max-md:grid-cols-1">
+        <div class="w-full col-span-2 max-md:order-2 max-myMob:col-span-1">
+            <h1 class="mb-4 text-3xl font-bold">Recent Loans</h1>
+            <div class="grid grid-cols-2 gap-4 max-myMob:grid-cols-1">
+                {% comment %} <div
+                    class="flex items-start justify-between p-4 bg-white shadow-lg cursor-pointer shadow-gray-300 rounded-2xl hover:border-2 hover:border-gray-100 hover:shadow-none">
+                    <div class="">
+                        <h1 class="text-xl font-bold">Musoke MIke</h1>
+                        <p class="italic text-gray-600"><span class="mr-10">Salary Loan</span> <span>3 Months</span></p>
+                        <h1 class="mt-4 text-2xl font-bold">UGX 350,000</h1>
+                    </div>
+                    <div class="flex items-center justify-center text-white rounded-full w-7 h-7 bg-myGreen">
+                        <i class="text-xs leading-3 fi fi-rr-chat-arrow-grow"></i>
+                    </div>
+                </div> {% endcomment %}
+                {% comment %} <div
+                    class="flex items-start justify-between p-4 bg-white shadow-lg cursor-pointer shadow-gray-300 rounded-2xl hover:border-2 hover:border-gray-100 hover:shadow-none">
+                    <div class="">
+                        <h1 class="text-xl font-bold">Musoke MIke</h1>
+                        <p class="italic text-gray-600"><span class="mr-10">Salary Loan</span> <span>3 Months</span></p>
+                        <h1 class="mt-4 text-2xl font-bold">UGX 350,000</h1>
+                    </div>
+                    <div class="flex items-center justify-center text-white rounded-full w-7 h-7 bg-myGreen">
+                        <i class="text-xs leading-3 fi fi-rr-chat-arrow-grow"></i>
+                    </div>
+                </div> {% endcomment %}
+                {% for loan in active_loans %}
+                <a href="/loan/loanview/{{loan.id}}">
+                <div class="p-4 bg-white shadow-lg cursor-pointer shadow-gray-300 rounded-2xl hover:border-2 hover:border-gray-100 hover:shadow-none">
+                    <div class="">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h1 class="text-xl font-bold">{{loan.client.full_name}}</h1>
+                                <p class="italic text-gray-600"><span class="mr-10">{{loan.loan_product.name}}</span> <span>{{loan.loan_term}} {{loan.loan_term_type_of_period}}</span></p>
+                            </div>
+                            <div class="flex items-center justify-center text-white rounded-full w-7 h-7 bg-myGreen">
+                                <i class="text-xs leading-3 fi fi-rr-chat-arrow-grow"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="mt-4 italic text-gray-600">Loan Amount</p>
+                                <h1 class="text-xl font-bold ">UGX {{loan.given_amount}}</h1>
+                            </div>
+                            <div>
+                                <p class="mt-4 italic text-gray-600">Balance</p>
+                                <h1 class="text-xl font-bold ">UGX {{loan.demanded_amount}}</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="w-full h-[350px] col-span-1 px-4 pb-4 overflow-y-auto bg-slate-100 rounded-3xl max-md:order-1">
+            <div class="sticky top-0 pt-5 bg-gray-100 border-b-2 border-gray-200">
+                <h1 class="text-2xl font-bold">Notifications</h1>
+            </div>
+            <div class="w-full mt-4">
+                {% for notification in notifications %}
+                    <div id="LoanNotification_{{ notification.id }}" onclick="showPopup('{{ notification.id }}')" class="flex items-center w-full gap-2 mb-4 cursor-pointer">
+                        <span class="flex items-center justify-center p-2 bg-gray-300 rounded-full">
+                            <i class="text-xl leading-3 fi fi-rr-bell-ring"></i>
+                        </span>
+                        <span class="w-full font-bold truncate">
+                            <p class="w-full truncate">{{notification.message}}</p>
+                            <p class="float-right text-xs text-gray-500">2hrs ago</p>
+                        </span>
+                    </div>
+                {% endfor %}
+                {% comment %} <div class="flex items-center w-full gap-2 mb-4 cursor-pointer">
+                    <span class="flex items-center justify-center p-2 bg-gray-300 rounded-full">
+                        <i class="text-xl leading-3 fi fi-rr-bell-ring"></i>
+                    </span>
+                    <span class="w-full font-bold truncate">
+                        <p class="w-full truncate">musoke has an exipired loan eygyugg eg ge huih</p>
+                        <p class="float-right text-xs text-gray-500">2hrs ago</p>
+                    </span>
+                </div>
+                <div class="flex items-center w-full gap-2 mb-4 cursor-pointer">
+                    <span class="flex items-center justify-center p-2 bg-gray-300 rounded-full">
+                        <i class="text-xl leading-3 fi fi-rr-bell-ring"></i>
+                    </span>
+                    <span class="w-full text-gray-700 truncate">
+                        <p class="w-full truncate">musoke has an exipired loan eygyugg eg ge huih</p>
+                        <p class="float-right text-xs text-gray-500">2hrs ago</p>
+                    </span>
+                </div>
+                <div class="flex items-center w-full gap-2 mb-4 cursor-pointer">
+                    <span class="flex items-center justify-center p-2 bg-gray-300 rounded-full">
+                        <i class="text-xl leading-3 fi fi-rr-bell-ring"></i>
+                    </span>
+                    <span class="w-full text-gray-700 truncate">
+                        <p class="w-full truncate">musoke has an exipired loan eygyugg eg ge huih</p>
+                        <p class="float-right text-xs text-gray-500">2hrs ago</p>
+                    </span>
+                </div>
+                <div class="flex items-center w-full gap-2 mb-4 cursor-pointer">
+                    <span class="flex items-center justify-center p-2 bg-gray-300 rounded-full">
+                        <i class="text-xl leading-3 fi fi-rr-bell-ring"></i>
+                    </span>
+                    <span class="w-full text-gray-700 truncate">
+                        <p class="w-full truncate">musoke has an exipired loan eygyugg eg ge huih</p>
+                        <p class="float-right text-xs text-gray-500">2hrs ago</p>
+                    </span>
+                </div>
+                <div class="flex items-center w-full gap-2 mb-4 cursor-pointer">
+                    <span class="flex items-center justify-center p-2 bg-gray-300 rounded-full">
+                        <i class="text-xl leading-3 fi fi-rr-bell-ring"></i>
+                    </span>
+                    <span class="w-full text-gray-700 truncate">
+                        <p class="w-full truncate">musoke has an exipired loan eygyugg eg ge huih</p>
+                        <p class="float-right text-xs text-gray-500">2hrs ago</p>
+                    </span>
+                </div>
+                <div class="flex items-center w-full gap-2 mb-4 cursor-pointer">
+                    <span class="flex items-center justify-center p-2 bg-gray-300 rounded-full">
+                        <i class="text-xl leading-3 fi fi-rr-bell-ring"></i>
+                    </span>
+                    <span class="w-full text-gray-700 truncate">
+                        <p class="w-full truncate">musoke has an exipired loan eygyugg eg ge huih</p>
+                        <p class="float-right text-xs text-gray-500">2hrs ago</p>
+                    </span>
+                </div>
+                <div class="flex items-center w-full gap-2 mb-4 cursor-pointer">
+                    <span class="flex items-center justify-center p-2 bg-gray-300 rounded-full">
+                        <i class="text-xl leading-3 fi fi-rr-bell-ring"></i>
+                    </span>
+                    <span class="w-full text-gray-700 truncate">
+                        <p class="w-full truncate">musoke has an exipired loan eygyugg eg ge huih</p>
+                        <p class="float-right text-xs text-gray-500">2hrs ago</p>
+                    </span>
+                </div>
+                <div class="flex items-center w-full gap-2 mb-4 cursor-pointer">
+                    <span class="flex items-center justify-center p-2 bg-gray-300 rounded-full">
+                        <i class="text-xl leading-3 fi fi-rr-bell-ring"></i>
+                    </span>
+                    <span class="w-full text-gray-700 truncate">
+                        <p class="w-full truncate">musoke has an exipired loan eygyugg eg ge huih</p>
+                        <p class="float-right text-xs text-gray-500">2hrs ago</p>
+                    </span>
+                </div>
+                <div class="flex items-center w-full gap-2 mb-4 cursor-pointer">
+                    <span class="flex items-center justify-center p-2 bg-gray-300 rounded-full">
+                        <i class="text-xl leading-3 fi fi-rr-bell-ring"></i>
+                    </span>
+                    <span class="w-full text-gray-700 truncate">
+                        <p class="w-full truncate">musoke has an exipired loan eygyugg eg ge huih</p>
+                        <p class="float-right text-xs text-gray-500">2hrs ago</p>
+                    </span>
+                </div>
+                <div class="flex items-center w-full gap-2 mb-4 cursor-pointer">
+                    <span class="flex items-center justify-center p-2 bg-gray-300 rounded-full">
+                        <i class="text-xl leading-3 fi fi-rr-bell-ring"></i>
+                    </span>
+                    <span class="w-full text-gray-700 truncate">
+                        <p class="w-full truncate">musoke has an exipired loan eygyugg eg ge huih</p>
+                        <p class="float-right text-xs text-gray-500">2hrs ago</p>
+                    </span>
+                </div> {% endcomment %}
+            </div>
+        </div>
+    </div>
+    <!-- <div class="w-full mt-14">
+                        <h1 class="mb-4 text-3xl font-bold">Clients</h1>
+                        <div class="grid grid-cols-3 gap-4 max-md:grid-cols-2 max-myMob:grid-cols-1">
+                            <div class="flex items-center gap-3 p-3 rounded-full cursor-pointer hover:bg-gray-200">
+                                <div class="flex items-center justify-center w-12 h-12 text-white rounded-full bg-myBlack">
+                                    <i class="text-2xl leading-3 fi fi-rr-user"></i>
+                                </div>
+                                <div>
+                                    <h1 class="text-xl font-bold">Yiga Jonathan</h1>
+                                    <p class="text-gray-600 font-myMono">MFU-04475745</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 p-3 rounded-full cursor-pointer hover:bg-gray-200">
+                                <div class="flex items-center justify-center w-12 h-12 text-white rounded-full bg-myBlack">
+                                    <i class="text-2xl leading-3 fi fi-rr-user"></i>
+                                </div>
+                                <div>
+                                    <h1 class="text-xl font-bold">Yiga Jonathan</h1>
+                                    <p class="text-gray-600 font-myMono">MFU-04475745</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 p-3 rounded-full cursor-pointer hover:bg-gray-200">
+                                <div class="flex items-center justify-center w-12 h-12 text-white rounded-full bg-myBlack">
+                                    <i class="text-2xl leading-3 fi fi-rr-user"></i>
+                                </div>
+                                <div>
+                                    <h1 class="text-xl font-bold">Yiga Jonathan</h1>
+                                    <p class="text-gray-600 font-myMono">MFU-04475745</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 p-3 rounded-full cursor-pointer hover:bg-gray-200">
+                                <div class="flex items-center justify-center w-12 h-12 text-white rounded-full bg-myBlack">
+                                    <i class="text-2xl leading-3 fi fi-rr-user"></i>
+                                </div>
+                                <div>
+                                    <h1 class="text-xl font-bold">Yiga Jonathan</h1>
+                                    <p class="text-gray-600 font-myMono">MFU-04475745</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+</div>
+</div>
+</div>
+</div>
+
+<!--add loan popup -->
+<div id="addLoanPopup"
+    class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+    <div class="relative w-3/12 overflow-y-auto bg-white h-4/5 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+        <button id="closeAddLoanPopup"
+            class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i
+                class="leading-3 fi fi-rr-cross-small"></i></button>
+        <div class="w-full p-6">
+            <h1 class="mb-10 text-2xl font-bold">Add Loan</h1>
+            <form action="{% url 'add-loan-request' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <!-- <div class="relative flex flex-col mb-4">
+                    <label for="client">Client</label>
+
+                    <div class="relative mb-4">
+                        <input type="text" id="searchInput"
+                            class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
+                            placeholder="Search users...">
+                        <div id="dropdownResults"
+                            class="absolute z-10 w-10/12 mt-1 overflow-y-scroll text-white rounded-md bg-myBlack max-h-32"
+                            style="display: none;"></div>
+                    </div>
+
+                    <div id="selectedUser" class="relative hidden w-10/12 p-2 mt-0 text-white rounded-lg bg-myBlack">
+                        <div id="selectedUserName"></div>
+                        <div id="selectedUserAccountNumber" class="text-gray-500"></div>
+                        <button type="button" id="cancelBtn" class="absolute ml-2 cancel-btn top-1 right-1"><i
+                                class="leading-3 fi fi-rr-cross-small"></i></button>
+                    </div>
+                    <input type="hidden" id="selectedUserId">
+                    <input type="hidden" id="selectedUserAccountId">
+                </div>
+
+                <div id="selectedUser" class="w-10/12 mt-4 mb-4"></div> -->
+                <div class="flex flex-col mb-4">
+                    <label for="client">Client</label>
+                    <select name="client" id=""
+                        class="w-10/12 h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
+                        required>
+                        <option value=""></option>
+                        {% for client in people %}
+                        <option value="{{client.id}}">{{client.full_name}} - {{client.nin}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="flex flex-col mb-4">
+                    <label for="loanProduct">Loan Product</label>
+                    <select name="loanProduct" id=""
+                        class="w-10/12 h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
+                        required>
+                        {% for loan_type in loan_products %}
+                        <option value="{{loan_type.id}}">{{loan_type.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="requestedAmount">Requested amount</label>
+                    <input required type="number" min="10000" name="requestedAmount" id=""
+                        class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
+                        placeholder="10000" required>
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="recommendedAMount">Recommended amount</label>
+                    <input required type="number" min="10000" name="recommendedAmount" id=""
+                        class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
+                        placeholder="10000" required>
+                </div>
+
+                <div class="flex flex-col mb-4">
+                    <label for="loanTerm">Loan Term</label>
+                    <input required type="number" min="" name="loanTermNumber" id=""
+                        class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
+                        required>
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="loanTermType">Loan Term Type</label>
+                    <select name="loanTermTypeOfPeriod" id=""
+                        class="w-10/12 h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
+                        required>
+                        <option value="weeks">Weeks</option>
+                        <option value="months">Months</option>
+                        <option value="years">Years</option>
+                    </select>
+
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="installmentinterval">Installment Interval</label>
+                    <select name="paymentFrequency" id=""
+                        class="w-10/12 h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="bi-weekly">Bi-Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="quarterly">Quarterly</option>
+                                <option value="semi-annually">Semi-Annually</option>
+                                <option value="yearly">Annually</option>
+                    </select>
+                </div>
+
+                <h1 class="pt-4 pb-1 text-xl font-bold">Security</h1>
+                <div class="flex flex-col mb-4">
+                    <label for="client">Security Type</label>
+                    <select name="securityType" id=""
+                        class="w-10/12 h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                        {% for security_type in security_types %}
+                        <option value="{{security_type.id}}">{{security_type.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="client">Description</label>
+                    <input required type="text" min="" name="securityDescription" id=""
+                        class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                </div>
+                {% comment %} <div class="flex flex-col mb-4">
+                    <input type="file" id="file-input" class="hidden" accept="image/*" onchange="previewImage(event)" name="securityImage">
+                    <button type="button" id="add-image-button" class="w-10/12 h-10 text-white rounded-full bg-myBlack hover:animate-pulse" onclick="document.getElementById('file-input').click()">Add Image</button>
+                </div> {% endcomment %}
+                <div class="flex flex-col mb-4">
+                    <label for="Image 2">Security Image</label>
+                    <input type="file" accept="image/*" name="securityImage2" />
+                </div>
+                <div id="image-preview-container" class="flex flex-wrap gap-2"></div>
+                <h1 class="pt-4 pb-1 text-xl font-bold">Guarantor</h1>
+                <div class="relative flex flex-col mb-4">
+                    <label for="client">Name</label>
+                    {% comment %} <input type="text" id="searchGuarantor"
+                        class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
+                        placeholder="Search Guarantor" name="guarantor">
+                    <div id="guarantorResults"
+                        class="absolute z-10 hidden w-10/12 overflow-y-auto text-white rounded-lg right-12 max-h-32 top-16 bg-myBlack">
+                    </div>
+                    <input type="text" id="selectedUserId"
+                        class="hidden w-64 px-4 py-2 mt-2 border border-gray-300 rounded" placeholder="Selected user ID"
+                        readonly> {% endcomment %}
+                        <Select name="guarantor" id="guarantor" class="w-10/12 h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                            <option value=""></option>
+                        {% for client in people %}
+                        <option value="{{client.id}}">{{client.full_name}} - {{client.nin}}</option>
+                        {% endfor %}
+                    </Select>
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="client">Relationship</label>
+                    <select required type="text" min="" name="guarantorRelationship" id=""
+                        class="w-10/12 h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                        <option value="friend">Friend</option>
+                        <option value="sibling">Sibling</option>
+                        <option value="mother">Mother</option>
+                        <option value="father">Father</option>
+                        <option value="uncle">Uncle</option>
+                        <option value="aunt">Auntie</option>
+                        <option value="child">Child</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-10/12 h-10 mt-10 text-white rounded-full bg-myBlack">Add loan</button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<!-- deposit popup -->
+
+<div id="depositPopup"
+    class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+    <div class="relative w-7/12 overflow-y-auto bg-white h-5/6 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+        <button id="closeDepositPopup" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+        <div class="w-full p-6">
+            <h1 class="mb-10 text-2xl font-bold">Add Payment</h1>
+            <form action="/make-deposit" method="post">
+                {% csrf_token %}
+                <div class="grid w-full grid-cols-2 gap-4 mb-4">
+                    <div class="relative grid grid-cols-2 gap-4">
+                        <div class="flex flex-col">
+                            <label for="people">Client</label>
+                            <select name="person" id="person-select" class="h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                                <option value=""> Select Client</option>
+                                {% for person in people %}
+                                    <option value="{{ person.id}}" class="">{{ person.full_name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="loan">Loan</label>
+                        <select id="loan-select"  name="loan" class="h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                        </select>
+                        </div>
+                       
+                        <div id="searchResults"
+                            class="absolute z-50 invisible w-10/12 h-40 mt-16 overflow-y-auto text-white border shadow-md rounded-xl bg-myBlack max-h-40">
+                        </div>
+                    </div>
+                    <!-- <div id="selectedUser" class="w-10/12 mt-4 mb-4"></div> -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="flex flex-col">
+                            <label for="amount">Amount</label>
+                            <input required type="number" min="0" name="amount" id=""
+                                class="h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="date">Date</label>
+                            <input required type="date" name="date" id=""
+                                class="h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="float-right w-full h-10 mb-8 text-white rounded-full bg-myBlack">Pay</button>
+            </form>
+            <div>
+                <table id="ammortization-table" class="w-full">
+                    <thead class="bg-gray-300 ">
+                        <tr class="">
+                            <th class="px-2 py-3 text-left">Date</th>
+                            <th class="px-2 py-3 text-left">Principal</th>
+                            <th class="px-2 py-3 text-left">Intrest</th>
+                            <th class="px-2 py-3 text-left">Ending Balance</th>
+                            {% comment %} <th class="px-2 py-3 text-left">Actual Balance</th> {% endcomment %}
+                            <th class="px-2 py-3 text-left">Penalty</th>
+                            <th class="px-2 py-3 text-left">Status</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- calc popup  -->
+<div id="calcPopup"
+    class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+    <div class="relative w-8/12 overflow-y-auto bg-white h-5/6 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+        <button id="closeCalcPopup" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+        <div class="w-full p-6 loan-calculator">
+            <h1 class="mb-10 text-3xl font-bold">Loan Calculator</h1>
+            <div>
+                <form action="" method="post" class="w-full">
+                    {% csrf_token %}
+                    <div class="grid w-full grid-cols-5 gap-2 pb-4">
+                        <div class="flex flex-col">
+                            <label for="amount">Amount</label>
+                            <input required type="number" min="10000" name="principal" id=""
+                                class="h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
+                                placeholder="10000">
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="interestrate">Interest Rate(%)</label>
+                            <input required type="number.." name="annual_interest_rate" id=""
+                                class="h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="installmentinterval">Installment Interval</label>
+                            <select name="payment_frequency" id=""
+                                class="h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                                <option value=""></option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="bi-weekly">Bi-Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="quarterly">Quarterly</option>
+                                <option value="semi-annually">Semi-Annually</option>
+                                <option value="yearly">Annually</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="loanterm">Loan Term</label>
+                            <div class="flex items-center gap-2">
+                                <input required type="number" name="loan_term_number" id=""
+                                    class="h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                                <select id="" name="loan_term_type_of_period"
+                                    class="h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                                    <option value=""></option>
+                                    <option value="weeks">Weeks</option>
+                                    <option value="months">Months</option>
+                                    <option value="years">Years</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="flex flex-col w-full">
+                        <button type="submit" class="float-right w-full h-10 px-4 text-white rounded-full bg-myBlack">Calculate</button>
+                    </div>
+                </form>
+                <div class="mt-12">
+                    <div class="grid grid-cols-4 gap-4">
+                        <div>
+                            <p class="">Loan Amount</p>
+                            <p class="font-bold loan-amount"></p>
+                        </div>
+                        <div>
+                            <p>Intrest Rate</p>
+                            <p class="font-bold interest-rate"></p>
+                        </div>
+                        <div>
+                            <p>Period</p>
+                            <p class="font-bold loan-period"></p>
+                        </div>
+                        <div>
+                            <p>Start Date</p>
+                            <p class="font-bold loan-start-date"></p>
+                        </div>
+                        <div>
+                            <p>Instalment</p>
+                            <p class="font-bold loan-installments"></p>
+                        </div>
+                        <div>
+                            <p>No of payments</p>
+                            <p class="font-bold loan-number-of-payments"></p>
+                        </div>
+                        <div>
+                            <p>Total Intrest</p>
+                            <p class="font-bold total-loan-interest"></p>
+                        </div>
+                        <div>
+                            <p>Total Loan Cost</p>
+                            <p class="font-bold total-loan-cost"></p>
+                        </div>
+                    </div>
+                    <div class="w-full mt-8 results-table">
+                        <table class="w-full">
+                            <thead class="w-full bg-gray-300">
+                                <tr class="">
+                                    <th class="px-6 py-3 text-left">No</th>
+                                    <th class="px-6 py-3 text-left">Payment Date</th>
+                                    <th class="px-6 py-3 text-left">Principal</th>
+                                    <th class="px-6 py-3 text-left">Intrest</th>
+                                    <th class="px-6 py-3 text-left">Ending Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody class="w-full">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% for notification in notifications %}
+<div  id="Popup_{{ notification.id }}" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+    <div class="relative w-3/12 py-4 overflow-y-auto bg-white rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+        <button onclick="closePopup('{{ notification.id }}')" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+        <div class="w-full p-6">
+            <h1 class="mb-6 text-2xl font-bold">Notification</h1>
+            <div>
+                <p>{{notification.message}}</p>
+                <p class="font-bold">Type: <span class="font-normal">{{notification.loan.loan_product}}</span></p>
+                <p class="font-bold">Amount: <span class="font-normal">{{notification.loan.given_amount}}</span></p>
+                {% comment %} <p>This is the content of the popup for notification {{ notification.id }}</p> {% endcomment %}
+            </div>
+            <div>
+                <a href="/loan/loanview/{{notification.loan.id}}">
+                <button type="button" class="w-10/12 h-10 mt-10 text-white rounded-full bg-myBlack">View Loan</button>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endfor %}
+<!-- Loan notification popup  -->
+
+
+<div  id="penaltyModal" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+    <div class="relative w-3/12 py-4 overflow-y-auto bg-white rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+        <button id="cancelPenaltyModal" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+        <div class="w-full p-6">
+            <div>
+                <p>Do you want to forgive this penalty</p>
+            </div>
+            <div>
+                <button type="button" class="w-10/12 h-10 mt-10 text-white rounded-full bg-myBlack">Forgive</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+
+<script>
+    const loanselect = document.getElementById('loan-select');
+    const personselect = document.getElementById('person-select');
+    const ammortizationTable = document.getElementById('ammortization-table');
+    personselect.addEventListener('change', (e) => {
+        const personId = e.target.value;
+        fetch(`/loan/get-loans/${personId}`)
+            .then(response => response.json())
+            .then(data => {
+                loanselect.classList.remove('hidden');
+                loanselect.innerHTML = '';
+                loanselect.innerHTML = '<option value="">Select Loan</option>';
+                data.loans.forEach(loan => {
+                    const option = document.createElement('option');
+                    option.value = loan.id;
+                    option.textContent = loan.name;
+                    loanselect.appendChild(option);
+                });
+            });
+    });
+
+    loanselect.addEventListener('change', (e) => {
+        const loanId = e.target.value;
+        ammortizationTable.innerHTML = '';
+        th = document.createElement('thead');
+        th.classList.add('bg-gray-300');
+        th.innerHTML = `
+            <tr class="">
+                <th class="px-2 py-3 text-left">Date</th>
+                <th class="px-2 py-3 text-left">Principal</th>
+                <th class="px-2 py-3 text-left">Intrest</th>
+                <th class="px-2 py-3 text-left">Ending Balance</th>
+                {% comment %} <th class="px-2 py-3 text-left">Actual Balance</th> {% endcomment %}
+                <th class="px-2 py-3 text-left">Penalty</th>
+                <th class="px-2 py-3 text-left">Status</th>
+            </tr>
+        `;
+        ammortizationTable.appendChild(th);
+        fetch(`/loan/get-loan-ammortization/${loanId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.loan_amortization.forEach((schedule) => {
+                const row = document.createElement('tr');
+                row.classList.add('table-row');
+                
+                const dateCell = document.createElement('td');
+                const paymentDate = new Date(schedule.payment_date);
+                const options = { day: 'numeric', month: 'short', year: 'numeric' };
+                const formattedDate = paymentDate.toLocaleDateString('en-US', options);
+                dateCell.textContent = formattedDate;
+                dateCell.classList.add('py-3', 'px-2');
+                row.appendChild(dateCell);
+
+                const principalCell = document.createElement('td');
+                principalCell.textContent = schedule.principal.toLocaleString();
+                principalCell.classList.add('py-3', 'px-2');
+                row.appendChild(principalCell);
+
+                const interestCell = document.createElement('td');
+                interestCell.textContent = schedule.interest.toLocaleString();
+                interestCell.classList.add('py-3', 'px-2');
+                row.appendChild(interestCell);
+
+                const balanceCell = document.createElement('td');
+                balanceCell.textContent = schedule.ending_balance.toLocaleString();
+                balanceCell.classList.add('py-3', 'px-2');
+                row.appendChild(balanceCell);
+
+                const penaltyRate = {{ penalty }};
+                const penalty = schedule.principal * penaltyRate;
+                const cancelPenaltBtn = document.createElement('button')
+                cancelPenaltBtn.setAttribute("id", "cancelPenalty")
+                cancelPenaltBtn.innerHTML = '<i class="fi fi-sr-cross-small"></i>';
+                cancelPenaltBtn.classList.add('text-white', 'bg-red-500', 'rounded-full', 'text-xs', 'ml-1', 'w-5', 'h-5', 'p-1');
+                const penaltyCell = document.createElement('td');
+                penaltyCell.classList.add('py-3', 'px-2');
+                penaltyCell.textContent = penalty.toLocaleString();
+                penaltyCell.appendChild(cancelPenaltBtn);
+                row.appendChild(penaltyCell);
+
+                document.addEventListener("DOMContentLoaded", function() {
+                const openCancelPenaltyModal = document.getElementById('cancelPenalty');
+                const cancelPenaltyModal = document.getElementById('cancelPenaltyModal');
+                const penaltyModal = document.getElementById('penaltyModal');
+
+                openCancelPenaltyModal.addEventListener('click', () => {
+                    penaltyModal.classList.remove('hidden');
+                });
+
+                cancelPenaltyModal.addEventListener('click', () => {
+                    penaltyModal.classList.add('hidden');
+                });
+                });
+
+               
+
+                const statusCell = document.createElement('td');
+                if(schedule.status == 'PAID'){
+                    statusCell.classList.add('bg-green-500');
+                }else{
+                    statusCell.classList.add('bg-red-500');
+                }
+                statusCell.textContent = schedule.status;
+                statusCell.classList.add('py-3', 'px-2');
+                row.appendChild(statusCell);
+
+                ammortizationTable.appendChild(row);
+            })});
+    });
+</script>
+
+<script>
+    const closeAddLoanPopup = document.getElementById('closeAddLoanPopup');
+    const loanPopup = document.getElementById('addLoanPopup');
+    const openLoanPopup = document.getElementById('addLoanPopupBtn');
+
+    openLoanPopup.addEventListener('click', () => {
+        loanPopup.classList.remove('hidden');
+    });
+
+
+    closeAddLoanPopup.addEventListener('click', () => {
+        loanPopup.classList.add('hidden');
+    });
+
+</script>
+
+<script>
+    const closeDepositPopup = document.getElementById('closeDepositPopup');
+    const depositPopup = document.getElementById('depositPopup');
+    const openDepositPopup = document.getElementById('depositPopupBtn');
+
+    openDepositPopup.addEventListener('click', () => {
+        depositPopup.classList.remove('hidden');
+    });
+
+
+    closeDepositPopup.addEventListener('click', () => {
+        depositPopup.classList.add('hidden');
+    });
+</script>
+
+<script>
+    const closeCalcPopup = document.getElementById('closeCalcPopup');
+    const calcPopup = document.getElementById('calcPopup');
+    const openCalcPopup = document.getElementById('calcPopupBtn');
+
+    openCalcPopup.addEventListener('click', () => {
+        calcPopup.classList.remove('hidden');
+    });
+
+
+    closeCalcPopup.addEventListener('click', () => {
+        calcPopup.classList.add('hidden');
+    });
+</script>
+
+<script>
+     function showPopup(notificationId) {
+        var popupId = "Popup_" + notificationId;
+        var popupElement = document.getElementById(popupId);
+        if (popupElement) {
+            popupElement.classList.remove("hidden");
+        }
+    }
+
+    function closePopup(notificationId) {
+        var popupId = "Popup_" + notificationId;
+        var popupElement = document.getElementById(popupId);
+        if (popupElement) {
+            popupElement.classList.add("hidden");
+        }
+    }
+</script>
+
+<script>
+    const calcForm = document.querySelector('.loan-calculator form');
+    calcForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        fetch('/loan/calculate', {
+            method: 'POST',
+            body: new FormData(calcForm),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                const loanAmount = document.querySelector('.loan-amount');
+                const interestRate = document.querySelector('.interest-rate');
+                const loanPeriod = document.querySelector('.loan-period');
+                const loanStartDate = document.querySelector('.loan-start-date');
+                const loanInstallments = document.querySelector('.loan-installments');
+                const loanNumberOfPayments = document.querySelector('.loan-number-of-payments');
+                const totalLoanInterest = document.querySelector('.total-loan-interest');
+                const totalLoanCost = document.querySelector('.total-loan-cost');
+
+                loanAmount.textContent = `UGX ${data.principal.toLocaleString()}`;
+                interestRate.textContent = `${data.annual_interest_rate.toLocaleString()}% PM`;
+                loanPeriod.textContent = `${data.loan_term_years} years`;
+                loanStartDate.textContent = `${data.start_date}`;
+                loanInstallments.textContent = `UGX ${data.installment.toLocaleString()}`;
+                loanNumberOfPayments.textContent = `${data.total_payments.toLocaleString()}`;
+                totalLoanInterest.textContent = `UGX ${data.total_interest.toLocaleString()}`;
+                totalLoanCost.textContent = `UGX ${(data.principal + data.total_interest).toLocaleString()}`;
+
+
+                const table = document.querySelector('.results-table tbody');
+                table.innerHTML = '';
+                data.amortization_schedule.forEach((schedule) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+            <td class="px-6 py-3">${schedule.payment_number}</td>
+            <td class="px-6 py-3">${schedule.payment_date}</td>
+            <td class="px-6 py-3">${schedule.principal.toLocaleString()}/=</td>
+            <td class="px-6 py-3">${schedule.interest.toLocaleString()}/=</td>
+            <td class="px-6 py-3">${schedule.remaining_balance.toLocaleString()}/=</td>
+        `;
+                    table.appendChild(tr);
+                });
+
+
+
+            })
+    });
+</script>
+
+
+{% endblock %}

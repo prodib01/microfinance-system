@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+                <div class="w-full">
+                    <div class="flex items-center justify-between w-full max-myMob:flex-col max-myMob:items-start max-myMob:gap-4 max-md:mt-10">
+                        <div>
+                            <h1 class="text-3xl font-bold">Staff Members</h1>
+                        </div>
+                        <div class="flex items-center gap-4 max-myMob:w-full">
+                            <button type="button" id="openPopup" class="p-3 text-white rounded-full bg-myBlack"><i class="flex justify-center fi fi-sr-plus"></i></button>
+                            <form method="POST" action="/users/search-user/">
+                                {% csrf_token %}
+                            <div class="flex items-center justify-between h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus-within:border-myBlack max-myMob:w-full">
+                                <input type="search" name="search" id="" class="w-full h-10 italic bg-transparent outline-none" placeholder="search">
+                                <button type="submit" class="flex items-center justify-center px-1 bg-transparent"><i class="leading-3 fi fi-br-search"></i></button>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 mt-7 max-md:grid-cols-2 max-myMob:grid-cols-1">
+                        {% if messages%}
+                            <div class="col-span-3">
+                                {% for message in messages %}
+                                    <div class="p-3 text-white bg-red-500 rounded-2xl">
+                                        <p>{{message}}</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        {% for staff in staffs %}
+                            <div class="p-3 text-white bg-myBlack rounded-2xl">
+                                <div class="flex items-center justify-center w-12 h-12 text-white rounded-full">
+                                    <img src="{% static "/img/profile.png" %}" alt="" srcset="" class="">
+                                </div>
+                                <div class="flex items-end justify-between mt-2">
+                                    <div class="">
+                                        <h1 class="text-xl font-bold capitalize"> {{staff.fullname}} </h1>
+                                        <p class="text-gray-400 capitalize font-myMono"> {{staff.profile.get_role_display}}, {{staff.profile.branch}} </p>
+                                        <p class="text-gray-400 font-myMono"> {{staff.phone_number}} </p>
+                                    </div>
+                                    <div class="space-x-2">
+                                        {% comment %} <button class="text-gray-400 hover:text-white"><i class="fi fi-sr-user-pen"></i></button>
+                                        <button class="text-gray-400 hover:text-white"><i class="fi fi-sr-trash"></i></button> {% endcomment %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        
+                    </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+                </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+            </div>
+        </div>
+    </div>                                                                                                                                                                                          
+
+    <!--add loan popup -->
+    <div id="popup" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+        <div class="relative w-3/12 overflow-y-auto bg-white h-5/6 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+            <button id="closePopup" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+            <div class="w-full p-6">
+                <h1 class="mb-10 text-2xl font-bold">Add Staff</h1>
+                <form action="{% url 'add_staff' %}" method="post">
+                    {% csrf_token %}
+                    <div class="flex flex-col mb-4">
+                        <label for="name">Full Name</label>
+                        <input required type="text" name="fullname" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    
+                    <div class="flex flex-col mb-4">
+                        <label for="role">Role</label>
+                        <select name="role" id="" class="w-10/12 h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack" required>
+                            <option value="LOAN_OFFICER">Loan Officer</option>
+                            <option value="MURO_MANAGER">Muro Manager</option>
+                            <option value="BRANCH_MANAGER">Branch Manager</option>
+                            <option value="BUSINESS_SUPERVISOR">Business Supervisor</option>
+                            <option value="RELATIONSHIP_OFFICER">Relationship Officer</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="branch">Branch</label>
+                        <select name="branch" id="" class="w-10/12 h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack" required>
+                            {% for branch in branches %}
+                                <option value="{{branch.id}}">{{branch.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="phone">Phone No</label>
+                        <input required type="tel" maxlength="10" name="phone" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack" required>
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="email">Email Address</label>
+                        <input type="email" name="email" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack" required>
+                    </div>
+                    <div class="block mb-4">
+                        <label for="password">Password</label>
+                        <div class="relative flex items-center w-10/12 h-10 px-2 bg-transparent border-2 rounded-full border-myGray focus-within:border-myBlack">
+                            <input type="password" id="password" type="password" class="w-10/12 bg-transparent border-none focus:outline-none" required name="password">
+                            <div id="password-toggle"  class="absolute top-0 right-0 mt-2 mr-3 text-gray-600 cursor-pointer"><i class="fi fi-rr-eye" id="icon-eye"></i></div>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                    <button type="submit" class="w-10/12 h-10 mt-10 text-white rounded-full bg-myBlack">Add</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const closeButton = document.getElementById('closePopup');
+        const popup = document.getElementById('popup');
+        const openButton = document.getElementById('openPopup');
+
+        openButton.addEventListener('click', () => {
+            popup.classList.remove('hidden');
+        });
+
+        closeButton.addEventListener('click', () => {
+            popup.classList.add('hidden');
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/dist/output.css" rel="stylesheet">
+    <title>Muro Finance LTD</title>
+</head>
+<body>
+    <div class="px-10 py-4 max-myMob:px-5">
+        <div class="">
+            <div class="flex items-center justify-between w-full px-3 py-2 text-white rounded-full bg-myBlack max-md:fixed max-md:w-[90%] max-md:top-5 max-md:z-10">
+                <div>
+                    <h1 class="text-2xl font-bold">MURO</h1>
+                </div>
+                <div class="flex items-center">
+                    <button id="toggleBtn" class="hidden mr-5 text-xl max-md:block"><i class="fi fi-br-bars-staggered"></i></button>
+                    <div class="mr-4 text-right max-md:hidden">
+                        <h1 class="font-bold">Musoke Paul</h1>
+                        <p class="text-sm">Admin</p>
+                    </div>
+                    <div>
+                        <img src="../img/profile.png" alt="" srcset="" class="h-10">
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-start gap-11 mt-14">
+                <div id="menu" class="sticky flex flex-col justify-between w-1/5 px-5 py-8 text-white myNav h-[470px] bg-myBlack rounded-3xl top-3 max-md:hidden max-md:z-10 max-md:w-[90%] max-md:fixed max-md:top-28 max-md:h-4/5 max-myMob:w-[90%]">
+                    <div class="flex flex-col items-start justify-around space-y-2">
+                        <a href="./home.html" class="w-full"><button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active"><i class="mr-3 leading-3 fi fi-sr-house-window"></i> Home</button></a>
+                        <a href="./requests.html" class="w-full"><button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn"><i class="mr-3 leading-3 fi fi-sr-file-export"></i> Requests</button></a>
+                        <a href="./loans.html" class="w-full"><button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn"><i class="mr-3 leading-3 fi fi-sr-coins"></i> Loans</button></a>
+                        <a href="./clients.html" class="w-full"><button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn"><i class="mr-3 leading-3 fi fi-sr-users"></i> Clients</button></a>
+                        <a href="./staff.html" class="w-full"><button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn"><i class="mr-3 leading-3 fi fi-sr-user-crown"></i> Staff</button></a>
+                        <a href="./reports.html" class="w-full"><button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn"><i class="mr-3 leading-3 fi fi-sr-chart-simple"></i> Reports</button></a>
+                    </div>
+                    <div class="border-t-2 border-[#1b1b1b]">
+                        <a href="./login.html"><button type="button" class="flex items-center px-3 mt-4 hover:text-myRed"><i class="mr-3 leading-3 fi fi-sr-portal-exit transform scale-x-[-1]"></i>Logout</button></a>
+                    </div>
+                </div>
+                <div class="w-full">
+                    <div class="w-full max-myMob:flex-col max-myMob:items-start max-myMob:gap-4 max-md:mt-10">
+                        <div>
+                            <h1 class="text-2xl font-bold">Profile</h1>
+                        </div>
+                        
+                    </div>
+                    <div class="mt-6">
+                        <div class="flex items-center justify-center text-white rounded-full w-14 h-14">
+                            <img src="../img/profile.png" alt="" srcset="" class="">
+                        </div>
+                        <div class="mt-2">
+                            <div class="">
+                                <h1 class="text-xl font-bold">Musoke Paul <span class="text-base font-normal"> (Admin)</span></h1>
+                                <p class="font-myMono">0754447887</p>
+                            </div>
+                            <div class="mt-6 space-x-2">
+                                <button id="openPopup" class="h-10 px-16 text-white rounded-full bg-myBlack"><i class="fi fi-sr-user-pen"></i> Edit</button>
+                                <button class="text-myRed">Log out</button>
+                            </div>
+                        </div>
+                    </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+                </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+            </div>
+        </div>
+    </div>                                                                                                                                                                                          
+
+    <!--add loan popup -->
+    <div id="popup" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+        <div class="relative w-3/12 py-2 overflow-y-auto bg-white rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+            <button id="closePopup" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+            <div class="w-full p-6">
+                <h1 class="mb-10 text-2xl font-bold">Update Profile</h1>
+                <form action="">
+                    <div class="flex flex-col mb-4">
+                        <label for="name">Name</label>
+                        <input required type="text" name="name" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="phone">Phone No</label>
+                        <input required type="tel" maxlength="10" name="phone" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="block mb-4">
+                        <label for="password">Password</label>
+                        <div class="relative flex items-center w-10/12 h-10 px-2 bg-transparent border-2 rounded-full border-myGray focus-within:border-myBlack">
+                            <input type="password" id="password" placeholder="Old password" type="password" class="w-10/12 bg-transparent border-none focus:outline-none">
+                            <div id="password-toggle"  class="absolute top-0 right-0 mt-2 mr-3 text-gray-600 cursor-pointer"><i class="fi fi-rr-eye-crossed" id="icon-eye"></i></div>
+                        </div>
+                        <div class="relative flex items-center w-10/12 h-10 px-2 mt-4 bg-transparent border-2 rounded-full border-myGray focus-within:border-myBlack">
+                            <input type="password" id="password" placeholder="New password" type="password" class="w-10/12 bg-transparent border-none focus:outline-none">
+                            <div id="password-toggle"  class="absolute top-0 right-0 mt-2 mr-3 text-gray-600 cursor-pointer"><i class="fi fi-rr-eye-crossed" id="icon-eye"></i></div>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                    <button type="submit" class="w-10/12 h-10 mt-8 text-white rounded-full bg-myBlack">Update</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const closeButton = document.getElementById('closePopup');
+        const popup = document.getElementById('popup');
+        const openButton = document.getElementById('openPopup');
+
+        openButton.addEventListener('click', () => {
+            popup.classList.remove('hidden');
+        });
+
+        closeButton.addEventListener('click', () => {
+            popup.classList.add('hidden');
+        });
+    </script>
+
+
+    <script src="../scripts/nav.js"></script>
+    <script src="../scripts/user.js"></script>
+    <script src="../scripts/married.js"></script>
+    <script src="../scripts/show.js"></script>
+</body>
+</html>

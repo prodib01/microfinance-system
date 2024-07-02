@@ -1,0 +1,458 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+
+                <div class="w-full">
+                    <div class="flex items-center justify-between w-full max-myMob:flex-col max-myMob:items-start max-myMob:gap-4 max-md:mt-10">
+                        <div>
+                            <h1 class="text-3xl font-bold">Reports</h1>
+                        </div>
+                        
+                    </div>
+                    <div class="flex items-center gap-3 overflow-x-scroll mt-7">
+                        <button id="tab1" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn active">Acounts</button>
+                        <button id="tab2" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn">Trail Balance</button>
+                        <button id="tab3" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn">Ledger</button>
+                        <button id="tab4" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn">Cash Flow</button>
+                        <button id="tab5" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn">Balance Sheet</button>
+                        <button id="tab6" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn">Income Statement</button>
+                    </div>
+                    <div class="w-full mt-7">
+                            <!-- accounts start  -->
+
+                        <div id="content1" class="w-full mt-4 tabContent">
+                            <div class="my-8 text-center">
+                                <p class="text-xl font-bold">Muro Finance LTD</p>
+                                <p>Accounts</p>
+                                <button type="button" id="addAccountBtn" class="text-blue-500">Add Account</button>
+                            </div>
+                            <div class="w-full">
+                                <table class="w-9/12 mx-auto">
+                                    <thead>
+                                        <tr class="text-left text-white bg-myBlack">
+                                            <th class="px-4 py-3">Accounts</th>
+                                            <th class="px-4 py-3">Debit (Total Amount)</th>
+                                            <th class="px-4 py-3">Credit (Total Amount)</th>
+                                        </trb>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="px-4 py-3"><a href="{% url "sec-page" %}">Assets</a></td>
+                                            <td class="px-4 py-3">UGX 500000</td>
+                                            <td class="px-4 py-3">UGX 20000</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3"><a href="">liabilities</a></td>
+                                            <td class="px-4 py-3">UGX 50000</td>
+                                            <td class="px-4 py-3">UGX 320100</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3"><a href="">Equity</a></td>
+                                            <td class="px-4 py-3">UGX 50000</td>
+                                            <td class="px-4 py-3">UGX 50000</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3"><a href="">Expenses</a></td>
+                                            <td class="px-4 py-3">UGX 50000</td>
+                                            <td class="px-4 py-3">UGX 20000</td>
+                                        </tr>
+                                        <tr class="border-t-2 border-b-2 border-b-gray-900">
+                                            <td class="px-4 py-3 text-lg font-bold text-right">TOTAL</td>
+                                            <td class="px-4 py-3 text-lg font-bold">UGX 50000</td>
+                                            <td class="px-4 py-3 text-lg font-bold">UGX 20000</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- trail balance starts here  -->
+
+                        <div id="content2" class="w-full mt-4 tabContent">
+                            <div class="my-8 text-center">
+                                <p class="text-xl font-bold">Muro Finance LTD</p>
+                                <p>Adjuted Trail Balance</p>
+                            </div>
+                            <div class="w-full">
+                                <table class="w-9/12 mx-auto">
+                                    <thead>
+                                        <tr class="text-left text-white bg-myBlack">
+                                            <th class="px-4 py-3">Particulars</th>
+                                            <th class="px-4 py-3">Debit Amount (Dr)</th>
+                                            <th class="px-4 py-3">Credit Amount (Cr)</th>
+                                        </trb>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="px-4 py-3">Acc Recieveable</td>
+                                            <td class="px-4 py-3"></td>
+                                            <td class="px-4 py-3">UGX 20000</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Acc Payable</td>
+                                            <td class="px-4 py-3">UGX 50000</td>
+                                            <td class="px-4 py-3"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Common Stock </td>
+                                            <td class="px-4 py-3">UGX 50000</td>
+                                            <td class="px-4 py-3"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Revenue</td>
+                                            <td class="px-4 py-3"></td>
+                                            <td class="px-4 py-3">UGX 20000</td>
+                                        </tr>
+                                        <tr class="border-t-2 border-b-2 border-b-gray-900">
+                                            <td class="px-4 py-3 text-lg font-bold text-right">TOTAL</td>
+                                            <td class="px-4 py-3 text-lg font-bold">UGX 50000</td>
+                                            <td class="px-4 py-3 text-lg font-bold">UGX 20000</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Ledger starts here  -->
+
+                        <div id="content3" class="w-full mt-4 tabContent">
+                            <div class="my-8 text-center">
+                                <p class="text-xl font-bold">Muro Finance LTD</p>
+                                <p>Ledger</p>
+                            </div>
+                            <div class="w-full">
+                                <table class="w-full mx-auto">
+                                    <thead>
+                                        <tr class="text-left text-white bg-myBlack">
+                                            <th class="px-4 py-3">Date</th>
+                                            <th class="px-4 py-3">Particulars</th>
+                                            <th class="px-4 py-3">Debit (Dr)</th>
+                                            <th class="px-4 py-3">Credit (Cr)</th>
+                                        </trb>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="px-4 py-3">19 Mar 2024</td>
+                                            <td class="px-4 py-3">Started a business with UGX 40,000 cash</td>
+                                            <td class="px-4 py-3">UGX 40,000</td>
+                                            <td class="px-4 py-3"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">19 Mar 2024</td>
+                                            <td class="px-4 py-3">Capital</td>
+                                            <td class="px-4 py-3"></td>
+                                            <td class="px-4 py-3">UGX 40,000</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">09 Apr 2024</td>
+                                            <td class="px-4 py-3"> Purchased machinery for UGX 4,000 cash</td>
+                                            <td class="px-4 py-3">UGX 4,000</td>
+                                            <td class="px-4 py-3"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">09 Apr 2024</td>
+                                            <td class="px-4 py-3">Cash</td>
+                                            <td class="px-4 py-3"></td>
+                                            <td class="px-4 py-3">UGX 4,000</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">09 Apr 2024</td>
+                                            <td class="px-4 py-3">Purchased merchandise for UGX 1,400 on account from S Brothers </td>
+                                            <td class="px-4 py-3">UGX 1,400</td>
+                                            <td class="px-4 py-3"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">09 Apr 2024</td>
+                                            <td class="px-4 py-3">Cash</td>
+                                            <td class="px-4 py-3"></td>
+                                            <td class="px-4 py-3">UGX 1,400</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">20 Apr 2024</td>
+                                            <td class="px-4 py-3">Sold merchandise to a customer for UGX 700 cash</td>
+                                            <td class="px-4 py-3"></td>
+                                            <td class="px-4 py-3">UGX 700</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">20 Apr 2024</td>
+                                            <td class="px-4 py-3">Cash</td>
+                                            <td class="px-4 py-3">UGX 700</td>
+                                            <td class="px-4 py-3"></td>
+                                        </tr>
+                                        <tr class="border-t-2 border-b-2 border-b-gray-900">
+                                            <td class="px-4 py-3"></td>
+                                            <td class="px-4 py-3 text-lg font-bold text-right">TOTAL</td>
+                                            <td class="px-4 py-3 text-lg font-bold">UGX 50000</td>
+                                            <td class="px-4 py-3 text-lg font-bold">UGX 20000</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Cash flow starts here  -->
+
+                        <div id="content4" class="hidden mt-4 tabContent">
+                            <div class="my-8 text-center">
+                                <p class="text-xl font-bold">Muro Finance LTD</p>
+                                <p>Cash Flow Statement</p>
+                            </div>
+                            <div class="w-full">
+                                <table class="w-9/12 mx-auto">
+                                    <thead>
+                                        <tr class="text-left">
+                                            <th class="px-4 py-3 text-lg font-bold">Beginnig Cash Balance</th>
+                                            <th class="px-4 py-3 text-lg font-bold">UGX 300000</th>
+                                        </trb>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="text-left">
+                                            <th class="px-4 py-3 font-bold capitalize">cash flow from operating activiteis</th>
+                                            <th class="px-4 py-3 font-bold"></th>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Increase in Accounts Payable </td>
+                                            <td class="px-4 py-3">UGX 20000</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Increase in Inventory </td>
+                                            <td class="px-4 py-3"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Depreciation </td>
+                                            <td class="px-4 py-3">UGX 50000</td>
+                                        </tr>
+                                        <tr class="text-left border-t-2 border-b-2 border-b-gray-700 border-t-gray-700">
+                                            <th class="px-4 py-3 font-bold capitalize">cash provided by operating activiteis</th>
+                                            <th class="px-4 py-3 font-bold">UGX 500100</th>
+                                        </tr>
+                                        <tr class="text-left">
+                                            <th class="px-4 py-3 font-bold capitalize">cash flow from investing activiteis</th>
+                                            <th class="px-4 py-3 font-bold"></th>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Purchasing PPE </td>
+                                            <td class="px-4 py-3">UGX 20000</td>
+                                        </tr>
+                                        <tr class="text-left border-t-2 border-b-2 border-b-gray-700 border-t-gray-700">
+                                            <th class="px-4 py-3 font-bold capitalize">cash provided by investing activiteis</th>
+                                            <th class="px-4 py-3 font-bold">UGX 500100</th>
+                                        </tr>
+                                        <tr class="text-left">
+                                            <th class="px-4 py-3 font-bold capitalize">cash flow from finance activiteis</th>
+                                            <th class="px-4 py-3 font-bold"></th>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Proceeds from long term debt </td>
+                                            <td class="px-4 py-3">UGX 20000</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Debt Payments </td>
+                                            <td class="px-4 py-3">UGX 20000</td>
+                                        </tr>
+                                        <tr class="text-left border-t-2 border-b-2 border-b-gray-700 border-t-gray-700">
+                                            <th class="px-4 py-3 font-bold capitalize">cash provided by finance activiteis</th>
+                                            <th class="px-4 py-3 font-bold">UGX 500,100</th>
+                                        </tr>
+                                        <tr class="border-t-2 border-b-2 border-b-gray-900">
+                                            <td class="px-4 py-3 text-lg font-bold text-right">Net Change In Cash</td>
+                                            <td class="px-4 py-3 text-lg font-bold">UGX 21354000</td>
+                                        </tr>
+                                        <tr class="border-t-2 border-b-2 border-b-gray-900">
+                                            <td class="px-4 py-3 text-lg font-bold text-right">Ending Cash Balance</td>
+                                            <td class="px-4 py-3 text-lg font-bold">UGX 554700</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- balnce sheet starts here  -->
+
+
+                        <div id="content5" class="hidden mt-4 tabContent">
+                            <div class="my-8 text-center">
+                                <p class="text-xl font-bold">Muro Finance LTD</p>
+                                <p>Balance Sheet</p>
+                            </div>
+                            <div class="w-full">
+                                <table class="w-9/12 mx-auto">
+                                    <thead>
+                                        <tr class="text-left">
+                                            <th class="px-4 py-3 text-2xl font-bold">Assets</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="text-left">
+                                            <th class="px-4 py-3 font-bold capitalize">current assets</th>
+                                            <th class="px-4 py-3 font-bold"></th>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Car</td>
+                                            <td class="px-4 py-3">UGX 20000</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Funiture</td>
+                                            <td class="px-4 py-3">UGX 2010000</td>
+                                        </tr>
+                                        <tr class="text-left border-t-2 border-b-2 border-b-gray-700 border-t-gray-700">
+                                            <th class="px-4 py-3 font-bold capitalize">Total current assets</th>
+                                            <th class="px-4 py-3 font-bold">UGX 5100100</th>
+                                        </tr>
+                                        <tr class="text-left">
+                                            <th class="px-4 py-3 font-bold capitalize">fixed assets</th>
+                                            <th class="px-4 py-3 font-bold"></th>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Car</td>
+                                            <td class="px-4 py-3">UGX 20000</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Funiture</td>
+                                            <td class="px-4 py-3">UGX 2010000</td>
+                                        </tr>
+                                        <tr class="text-left border-t-2 border-b-2 border-b-gray-700 border-t-gray-700">
+                                            <th class="px-4 py-3 font-bold capitalize">Total fixed assets</th>
+                                            <th class="px-4 py-3 font-bold">UGX 5100100</th>
+                                        </tr>
+                                        <tr class="border-t-2 border-b-2 border-b-gray-900">
+                                            <td class="px-4 py-3 text-lg font-bold text-right">Total Assets</td>
+                                            <td class="px-4 py-3 text-lg font-bold">UGX 554700</td>
+                                        </tr>
+                                        <tr class="text-left">
+                                            <th class="px-4 py-3 text-2xl font-bold">Liabilities</th>
+                                            <th></th>
+                                        </tr>
+                                        <tr class="text-left">
+                                            <th class="px-4 py-3 font-bold capitalize">current liabilities</th>
+                                            <th class="px-4 py-3 font-bold"></th>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Car</td>
+                                            <td class="px-4 py-3">UGX 20000</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Funiture</td>
+                                            <td class="px-4 py-3">UGX 2010000</td>
+                                        </tr>
+                                        <tr class="text-left border-t-2 border-b-2 border-b-gray-700 border-t-gray-700">
+                                            <th class="px-4 py-3 font-bold capitalize">Total current liabilities</th>
+                                            <th class="px-4 py-3 font-bold">UGX 5100100</th>
+                                        </tr>
+                                        <tr class="text-left">
+                                            <th class="px-4 py-3 font-bold capitalize">long term liabilities</th>
+                                            <th class="px-4 py-3 font-bold"></th>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Car</td>
+                                            <td class="px-4 py-3">UGX 20000</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Funiture</td>
+                                            <td class="px-4 py-3">UGX 2010000</td>
+                                        </tr>
+                                        <tr class="text-left border-t-2 border-b-2 border-b-gray-700 border-t-gray-700">
+                                            <th class="px-4 py-3 font-bold capitalize">Total long term liabilities</th>
+                                            <th class="px-4 py-3 font-bold">UGX 5100100</th>
+                                        </tr>
+                                        <tr class="border-t-2 border-b-2 border-b-gray-900">
+                                            <td class="px-4 py-3 text-lg font-bold text-right">Total Liabilities</td>
+                                            <td class="px-4 py-3 text-lg font-bold">UGX 554700</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- income statment starts here  -->
+
+                        <div id="content6" class="hidden mt-4 tabContent">
+                            <div class="my-8 text-center">
+                                <p class="text-xl font-bold">Muro Finance LTD</p>
+                                <p>Income Statement</p>
+                            </div>
+                            <div class="w-full">
+                                <table class="w-9/12 mx-auto">
+                                    <thead>
+                                        <tr class="text-left">
+                                            <th class="px-4 py-3 font-bold capitalize">sales /revenue</th>
+                                            <th class="px-4 py-3 font-bold">UGX 2500656</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="text-left">
+                                            <th class="px-4 py-3 font-normal">cost of goods sold</th>
+                                            <th class="px-4 py-3 font-normal">UGX 2500011</th>
+                                        </tr>
+                                        <tr class="text-left border-t-2 border-b-2 border-b-gray-700 border-t-gray-700">
+                                            <th class="px-4 py-3 font-bold capitalize">gross profit</th>
+                                            <th class="px-4 py-3 font-bold">UGX 5100100</th>
+                                        </tr>
+                                        <tr class="text-left">
+                                            <th class="px-4 py-3 font-bold capitalize">operating expenses</th>
+                                            <th class="px-4 py-3 font-bold"></th>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Car</td>
+                                            <td class="px-4 py-3">UGX 20000</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Proceeds from long term debt </td>
+                                            <td class="px-4 py-3">UGX 20000</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">Debt Payments </td>
+                                            <td class="px-4 py-3">UGX 20000</td>
+                                        </tr>
+                                        <tr class="text-left border-t-2 border-b-2 border-b-gray-700 border-t-gray-700">
+                                            <th class="px-4 py-3 font-bold capitalize">Total expenses</th>
+                                            <th class="px-4 py-3 font-bold">UGX 5100100</th>
+                                        </tr>
+                                        <tr class="border-t-2 border-b-2 border-b-gray-900">
+                                            <td class="px-4 py-3 text-lg font-bold text-right">Net Earnings</td>
+                                            <td class="px-4 py-3 text-lg font-bold">UGX 554700</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- add account popup  -->
+
+    <div  id="addAccountPopup" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+        <div class="relative w-3/12 py-4 overflow-y-auto bg-white rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+            <button id="cancelAddAccount" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+            <div class="w-full p-6">
+                <form action="" method="post">
+                    <div class="flex flex-col">
+                        <label for="account">Account</label>
+                        <input required type="text" name="account" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <button type="submit" class="w-10/12 h-10 mt-10 text-white rounded-full bg-myBlack">Add</button>
+                </form>
+            </div>
+    
+        </div>
+    </div>
+
+    <script>
+        const addAccountBtn = document.getElementById("addAccountBtn");
+        const addAccountPopup = document.getElementById("addAccountPopup");
+        const cancelAddAccount = document.getElementById("cancelAddAccount");
+
+        addAccountBtn.onclick = () => {
+            addAccountPopup.classList.remove("hidden");
+        }
+
+        cancelAddAccount.onclick = () => {
+            addAccountPopup.classList.add("hidden");
+        }
+    </script>
+{% endblock %}

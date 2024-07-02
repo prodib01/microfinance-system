@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+
+                <div class="w-full">
+                    <div id="content3" class="w-full mt-4 tabContent">
+                        <div class="my-8 text-center">
+                            <p class="text-xl font-bold">Muro Finance LTD</p>
+                            <p class="capitalize">cash of centenary bank</p>
+                            <button type="button" id="addTransaction" class="text-blue-500">Make Transaction</button>
+                        </div>
+                        <div class="w-full">
+                            <table class="w-full mx-auto">
+                                <thead>
+                                    <tr class="text-left text-white bg-myBlack">
+                                        <th class="px-4 py-3">Date</th>
+                                        <th class="px-4 py-3">Title </th>
+                                        <th class="px-4 py-3">Remark</th>
+                                        <th class="px-4 py-3">Debit (Dr)</th>
+                                        <th class="px-4 py-3">Credit (Cr)</th>
+                                    </trb>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="px-4 py-3">19 Mar 2024</td>
+                                        <td class="px-4 py-3">sold</td>
+                                        <td class="px-4 py-3">we rid this</td>
+                                        <td class="px-4 py-3">UGX 40,000</td>
+                                        <td class="px-4 py-3"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-3">19 Mar 2024</td>
+                                        <td class="px-4 py-3">sold</td>
+                                        <td class="px-4 py-3">Capital</td>
+                                        <td class="px-4 py-3"></td>
+                                        <td class="px-4 py-3">UGX 40,000</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-3">09 Apr 2024</td>
+                                        <td class="px-4 py-3">sold</td>
+                                        <td class="px-4 py-3"> Purchased machinery for UGX 4,000 cash</td>
+                                        <td class="px-4 py-3">UGX 4,000</td>
+                                        <td class="px-4 py-3"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-3">09 Apr 2024</td>
+                                        <td class="px-4 py-3">sold</td>
+                                        <td class="px-4 py-3">Cash</td>
+                                        <td class="px-4 py-3"></td>
+                                        <td class="px-4 py-3">UGX 4,000</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-3">09 Apr 2024</td>
+                                        <td class="px-4 py-3">sold</td>
+                                        <td class="px-4 py-3">Purchased merchandise for UGX 1,400 on account from S Brothers </td>
+                                        <td class="px-4 py-3">UGX 1,400</td>
+                                        <td class="px-4 py-3"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-3">09 Apr 2024</td>
+                                        <td class="px-4 py-3">sold</td>
+                                        <td class="px-4 py-3">Cash</td>
+                                        <td class="px-4 py-3"></td>
+                                        <td class="px-4 py-3">UGX 1,400</td>
+                                    </tr>
+                                    <tr class="border-t-2 border-b-2 border-b-gray-900">
+                                        <td class="px-4 py-3"></td>
+                                        <td class="px-4 py-3"></td>
+                                        <td class="px-4 py-3 text-lg font-bold text-right">TOTAL</td>
+                                        <td class="px-4 py-3 text-lg font-bold">UGX 50000</td>
+                                        <td class="px-4 py-3 text-lg font-bold">UGX 20000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div  id="addTransactionPopup" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+        <div class="relative w-3/12 py-4 overflow-y-auto bg-white rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+            <button id="cancelAddTransaction" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+            <div class="w-full p-6">
+                <div class="mb-4">
+                    <p class="text-xl font-bold">Make Transaction</p>
+                </div>
+                <form action="" method="post">
+                    <div class="flex flex-col mb-2">
+                        <label for="date">Date</label>
+                        <input required type="date" name="date" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-2">
+                        <label for="note">Note</label>
+                        <input required type="text" name="note" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-2">
+                        <label for="note">Debit/Credit</label>
+                        <select name="" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                            <option value="">Debit</option>
+                            <option value="">Credit</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col mb-2">
+                        <label for="note">Select Account</label>
+                        <select name="" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                            <option value="">Cash Bank</option>
+                            <option value="">Assets</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col mb-2">
+                        <label for="amount">Amount</label>
+                        <input required type="number" name="amount" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <button type="submit" class="w-10/12 h-10 mt-10 text-white rounded-full bg-myBlack">Add</button>
+                </form>
+            </div>
+    
+        </div>
+    </div>
+
+    <script>
+        const addTransaction = document.getElementById("addTransaction");
+        const addTransactionPopup = document.getElementById("addTransactionPopup");
+        const cancelAddTransaction = document.getElementById("cancelAddTransaction");
+
+        addTransaction.onclick = () => {
+            addTransactionPopup.classList.remove("hidden");
+        }
+
+        cancelAddTransaction.onclick = () => {
+            addTransactionPopup.classList.add("hidden");
+        }
+    </script>
+
+{% endblock %}
+
+

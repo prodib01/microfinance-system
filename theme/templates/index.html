@@ -1,0 +1,30 @@
+{% load static tailwind_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% tailwind_css %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{% static "/css/dist/output.css" %}" rel="stylesheet">
+    <title>Muro Finance LTD</title>
+    <style>
+        html{
+            height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('{% static '/img/bg.png' %}');
+            background-size: cover;
+            background-position: center; 
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+<body>
+    <div class="flex items-center justify-center w-full h-screen">
+        <div class="w-full text-center text-white">
+            <h1 class="text-5xl font-bold leading-tight">Welcome to Muro Finance Uganda Limited Your Trusted Financial Partner</h1>
+            <p class="text-xl mt-5 text-[#DBDBDB]">Unlock Your Financial Potential with Muro Finance Uganda Limited</p>
+            <a href="/home"><button class="h-12 px-6 mt-20 text-base bg-white rounded-full text-myBlack hover:bg-transparent hover:border-white hover:border hover:text-white">Get Started</button></a>
+        </div>
+    </div>
+</body>
+</html>

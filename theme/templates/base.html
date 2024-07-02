@@ -1,0 +1,127 @@
+{% load static tailwind_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<hea>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4/dist/tailwind.min.css" rel="stylesheet"> -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="{% static "/css/dist/output.css" %}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Muro Finance LTD</title>
+    <style>
+        tbody tr:nth-child(even){
+            background-color: hsl(0, 0%, 95%);
+        }
+
+        
+    </style>
+</head>
+<body>
+    <div class="px-10 py-4 max-myMob:px-5">
+        <div class="">
+            <div class="flex items-center justify-between w-full px-3 py-2 text-white rounded-full bg-myBlack max-md:fixed max-md:w-[90%] max-md:top-5 max-md:z-10">
+                <div class="">
+                    <!-- <h1 class="text-2xl font-bold">MURO</h1> -->
+                    <img src="{% static "/img/MURO-WHITE.png" %}" alt="" srcset="" class="w-16 pr-1">
+                </div>
+                <div class="flex items-center">
+                    <button id="toggleBtn" class="hidden mr-5 text-xl max-md:block"><i class="fi fi-br-bars-staggered"></i></button>
+                    <div class="mr-4 text-right max-md:hidden">
+                        <h1 class="font-bold capitalize">{{ user.fullname }}</h1>
+                        {% if user.profile.branch %}
+                            <p class="text-sm">{{ user.profile.get_role_display }}, <span class="pl-1">{{ user.profile.branch }}</span></p>
+                        {% else %}
+                            <p class="text-sm">No Branch</p>
+                        {% endif %}
+                        <p class="text-sm"></p>
+                    </div>
+                    <a href="../pages/myprofile.html">
+                        <div>
+                            <img src="{% static "/img/profile.png" %}" alt="" srcset="" class="h-10">
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="flex items-start gap-11 mt-14">
+                <div id="menu" class="sticky flex flex-col justify-between w-1/5 px-5 py-8 text-white myNav h-[470px] bg-myBlack rounded-3xl top-3 max-md:hidden max-md:z-10 max-md:w-[90%] max-md:fixed max-md:top-28 max-md:h-4/5 max-myMob:w-[90%]">
+                    <div class="flex flex-col items-start justify-around space-y-2">
+                        <a href="/home/" class="w-full">
+                            {% if active == 'home'%}
+                            <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">
+                            {% else %}
+                            <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
+                            {% endif %}    
+                            <i class="mr-3 leading-3 fi fi-sr-house-window"></i> Home</button></a>
+                        <a href="{% url "requests" %}" class="w-full">
+                            {% if active == 'requests'%}
+                            <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">
+                            {% else %}
+                            <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
+                            {% endif %} 
+                            <i class="mr-3 leading-3 fi fi-sr-file-export"></i> Requests</button></a>
+                        <a href="/loans" class="w-full">
+                            {% if active == 'loans'%}
+                            <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">
+                            {% else %}
+                            <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
+                            {% endif %} 
+                            <i class="mr-3 leading-3 fi fi-sr-coins"></i> Loans</button></a>
+                        <a href="{% url "clients" %}" class="w-full">
+                            {% if active == 'clients'%}
+                            <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">
+                            {% else %}
+                            <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
+                            {% endif %} 
+                            <i class="mr-3 leading-3 fi fi-sr-users"></i> Clients</button></a>
+                        {% if user.profile.role != "" %}     
+                            <a href="/users/staff" class="w-full">
+                                {% if active == 'staff'%}
+                                    <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">
+                                    {% else %}
+                                    <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
+                                    {% endif %} 
+                                    <i class="mr-3 leading-3 fi fi-sr-user-crown"></i> Staff</button></a>
+                            <a href="{% url "guarantor" %}" class="w-full">
+                                {% if active == 'guarantors'%}
+                                <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">
+                                {% else %}
+                                <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
+                                {% endif %} 
+                                <i class="mr-3 leading-3 fi fi-sr-following"></i> guarantors</button></a>
+                            <a href="/reports" class="w-full">
+                                {% if active == 'reports'%}
+                                <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">
+                                {% else %}
+                                <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
+                                {% endif %}
+                                <i class="mr-3 leading-3 fi fi-sr-chart-simple"></i> Reports</button></a>
+                        {% endif %}
+                    </div>
+                    <div class="border-t-2 border-[#1b1b1b]">
+                        <a href="{% url "logout" %}"><button type="button" class="flex items-center px-3 mt-4 hover:text-myRed"><i class="mr-3 leading-3 fi fi-sr-portal-exit transform scale-x-[-1]"></i>Logout</button></a>
+                    </div>
+                </div>
+
+                {% block content %}
+                
+                {% endblock  %}
+
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script src="{% static "/scripts/chart.js" %}"></script>
+                <!-- <script src="{% static "/scripts/popup.js" %}"></script> -->
+                <script src="{% static "/scripts/nav.js" %}"></script>
+                <script src="{% static "/scripts/imgview.js" %}"></script>
+                <script src="{% static "/scripts/selectPerson1.js" %}"></script>
+                <script src="{% static "/scripts/time.js" %}"></script>
+                <script src="{% static "/scripts/married.js" %}"></script>
+                <script src="{% static "/scripts/show.js" %}"></script>
+                <script src="{% static "/scripts/tab.js" %}"></script>
+                <script src="{% static "/scripts/numbercomma.js" %}"></script>
+                <script src="{% static "/scripts/selectPDF.js" %}"></script>
+                <script src="{% static "/scripts/selectGuarantor.js" %}"></script>
+                
+
+            </body>
+            </html>

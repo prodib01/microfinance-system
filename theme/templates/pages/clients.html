@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+<div class="w-full">
+                    <div class="flex items-center justify-between w-full max-myMob:flex-col max-myMob:items-start max-myMob:gap-4 max-md:mt-10">
+                        <div>
+                            <h1 class="text-3xl font-bold">People</h1>
+                        </div>
+                        <form action="/clients/search-client/" method="POST">
+                            {% csrf_token %}
+                        <div class="flex items-center gap-4 max-myMob:w-full">
+                            <button type="button" id="openPopup" class="p-3 text-white rounded-full bg-myBlack"><i class="flex justify-center fi fi-sr-plus"></i></button>
+                            <div class="flex items-center justify-between h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus-within:border-myBlack max-myMob:w-full">
+                                <input type="search" name="search" id="" class="w-full h-10 italic bg-transparent outline-none" placeholder="search">
+                                <button type="submit" class="flex items-center justify-center px-1 bg-transparent"><i class="leading-3 fi fi-br-search"></i></button>
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                    <div class="grid grid-cols-4 gap-4 mt-7 max-md:grid-cols-2 max-myMob:grid-cols-1">
+                        {% for client in clients %}
+                        <a href="clientview/{{client.id}}">
+                        <div class="flex items-center gap-3 p-2 rounded-full cursor-pointer hover:bg-gray-200">
+                            <div class="flex items-center justify-center w-12 h-12 text-white rounded-full bg-myBlack">
+                                <i class="text-2xl leading-3 fi fi-rr-user"></i>
+                            </div>
+                            <div>
+                                <h1 class="text-xl font-bold capitalize truncate"> {{ client.full_name }} </h1>
+                                <p class="text-gray-600 font-myMono"> {{ client.address }} </p>
+                            </div>
+                        </div>
+                        </a>
+                        {% endfor %}
+                    </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+                </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+            </div>
+        </div>
+    </div>                                                                                                                                                                                          
+
+    <!--add client popup -->
+    <div id="popup" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+        <div class="relative w-3/12 overflow-y-auto bg-white h-4/5 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+            <button id="closePopup" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+            <div class="w-full p-6">
+                <h1 class="mb-10 text-2xl font-bold">Add Client</h1>
+                <form action="add-client" method="post">
+                    {% csrf_token %}
+                    <div class="flex flex-col mb-4">
+                        <label for="name">Name</label>
+                        <input required type="text" name="name" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="nationality">Nationality</label>
+                        <input required type="text" name="nationality" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="nin">NIN</label>
+                        <input required type="text" maxlength="14" name="nin" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="phone">Phone No</label>
+                        <input required type="tel" maxlength="10" name="phone" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="email">Email</label>
+                        <input type="email"  name="email" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="address">Address</label>
+                        <input required type="text" name="address" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="gender">Gender</label>
+                        <select name="gender" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="address">Date Of Birth</label>
+                        <input required type="date" name="dob" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="business">Business</label>
+                        <input required type="text" name="business" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="MS">Marital status</label>
+                        <select name="MS" required id="options" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                            <option value="">Select</option>
+                            <option value="single">Single</option>
+                            <option value="married">Married</option>
+                            <option value="devorced">Devorced</option>
+                            <option value="widowed">Widowed</option>
+                        </select>
+                    </div>
+                    
+                    <div id="married" class="hidden">
+                        <div class="flex flex-col mb-4">
+                            <label for="sName">Spouse Name</label>
+                            <input type="text" name="sName" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                        </div>
+                        <div class="flex flex-col mb-4">
+                            <label for="sPhone">Spouse Phone</label>
+                            <input type="tel"  maxlength="10" name="sPhone" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-10/12 h-10 mt-10 text-white rounded-full bg-myBlack">Add Client</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const closeButton = document.getElementById('closePopup');
+        const popup = document.getElementById('popup');
+        const openButton = document.getElementById('openPopup');
+
+        openButton.addEventListener('click', () => {
+            popup.classList.remove('hidden');
+        });
+
+        closeButton.addEventListener('click', () => {
+            popup.classList.add('hidden');
+        });
+    </script>
+{% endblock %}

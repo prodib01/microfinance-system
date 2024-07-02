@@ -1,0 +1,8 @@
+if the security power is between 76 inclusive and 100 inclusive and weekly payment:
+	interest is 25 per month
+if the security power is between 76 inclusive and 100 inclusive and monthly payment:
+	interest is 27 per month
+if the security power is between 50 inclusive and 75 inclusive and weekly payment:
+	interest is 27 per month
+else:
+	interest is 30 per month

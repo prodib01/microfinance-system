@@ -1,0 +1,806 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+                <div class="w-full">
+                    <div class="flex items-center justify-between w-full max-myMob:flex-col max-myMob:items-start max-myMob:gap-4 max-md:mt-10">
+                        <div>
+                            <h1 class="text-3xl font-bold">Requests</h1>
+                        </div>
+                        <form method="POST" action="/loan/search-loan/">
+                            {% csrf_token %}
+                        <div class="flex items-center gap-4 max-myMob:w-full">
+                            <!-- <button type="button" id="openPopup" class="p-3 text-white rounded-full bg-myBlack"><i class="flex justify-center fi fi-sr-plus"></i></button> -->
+                            <div class="flex items-center justify-between h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus-within:border-myBlack max-myMob:w-full">
+                                <input type="search" name="search" id="" class="w-full h-10 italic bg-transparent outline-none" placeholder="search">
+                                <button type="submit" class="flex items-center justify-center px-1 bg-transparent"><i class="leading-3 fi fi-br-search"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                    </div>
+                    <div class="flex items-center gap-3 overflow-x-scroll mt-7">
+                        <button class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn active" onclick="showAll()">All</button>
+                        <button class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn" onclick="showApproved()">Approved</button>
+                        <button class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn" onclick="showRejected()">Rejected</button>
+                        <button class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn" onclick="showPending()">Pending</button>
+                    </div>
+                    <div class="flex items-start justify-between w-full gap-8 mt-7 max-md:flex-wrap">
+                        <div class="w-8/12 max-md:w-full max-md:order-2">
+                            {% for loan_request in loan_requests %}
+                                {% if user.profile.role == 'MURO_MANAGER'%}
+                                    {% if loan_request.branch ==  user.profile.branch %}
+                                        <div id="{{ loan_request.status}}">
+                                        <div id="openRequestPopup_{{loan_request.id}}"  class="flex items-start justify-between py-3 mb-4 border-b-2 cursor-pointer border-b-gray-100">
+                                            <div class="flex items-center gap-4">
+                                                <div class="flex items-center justify-center w-12 h-12 text-2xl bg-gray-300 rounded-full">
+                                                    <i class="leading-3 fi fi-rr-file-export"></i>
+                                                </div>
+                                                <div>
+                                                    <h1 class="text-lg font-bold">{{ loan_request.client.full_name }}</h1>
+                                                    <p>{{ loan_request.loan_product.name }}</p>
+                                                </div>
+                                            </div>
+                                            {% if loan_request.status == 'APPROVED' %}
+                                                <span class="px-1 text-xs text-white rounded-full bg-myGreen">{{loan_request.status}}</span>
+                                            {% elif loan_request.status == 'REJECTED' %}
+                                                <span class="px-1 text-xs text-white rounded-full bg-myRed">{{loan_request.status}}</span>
+                                            {% else %}
+                                                <span class="px-1 text-xs text-white rounded-full bg-blue-600">{{loan_request.status}}</span>
+                                            {% endif %}
+                                        </div>
+                                        {% comment %} this is a popup element {% endcomment %}
+                                        <div id="requestPopup_{{loan_request.id}}" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+                                            <div class="relative w-4/12 overflow-y-auto bg-white h-4/5 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+                                                <button id="closeRequestPopup_{{loan_request.id}}" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+                                                <div class="w-full p-6">
+                                                    <h1 class="mb-10 text-2xl font-bold">Loan Request</h1>
+                                                    <div>
+                                                        <div class="flex items-center gap-3 p-3 text-white rounded-2xl bg-myBlack">
+                                                            <div class="flex items-center justify-center w-10 h-10 text-white bg-gray-900 rounded-full">
+                                                                <i class="text-2xl leading-3 fi fi-rr-user"></i>
+                                                            </div>
+                                                            <div>
+                                                                <h1 class="font-bold">{{ loan_request.client.full_name }}</h1>
+                                                                <p class="text-gray-500 font-myMono">{{ loan_request.client.nin }}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mt-6">
+                                                            <h1 class="font-bold">Business Loan</h1>
+                                                        </div>
+                                                        <div class="mt-4">
+                                                            <p>Requested Amount</p>
+                                                            <h1 class="text-xl font-bold">{{ loan_request.requested_amount }}</h1>
+                                                        </div>
+                                                        <div class="flex items-end justify-between mt-4">
+                                                            <div>
+                                                                <p>Recommended Amount</p>
+                                                                <h1 class="text-xl font-bold">{{ loan_request.recommended_amount}}</h1>  
+                                                            </div>
+                                                            <p>{{ loan_request.interest_rate}}%</p>
+                                                            <p>{{ loan_request.loan_term}} {{ loan_request.loan_term_type_of_period}} ({{ loan_request.payment_frequency}})</p>
+                                                        </div>
+                                                        <div class="flex items-end gap-6 mt-4">
+                                                            <div>
+                                                                <p class="font-bold">Referee</p>
+                                                                <h1 class="">{{ loan_request.guarantor}} <span>({{ loan_request.guarantor_relationship}})</span></h1>  
+                                                            </div>
+                                                            <p>{{ loan_request.guarantor.phone}}</p>
+                                                        </div>
+                                                        <div class="mt-4">
+                                                            <div>
+                                                                <p class="font-bold">Security</p>
+                                                                <h1 class="">{{ loan_request.security_type}}</h1>  
+                                                            </div>
+                                                            {% comment %} <img src="{% static "/img/bg.png" %}" alt="" srcset="" class="object-cover w-full bg-cover h-52 rounded-xl"> {% endcomment %}
+                                                        </div>
+                                                        <div class="mt-6">
+                                                            <p class="font-bold">Staff</p>
+                                                            <h1 class="">{{ loan_request.loan_officer.user.fullname}}</h1>  
+                                                        </div>
+                                                        {% comment %} {% if loan_request.status != 'REJECTED' and loan_request.status != 'APPROVED' %}
+                                                            <div>
+                                                            <div class="flex items-center w-full gap-6 mt-6 max-md:gap-2">
+                                                                <button id="loan_{{loan_request.id}}" class="h-10 px-12 text-white rounded-full bg-myBlack max-md:px-8 active:animate-spin">Confirm</button>
+                                                                <form action="reject-loan-request/{{ loan_request.id}}" method="post">
+                                                                    {% csrf_token %}
+                                                                    <button type="submit" class="h-10 px-12 text-white rounded-full bg-myRed max-md:px-8">Reject</button>
+                                                                </form>
+                                                            </div>
+                                                            <div id="loanfields__{{loan_request.id}}" class="hidden mt-4">
+                                                                <form action="accept-loan/{{ loan_request.id}}" method="post">
+                                                                    {% csrf_token %}
+                                                                    <div class="flex flex-col mb-4">
+                                                                        <label for="amount">Amount</label>
+                                                                        <input required type="number" name="amount" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                                                                    </div>
+                                                                    <div class="flex flex-col mb-4">
+                                                                        <label for="rate">Rate %</label>
+                                                                        <input required type="number" name="rate" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                                                                    </div>
+                                                                    <div class="flex flex-col mb-4">
+                                                                        <label for="loanTerm">Loan Term</label>
+                                                                        <input required type="number" min="" name="loanTermNumber" id=""
+                                                                            class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
+                                                                            required>
+                                                                    </div>
+                                                                    <div class="flex flex-col mb-4">
+                                                                        <label for="loanTermType">Loan Term Type</label>
+                                                                        <select name="loanTermTypeOfPeriod" id=""
+                                                                            class="w-10/12 h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
+                                                                            required>
+                                                                            <option value="weeks">Weeks</option>
+                                                                            <option value="months">Months</option>
+                                                                            <option value="years">Years</option>
+                                                                        </select>
+                                                    
+                                                                    </div>
+                                                                    <button type="submit" class="w-10/12 h-10 mt-8 text-white rounded-full bg-myBlack">Confirm</button>
+                                                                </form>
+                                                            </div>
+                                                            </div>
+                                                        {% else %}
+                                                            <div></div>
+                                                        {% endif %} {% endcomment %}
+                                                    </div>
+                                                </div>
+                                    
+                                            </div>
+                                        </div>
+                                        </div>
+                                    {% endif %}
+                                {% elif user.profile.role == 'LOAN_OFFICER'%}
+                                        {% if loan_request.loan_officer == user.profile%}
+                                        <div id="{{ loan_request.status}}">
+                                            <div id="openRequestPopup_{{loan_request.id}}"  class="flex items-start justify-between py-3 mb-4 border-b-2 cursor-pointer border-b-gray-100">
+                                                <div class="flex items-center gap-4">
+                                                    <div class="flex items-center justify-center w-12 h-12 text-2xl bg-gray-300 rounded-full">
+                                                        <i class="leading-3 fi fi-rr-file-export"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h1 class="text-lg font-bold">{{ loan_request.client.full_name }}</h1>
+                                                        <p>{{ loan_request.loan_product.name }}</p>
+                                                    </div>
+                                                </div>
+                                                {% if loan_request.status == 'APPROVED' %}
+                                                    <span class="px-1 text-xs text-white rounded-full bg-myGreen">{{loan_request.status}}</span>
+                                                {% elif loan_request.status == 'REJECTED' %}
+                                                    <span class="px-1 text-xs text-white rounded-full bg-myRed">{{loan_request.status}}</span>
+                                                {% else %}
+                                                    <span class="px-1 text-xs text-white rounded-full bg-blue-600">{{loan_request.status}}</span>
+                                                {% endif %}
+                                            </div>
+                                            {% comment %} this is a popup element {% endcomment %}
+                                            <div id="requestPopup_{{loan_request.id}}" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+                                                <div class="relative w-4/12 overflow-y-auto bg-white h-4/5 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+                                                    <button id="closeRequestPopup_{{loan_request.id}}" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+                                                    <div class="w-full p-6">
+                                                        <h1 class="mb-10 text-2xl font-bold">Loan Request</h1>
+                                                        <div>
+                                                            <div class="flex items-center gap-3 p-3 text-white rounded-2xl bg-myBlack">
+                                                                <div class="flex items-center justify-center w-10 h-10 text-white bg-gray-900 rounded-full">
+                                                                    <i class="text-2xl leading-3 fi fi-rr-user"></i>
+                                                                </div>
+                                                                <div>
+                                                                    <h1 class="font-bold">{{ loan_request.client.full_name }}</h1>
+                                                                    <p class="text-gray-500 font-myMono">{{ loan_request.client.nin }}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="mt-6">
+                                                                <h1 class="font-bold">Business Loan</h1>
+                                                            </div>
+                                                            <div class="mt-4">
+                                                                <p>Requested Amount</p>
+                                                                <h1 class="text-xl font-bold">{{ loan_request.requested_amount }}</h1>
+                                                            </div>
+                                                            <div class="flex items-end justify-between mt-4">
+                                                                <div>
+                                                                    <p>Recommended Amount</p>
+                                                                    <h1 class="text-xl font-bold">{{ loan_request.recommended_amount}}</h1>  
+                                                                </div>
+                                                                <p>{{ loan_request.interest_rate}}%</p>
+                                                                <p>{{ loan_request.loan_term}} {{ loan_request.loan_term_type_of_period}} ({{ loan_request.payment_frequency}})</p>
+                                                            </div>
+                                                            <div class="flex items-end gap-6 mt-4">
+                                                                <div>
+                                                                    <p class="font-bold">Referee</p>
+                                                                    <h1 class="">{{ loan_request.guarantor}} <span>({{ loan_request.guarantor_relationship}})</span></h1>  
+                                                                </div>
+                                                                <p>{{ loan_request.guarantor.phone}}</p>
+                                                            </div>
+                                                            <div class="mt-4">
+                                                                <div>
+                                                                    <p class="font-bold">Security</p>
+                                                                    <h1 class="">{{ loan_request.security_type}}</h1>  
+                                                                </div>
+                                                                {% comment %} <img src="{% static "/img/bg.png" %}" alt="" srcset="" class="object-cover w-full bg-cover h-52 rounded-xl"> {% endcomment %}
+                                                            </div>
+                                                            <div class="mt-6">
+                                                                <p class="font-bold">Staff</p>
+                                                                <h1 class="">{{ loan_request.loan_officer.user.fullname}}</h1>  
+                                                            </div>
+                                                             <div class="mt-6">
+                                                                <p class="font-bold">Remarks</p>
+                                                                {% for remark in remarks%}
+                                                                    {% if remark.loan == loan_request %}
+                                                                        <h1 class="">{{ remark.remarks}} - {{ remark.created_by.user.fullname}} ({{ remark.created_at}})</h1>  
+
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                                {% comment %} <h1 class="">{{ loan_request.laon_officer.user.fullname}}</h1>   {% endcomment %}
+                                                            </div>
+                                                            {% comment %} {% if loan_request.status != 'REJECTED' and loan_request.status != 'APPROVED' %}
+                                                                <div>
+                                                                <div class="flex items-center w-full gap-6 mt-6 max-md:gap-2">
+                                                                    <button id="loan_{{loan_request.id}}" class="h-10 px-12 text-white rounded-full bg-myBlack max-md:px-8 active:animate-spin">Confirm</button>
+                                                                    <form action="reject-loan-request/{{ loan_request.id}}" method="post">
+                                                                        {% csrf_token %}
+                                                                        <button type="submit" class="h-10 px-12 text-white rounded-full bg-myRed max-md:px-8">Reject</button>
+                                                                    </form>
+                                                                </div>
+                                                                <div id="loanfields__{{loan_request.id}}" class="hidden mt-4">
+                                                                    <form action="accept-loan/{{ loan_request.id}}" method="post">
+                                                                        {% csrf_token %}
+                                                                        <div class="flex flex-col mb-4">
+                                                                            <label for="amount">Amount</label>
+                                                                            <input required type="number" name="amount" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                                                                        </div>
+                                                                        <div class="flex flex-col mb-4">
+                                                                            <label for="rate">Rate %</label>
+                                                                            <input required type="number" name="rate" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                                                                        </div>
+                                                                        <div class="flex flex-col mb-4">
+                                                                            <label for="loanTerm">Loan Term</label>
+                                                                            <input required type="number" min="" name="loanTermNumber" id=""
+                                                                                class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
+                                                                                required>
+                                                                        </div>
+                                                                        <div class="flex flex-col mb-4">
+                                                                            <label for="loanTermType">Loan Term Type</label>
+                                                                            <select name="loanTermTypeOfPeriod" id=""
+                                                                                class="w-10/12 h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
+                                                                                required>
+                                                                                <option value="weeks">Weeks</option>
+                                                                                <option value="months">Months</option>
+                                                                                <option value="years">Years</option>
+                                                                            </select>
+                                                        
+                                                                        </div>
+                                                                        <button type="submit" class="w-10/12 h-10 mt-8 text-white rounded-full bg-myBlack">Confirm</button>
+                                                                    </form>
+                                                                </div>
+                                                                </div>
+                                                            {% else %}
+                                                                <div></div>
+                                                            {% endif %} {% endcomment %}
+                                                        </div>
+                                                    </div>
+                                        
+                                                </div>
+                                            </div>
+                                            </div>
+                                        {% endif %}
+                                {% elif user.profile.role == 'RELATIONSHIP_OFFICER'%}
+                                    <div id="{{ loan_request.status}}">
+                                    <div id="openRequestPopup_{{loan_request.id}}"  class="flex items-start justify-between py-3 mb-4 border-b-2 cursor-pointer border-b-gray-100">
+                                        <div class="flex items-center gap-4">
+                                            <div class="flex items-center justify-center w-12 h-12 text-2xl bg-gray-300 rounded-full">
+                                                <i class="leading-3 fi fi-rr-file-export"></i>
+                                            </div>
+                                            <div>
+                                                <h1 class="text-lg font-bold">{{ loan_request.client.full_name }}</h1>
+                                                <p>{{ loan_request.loan_product.name }}</p>
+                                            </div>
+                                        </div>
+                                        {% if loan_request.status == 'APPROVED' %}
+                                            <span class="px-1 text-xs text-white rounded-full bg-myGreen">{{loan_request.status}}</span>
+                                        {% elif loan_request.status == 'REJECTED' %}
+                                            <span class="px-1 text-xs text-white rounded-full bg-myRed">{{loan_request.status}}</span>
+                                        {% else %}
+                                            <span class="px-1 text-xs text-white rounded-full bg-blue-600">{{loan_request.status}}</span>
+                                        {% endif %}
+                                    </div>
+                                    {% comment %} this is a popup element {% endcomment %}
+                                    <div id="requestPopup_{{loan_request.id}}" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+                                        <div class="relative w-4/12 overflow-y-auto bg-white h-4/5 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+                                            <button id="closeRequestPopup_{{loan_request.id}}" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+                                            <div class="w-full p-6">
+                                                <h1 class="mb-10 text-2xl font-bold">Loan Request</h1>
+                                                <div>
+                                                    <div class="flex items-center gap-3 p-3 text-white rounded-2xl bg-myBlack">
+                                                        <div class="flex items-center justify-center w-10 h-10 text-white bg-gray-900 rounded-full">
+                                                            <i class="text-2xl leading-3 fi fi-rr-user"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h1 class="font-bold">{{ loan_request.client.full_name }}</h1>
+                                                            <p class="text-gray-500 font-myMono">{{ loan_request.client.nin }}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mt-6">
+                                                        <h1 class="font-bold">{{loan_request.loan_product.name}}</h1>
+                                                    </div>
+                                                    <div class="mt-4">
+                                                        <p>Requested Amount</p>
+                                                        <h1 class="text-xl font-bold">{{ loan_request.requested_amount }}</h1>
+                                                    </div>
+                                                    <div class="flex items-end justify-between mt-4">
+                                                        <div>
+                                                            <p>Recommended</p>
+                                                            <h1 class="text-xl font-bold">{{ loan_request.recommended_amount}}</h1>  
+                                                        </div>
+                                                        <p>{{ loan_request.interest_rate}}%</p>
+                                                        <p>{{ loan_request.loan_term}} {{ loan_request.loan_term_type_of_period}} ({{ loan_request.payment_frequency}})</p>
+                                                    </div>
+                                                    <div class="flex items-end gap-6 mt-4">
+                                                        <div>
+                                                            <p class="font-bold">Referee</p>
+                                                            <h1 class="">{{ loan_request.guarantor}} <span>({{ loan_request.guarantor_relationship}})</span></h1>  
+                                                        </div>
+                                                        <p>{{ loan_request.guarantor.phone}}</p>
+                                                    </div>
+                                                    <div class="mt-4">
+                                                        <div>
+                                                            <p class="font-bold">Security</p>
+                                                            <h1 class="">{{ loan_request.security_type}}</h1>  
+                                                        </div>
+                                                        {% comment %} <img src="{% static "/img/bg.png" %}" alt="" srcset="" class="object-cover w-full bg-cover h-52 rounded-xl"> {% endcomment %}
+                                                    </div>
+                                                    <div class="mt-6">
+                                                        <p class="font-bold">Staff</p>
+                                                        <h1 class="">{{ loan_request.loan_officer.user.fullname}}</h1>  
+                                                    </div>
+                                                    <div class="mt-6">
+                                                        <p class="font-bold">Remarks</p>
+                                                        {% for remark in remarks%}
+                                                            {% if remark.loan == loan_request %}
+                                                                <h1 class="">{{ remark.remarks}} - {{ remark.created_by.user.fullname}} ({{ remark.created_at}})</h1>  
+
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        {% comment %} <h1 class="">{{ loan_request.laon_officer.user.fullname}}</h1>   {% endcomment %}
+                                                    </div>
+                                                    {% if loan_request.status != 'REJECTED' and loan_request.status != 'APPROVED' %}
+                                                        <div>
+                                                        <div class="flex items-center w-full gap-6 mt-6 max-md:gap-2">
+                                                            <button id="loan_{{loan_request.id}}" class="h-10 px-12 text-white rounded-full bg-myBlack max-md:px-8 active:animate-spin">Confirm</button>
+                                                            <form action="reject-loan-request/{{ loan_request.id}}" method="post">
+                                                                {% csrf_token %}
+                                                                <button type="submit" class="h-10 px-12 text-white rounded-full bg-myRed max-md:px-8">Reject</button>
+                                                            </form>
+                                                        </div>
+                                                        <div id="loanfields__{{loan_request.id}}" class="hidden mt-4">
+                                                            <form action="accept-loan/{{ loan_request.id}}" method="post">
+                                                                {% csrf_token %}
+                                                                <div class="flex flex-col mb-4">
+                                                                    <label for="amount">Amount</label>
+                                                                    <input required type="number" name="amount" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack" value="{{ loan_request.requested_amount}}">
+                                                                </div>
+                                                                <div class="flex flex-col mb-4">
+                                                                    <label for="rate">Rate %</label>
+                                                                    <input required type="number" name="rate" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack" value="{{ loan_request.loan_product.interest |floatformat:"0"}}">
+
+                                                                </div>
+                                                                <div class="flex flex-col mb-4">
+                                                                    <label for="loanTerm">Loan Term</label>
+                                                                    <input required type="number" min="" name="loanTermNumber" id=""
+                                                                        class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
+                                                                        required value="{{ loan_request.loan_term}}">
+                                                                </div>
+                                                                <div class="flex flex-col mb-4">
+                                                                    <label for="loanTermType">Loan Term Type</label>
+                                                                    <select name="loanTermTypeOfPeriod" id=""
+                                                                        class="w-10/12 h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
+                                                                        required>
+                                                                        <option value="{{ loan_request.loan_term_type_of_period}}">{{ loan_request.loan_term_type_of_period}}</option>
+                                                                        {% if loan_request.loan_term_type_of_period == 'weeks' %}
+                                                                            <option value="months">Months</option>
+                                                                            <option value="years">Years</option>
+                                                                        {% elif loan_request.loan_term_type_of_period == 'months' %}
+                                                                            <option value="weeks">Weeks</option>
+                                                                            <option value="years">Years</option>
+                                                                        {% else %}
+                                                                            <option value="weeks">Weeks</option>
+                                                                            <option value="months">Months</option>
+                                                                        {% endif %}
+                                                                    </select>
+                                                
+                                                                </div>
+                                                                <div class="flex flex-col mb-4">
+                                                                    <label for="installmentinterval">Installment Interval</label>
+                                                                    <select name="paymentFrequency" id=""
+                                                                        class="w-10/12 h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                                                                        <option value="{{ loan_request.payment_frequency}}">{{ loan_request.payment_frequency}}</option>
+                                                                                {% if loan_request.payment_frequency == 'daily' %}
+                                                                                    <option value="weekly">Weekly</option>
+                                                                                    <option value="bi-weekly">Bi-Weekly</option>
+                                                                                    <option value="monthly">Monthly</option>
+                                                                                    <option value="quarterly">Quarterly</option>
+                                                                                    <option value="semi-annually">Semi-Annually</option>
+                                                                                    <option value="yearly">Annually</option>
+                                                                                {% elif loan_request.payment_frequency == 'weekly' %}
+                                                                                    <option value="daily">Daily</option>
+                                                                                    <option value="bi-weekly">Bi-Weekly</option>
+                                                                                    <option value="monthly">Monthly</option>
+                                                                                    <option value="quarterly">Quarterly</option>
+                                                                                    <option value="semi-annually">Semi-Annually</option>
+                                                                                    <option value="yearly">Annually</option>
+                                                                                {% elif loan_request.payment_frequency == 'bi-weekly' %}
+                                                                                    <option value="daily">Daily</option>
+                                                                                    <option value="weekly">Weekly</option>
+                                                                                    <option value="monthly">Monthly</option>
+                                                                                    <option value="quarterly">Quarterly</option>
+                                                                                    <option value="semi-annually">Semi-Annually</option>
+                                                                                    <option value="yearly">Annually</option>
+                                                                                {% elif loan_request.payment_frequency == 'monthly' %}
+                                                                                    <option value="daily">Daily</option>
+                                                                                    <option value="weekly">Weekly</option>
+                                                                                    <option value="bi-weekly">Bi-Weekly</option>
+                                                                                    <option value="quarterly">Quarterly</option>
+                                                                                    <option value="semi-annually">Semi-Annually</option>
+                                                                                    <option value="yearly">Annually</option>
+                                                                                {% elif loan_request.payment_frequency == 'quarterly' %}
+                                                                                    <option value="daily">Daily</option>
+                                                                                    <option value="weekly">Weekly</option>
+                                                                                    <option value="bi-weekly">Bi-Weekly</option>
+                                                                                    <option value="monthly">Monthly</option>
+                                                                                    <option value="semi-annually">Semi-Annually</option>
+                                                                                    <option value="yearly">Annually</option>
+                                                                                {% elif loan_request.payment_frequency == 'semi-annually' %}
+                                                                                    <option value="daily">Daily</option>
+                                                                                    <option value="weekly">Weekly</option>
+                                                                                    <option value="bi-weekly">Bi-Weekly</option>
+                                                                                    <option value="monthly">Monthly</option>
+                                                                                    <option value="quarterly">Quarterly</option>
+                                                                                    <option value="yearly">Annually</option>
+                                                                                {% else %}
+                                                                                    <option value="daily">Daily</option>
+                                                                                    <option value="weekly">Weekly</option>
+                                                                                    <option value="bi-weekly">Bi-Weekly</option>
+                                                                                    <option value="monthly">Monthly</option>
+                                                                                    <option value="quarterly">Quarterly</option>
+                                                                                    <option value="semi-annually">Semi-Annually</option>
+                                                                                {% endif %}
+
+                                                                    </select>
+                                                                </div>
+                                                                <div class="flex flex-col mb-4">
+                                                                    <label for="dod">Date Of Disbursment</label>
+                                                                    <input required type="date" name="dod" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                                                                </div>
+                                                                <div class="flex flex-col mb-4">
+                                                                    <label for="disbursmentbranch">Disbursment Branch</label>
+                                                                    <select name="disbursementbranch" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                                                                        {% for branch in branches %}
+                                                                            <option value="{{ branch.id}}">{{ branch.name}}</option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                </div>
+                                                                
+
+                                                                <button type="submit" class="w-10/12 h-10 mt-8 text-white rounded-full bg-myBlack">Confirm</button>
+                                                            </form>
+                                                        </div>
+                                                        </div>
+                                                    {% else %}
+                                                        <div></div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                
+                                        </div>
+                                    </div>
+                                    </div>
+                                {% elif user.profile.role == 'BUSINESS_SUPERVISOR'%}
+                                <div id="{{ loan_request.status}}">
+                                    <div id="openRequestPopup_{{loan_request.id}}"  class="flex items-start justify-between py-3 mb-4 border-b-2 cursor-pointer border-b-gray-100">
+                                        <div class="flex items-center gap-4">
+                                            <div class="flex items-center justify-center w-12 h-12 text-2xl bg-gray-300 rounded-full">
+                                                <i class="leading-3 fi fi-rr-file-export"></i>
+                                            </div>
+                                            <div>
+                                                <h1 class="text-lg font-bold">{{ loan_request.client.full_name }}</h1>
+                                                <p>{{ loan_request.loan_product.name }}</p>
+                                            </div>
+                                        </div>
+                                        {% if loan_request.status == 'APPROVED' %}
+                                            <span class="px-1 text-xs text-white rounded-full bg-myGreen">{{loan_request.status}}</span>
+                                        {% elif loan_request.status == 'REJECTED' %}
+                                            <span class="px-1 text-xs text-white rounded-full bg-myRed">{{loan_request.status}}</span>
+                                        {% else %}
+                                            <span class="px-1 text-xs text-white rounded-full bg-blue-600">{{loan_request.status}}</span>
+                                        {% endif %}
+                                    </div>
+                                    {% comment %} this is a popup element {% endcomment %}
+                                    <div id="requestPopup_{{loan_request.id}}" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+                                        <div class="relative w-4/12 overflow-y-auto bg-white h-4/5 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+                                            <button id="closeRequestPopup_{{loan_request.id}}" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+                                            <div class="w-full p-6">
+                                                <h1 class="mb-10 text-2xl font-bold">Loan Request</h1>
+                                                <div>
+                                                    <div class="flex items-center gap-3 p-3 text-white rounded-2xl bg-myBlack">
+                                                        <div class="flex items-center justify-center w-10 h-10 text-white bg-gray-900 rounded-full">
+                                                            <i class="text-2xl leading-3 fi fi-rr-user"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h1 class="font-bold">{{ loan_request.client.full_name }}</h1>
+                                                            <p class="text-gray-500 font-myMono">{{ loan_request.client.nin }}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mt-6">
+                                                        <h1 class="font-bold">Business Loan</h1>
+                                                    </div>
+                                                    <div class="mt-4">
+                                                        <p>Requested Amount</p>
+                                                        <h1 class="text-xl font-bold">{{ loan_request.requested_amount }}</h1>
+                                                    </div>
+                                                    <div class="flex items-end justify-between mt-4">
+                                                        <div>
+                                                            <p>Recommended Amount</p>
+                                                            <h1 class="text-xl font-bold">{{ loan_request.recommended_amount}}</h1>  
+                                                        </div>
+                                                        <p>{{ loan_request.interest_rate}}%</p>
+                                                        <p>{{ loan_request.loan_term}} {{ loan_request.loan_term_type_of_period}} ({{ loan_request.payment_frequency}})</p>
+                                                    </div>
+                                                    <div class="flex items-end gap-6 mt-4">
+                                                        <div>
+                                                            <p class="font-bold">Referee</p>
+                                                            <h1 class="">{{ loan_request.guarantor}} <span>({{ loan_request.guarantor_relationship}})</span></h1>  
+                                                        </div>
+                                                        <p>{{ loan_request.guarantor.phone}}</p>
+                                                    </div>
+                                                    <div class="mt-4">
+                                                        <div>
+                                                            <p class="font-bold">Security</p>
+                                                            <h1 class="">{{ loan_request.security_type}}</h1>  
+                                                        </div>
+                                                        {% comment %} <img src="{% static "/img/bg.png" %}" alt="" srcset="" class="object-cover w-full bg-cover h-52 rounded-xl"> {% endcomment %}
+                                                    </div>
+                                                    <div class="mt-6">
+                                                        <p class="font-bold">Staff</p>
+                                                        <h1 class="">{{ loan_request.loan_officer.user.fullname}}</h1>  
+                                                    </div>
+                                                    <div class="mt-6">
+                                                        <p class="font-bold">Remarks</p>
+                                                        {% for remark in remarks%}
+                                                            {% if remark.loan == loan_request %}
+                                                                <h1 class="">{{ remark.remarks}} - {{ remark.created_by.user.fullname}} ({{ remark.created_at}})</h1>  
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        {% comment %} <h1 class="">{{ loan_request.laon_officer.user.fullname}}</h1>   {% endcomment %}
+                                                    </div>
+                                                    <form action="accept-loan/{{ loan_request.id}}" method="post">
+                                                        {% csrf_token %}
+                                                        <div class="flex flex-col mb-4 mt-6">
+                                                            <h1 class="font-bold">Remark</h1>
+                                                            <input required type="text" name="remark" placeholder=" Add Remark" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                                                        </div>
+                                                        <button type="submit" class="w-10/12 h-10 mt-8 text-white rounded-full bg-myBlack">Confirm</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                
+                                        </div>
+                                    </div>
+                                    </div>
+                                {% else %}
+                                {% endif%}
+                            {% endfor %}
+                        </div>
+                        <div class="sticky w-4/12 top-2 max-md:w-full max-md:order-1">
+                            <canvas id="polarChart" width="400" height="400"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--popup1 -->
+    <div id="popup" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+        <div class="relative w-3/12 overflow-y-auto bg-white h-4/5 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+            <button id="closePopup" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+            <div class="w-full p-6">
+                <h1 class="mb-10 text-2xl font-bold">Add Loan</h1>
+                <form action="">
+                    <div class="relative flex flex-col mb-4">
+                        <label for="client">Client</label>
+                        <input type="text" id="userSearch" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack" onkeyup="searchUsers(this.value)">
+                        <div id="searchResults" class="absolute z-50 invisible w-10/12 h-40 mt-16 overflow-y-auto text-white border shadow-md rounded-xl bg-myBlack max-h-40"></div>
+                    </div>
+                    <div id="selectedUser" class="w-10/12 mt-4 mb-4"></div>
+                    <div class="flex flex-col mb-4">
+                        <label for="client">Requested amount</label>
+                        <input required type="number" min="10000" name="amount" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="client">Recommended amount</label>
+                        <input required type="number" min="10000" name="amount" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="client">percentage %</label>
+                        <input required type="number" min="" name="amount" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="client">Duration</label>
+                        <input required type="number" min="" name="amount" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <h1 class="pt-4 pb-1 text-xl font-bold">Security</h1>
+                    <div class="flex flex-col mb-4">
+                        <label for="client">Description</label>
+                        <input required type="text" min="" name="description" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <input type="file" id="file-input" class="hidden" accept="image/*" onchange="previewImage(event)">
+                        <button id="add-image-button" class="w-10/12 h-10 text-white rounded-full bg-myBlack hover:animate-pulse" onclick="document.getElementById('file-input').click()">Add Image</button>
+                    </div>
+                    <div id="image-preview-container" class="flex flex-wrap gap-2"></div>
+                    <h1 class="pt-4 pb-1 text-xl font-bold">Referee</h1>
+                    <div class="flex flex-col mb-4">
+                        <label for="client">Name</label>
+                        <input required type="text" min="" name="name" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="client">Relationship</label>
+                        <select required type="text" min="" name="relationship" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                            <option value="">Friend</option>
+                            <option value="">Brother</option>
+                            <option value="">Sister</option>
+                            <option value="">Mother</option>
+                            <option value="">Father</option>
+                            <option value="">Uncle</option>
+                            <option value="">Auntie</option>
+                            <option value="">Son</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="client">Phone No</label>
+                        <input required type="tel"  maxlength="10" name="tell" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <button type="submit" class="w-10/12 h-10 mt-10 text-white rounded-full bg-myBlack">Add loan</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function showAll() {
+            const approved = document.querySelectorAll('#APPROVED')
+            const rejected = document.querySelectorAll('#REJECTED')
+            const pending = document.querySelectorAll('#PENDING')
+            approved.forEach(approved => {
+                approved.classList.remove('hidden')
+            })
+            rejected.forEach(rejected => {
+                rejected.classList.remove('hidden')
+            })
+            pending.forEach(pending => {
+                pending.classList.remove('hidden')
+            })
+        }
+
+
+        function showApproved() {
+            const approved = document.querySelectorAll('#APPROVED')
+            const rejected = document.querySelectorAll('#REJECTED')
+            const pending = document.querySelectorAll('#PENDING')
+            approved.forEach(approved => {
+                approved.classList.remove('hidden')
+            })
+            rejected.forEach(rejected => {
+                rejected.classList.add('hidden')
+            })
+            pending.forEach(pending => {
+                pending.classList.add('hidden')
+            })
+        }
+
+        function showRejected() {
+            const approved = document.querySelectorAll('#APPROVED')
+            const rejected = document.querySelectorAll('#REJECTED')
+            const pending = document.querySelectorAll('#PENDING')
+            approved.forEach(approved => {
+                approved.classList.add('hidden')
+            })
+            rejected.forEach(rejected => {
+                rejected.classList.remove('hidden')
+            })
+            pending.forEach(pending => {
+                pending.classList.add('hidden')
+            })
+        }
+
+        function showPending() {
+            const approved = document.querySelectorAll('#APPROVED')
+            const rejected = document.querySelectorAll('#REJECTED')
+            const pending = document.querySelectorAll('#PENDING')
+            approved.forEach(approved => {
+                approved.classList.add('hidden')
+            })
+            rejected.forEach(rejected => {
+                rejected.classList.add('hidden')
+            })
+            pending.forEach(pending => {
+                pending.classList.remove('hidden')
+            })
+        }
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll("[id^='loan_']").forEach(function(button) {
+              button.addEventListener("click", function() {
+                var requestId = button.id.split("_")[1];
+                const div = document.getElementById('loanfields__'+requestId)
+                div.classList.remove('hidden')
+              });
+            });
+            }
+          );   
+    </script>
+
+    <script>
+const data = {
+    labels: ["Rejected", "Pending", "Approved",],
+    datasets: [{
+      label: "Loan Requests",
+      data: {{loan_count | safe}},
+      backgroundColor: [
+        'rgba(255, 51, 51, 0.7)',
+        'rgba(51, 176, 255, 0.7)',
+        'rgba(51, 255, 98, 0.7)',
+      ],
+    }]
+  };
+
+  // Configuration for the chart
+  const config = {
+    type: 'polarArea',
+    data: data,
+    options: {
+      scales: {
+        r: {
+            pointLabels: {
+          display: true,
+          centerPointLabels: true,
+          font: {
+            size: 12
+          }
+        }
+        }
+      }
+    },
+  };
+
+  // Render the chart
+  var myChart = new Chart(
+    document.getElementById('polarChart'),
+    config
+  );
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll("[id^='openRequestPopup_']").forEach(function(button) {
+      button.addEventListener("click", function() {
+        var requestId = button.id.split("_")[1];
+        showRequestPopup(requestId);
+        hideRequestPopup(requestId);
+      });
+    });
+
+    function showRequestPopup(requestId) {
+      const popup = document.getElementById('requestPopup_' + requestId);
+      popup.classList.remove('hidden');
+      console.log("Accept popup for request ID: " + requestId);
+    }
+
+    function hideRequestPopup(requestId) {
+      const popup = document.getElementById('requestPopup_' + requestId);
+      const closeAcceptPopup = document.getElementById('closeRequestPopup_' + requestId);
+      closeAcceptPopup.onclick = function() {
+        popup.classList.add('hidden');
+      }
+    }
+    }
+  );
+</script>
+{% endblock %}

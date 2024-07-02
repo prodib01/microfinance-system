@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+                <div class="w-full">
+                    <div class="flex items-center justify-between w-full max-myMob:flex-col max-myMob:items-start max-myMob:gap-4 max-md:mt-10">
+                        <div>
+                            <h1 class="text-3xl font-bold">Loans</h1>
+                        </div>
+                        <form action="/search-loan/" method="POST">
+                        {% csrf_token %}
+                        <div class="flex items-center gap-4 max-myMob:w-full">
+                            <!-- <button type="button" id="openPopup" class="p-3 text-white rounded-full bg-myBlack"><i class="flex justify-center fi fi-sr-plus"></i></button> -->
+                            <div class="flex items-center justify-between h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus-within:border-myBlack max-myMob:w-full">
+                                <input type="search" name="search" id="" class="w-full h-10 italic bg-transparent outline-none" placeholder="search">
+                                <button type="submit" class="flex items-center justify-center px-1 bg-transparent"><i class="leading-3 fi fi-br-search"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                    </div>
+                    <div class="flex items-center gap-3 overflow-x-scroll mt-7">
+                        <button class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn active" onclick="showAll()">All</button>
+                        <button class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn" onclick="showApproved()">Ongoing</button>
+                        <button class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn" onclick="showClosed()">Cleared</button>
+                        <button class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn" onclick="showPending()">Pending</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-5 max-myMob:grid-cols-1 mt-7">
+                        {% for loan in loans%}
+                        {% if loan.status == "PENDING"%}
+                            <a>
+                        {% else%}
+                            <a href="/loan/loanview/{{loan.id}}/">
+                        {% endif %}
+                        <div id={{loan.status}}>
+                            <div class="grid grid-cols-1 gap-5 mt-7">
+                                <div class="p-4 bg-white shadow-lg cursor-pointer shadow-gray-300 rounded-2xl hover:border-2 hover:border-gray-100 hover:shadow-none">
+                                    <div class="flex items-start justify-between">
+                                        <div class="">
+                                            <h1 class="text-xl font-bold">{{loan.client.full_name}}</h1>
+                                            <div class="flex items-center gap-8">
+                                                <h1 class="italic text-gray-500">{{loan.loan_product.name}}</h1>
+                                                <p class="italic text-gray-500">{{loan.loan_term}} {{loan.loan_term_type_of_period}}</p>
+                                            </div>
+                                            {% if loan.status == "PENDING"%}
+                                            <p class="mt-4 italic text-gray-600">Loan Amount</p>
+                                            <h1 class="text-2xl font-bold">{{loan.requested_amount}}</h1>
+                                            {% else%}
+                                            <p class="mt-4 italic text-gray-600">Loan Amount</p>
+                                            <h1 class="text-2xl font-bold">{{loan.given_amount}}</h1>
+                                            {% endif %}
+                                        </div>
+                                        {% if loan.status == "PENDING"%}
+                                        <p> pending </p>
+                                        {% else%}
+                                        <div class="flex items-center justify-center text-white rounded-full w-7 h-7 bg-myGreen">
+                                            <i class="text-xs leading-3 fi fi-rr-chat-arrow-grow"></i>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <!-- <div class="flex items-center justify-between w-full mt-4">
+                                        
+                                        <p class="flex items-center"><i class="mr-2 leading-3 fi fi-rr-calendar"></i> {{loan.created_at}}</p>
+                                    </div> -->
+                                </div>   
+                            </div>
+                        </div>
+                        </a>
+                        {%endfor%}
+                        {% comment %} <div class="flex items-start justify-between p-4 bg-white shadow-lg cursor-pointer shadow-gray-300 rounded-2xl hover:border-2 hover:border-gray-100 hover:shadow-none">
+                            <div class="">
+                                <h1 class="text-xl font-bold">Musoke MIke</h1>
+                                <p class="italic text-gray-600"><span class="mr-10">Salary Loan</span> <span>3 Months</span></p>
+                                <h1 class="mt-4 text-2xl font-bold">UGX 350,000</h1>
+                            </div>
+                            <div class="flex items-center justify-center text-white rounded-full w-7 h-7 bg-myGreen">
+                                <i class="text-xs leading-3 fi fi-rr-chat-arrow-grow"></i>
+                            </div>
+                        </div> {% endcomment %}
+                        {% comment %} <div class="flex items-start justify-between p-4 bg-white shadow-lg cursor-pointer shadow-gray-300 rounded-2xl hover:border-2 hover:border-gray-100 hover:shadow-none">
+                            <div class="">
+                                <h1 class="text-xl font-bold">Musoke MIke</h1>
+                                <p class="italic text-gray-600"><span class="mr-10">Salary Loan</span> <span>3 Months</span></p>
+                                <h1 class="mt-4 text-2xl font-bold">UGX 350,000</h1>
+                            </div>
+                            <div class="flex items-center justify-center text-white rounded-full w-7 h-7 bg-myRed">
+                                <i class="text-xs leading-3 fi fi-rr-chat-arrow-down"></i>
+                            </div>
+                            <div class="flex items-center justify-center text-white rounded-full w-7 h-7 bg-myBlue">
+                                <i class="text-xs leading-3 fi fi-rr-loading"></i>
+                            </div>
+                            <div class="flex items-center justify-center text-white rounded-full w-7 h-7 bg-myGreen">
+                                <i class="text-xs leading-3 fi fi-rr-check-double"></i>
+                            </div>
+                        </div> {% endcomment %}
+                        {% comment %} <div class="flex items-start justify-between p-4 bg-white shadow-lg cursor-pointer shadow-gray-300 rounded-2xl hover:border-2 hover:border-gray-100 hover:shadow-none">
+                            <div class="">
+                                <h1 class="text-xl font-bold">Musoke MIke</h1>
+                                <p class="italic text-gray-600"><span class="mr-10">Salary Loan</span> <span>3 Months</span></p>
+                                <h1 class="mt-4 text-2xl font-bold">UGX 350,000</h1>
+                            </div>
+                            <div class="flex items-center justify-center text-white rounded-full w-7 h-7 bg-myGreen">
+                                <i class="text-xs leading-3 fi fi-rr-chat-arrow-grow"></i>
+                            </div>
+                        </div> {% endcomment %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="popup" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+        <div class="relative w-3/12 overflow-y-auto bg-white h-4/5 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+            <button id="closePopup" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+            <div class="w-full p-6">
+                <h1 class="mb-10 text-2xl font-bold">Add Loan</h1>
+                <form action="">
+                    <div class="relative flex flex-col mb-4">
+                        <label for="client">Client</label>
+                        {% comment %} <input type="text" id="userSearch" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack" onkeyup="searchUsers(this.value)">
+                        <div id="searchResults" class="absolute z-50 invisible w-10/12 h-40 mt-16 overflow-y-auto text-white border shadow-md rounded-xl bg-myBlack max-h-40"></div> {% endcomment %}
+                        <select required type="text" name="client" id="client" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                            <option value="">Select Client </option>
+                            {% for person in people %}
+                                <option value="{{ person.id }}">{{ person.full_name }} - {{ person.phone }}</option>
+                            {% endfor %}
+                    </div>
+                    <div id="selectedUser" class="w-10/12 mt-4 mb-4"></div>
+                    <div class="flex flex-col mb-4">
+                        <label for="client">Requested amount</label>
+                        <input required type="number" min="10000" name="amount" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="client">Recommended amount</label>
+                        <input required type="number" min="10000" name="amount" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="client">percentage %</label>
+                        <input required type="number" min="" name="amount" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="client">Duration</label>
+                        <input required type="number" min="" name="amount" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <h1 class="pt-4 pb-1 text-xl font-bold">Security</h1>
+                    <div class="flex flex-col mb-4">
+                        <label for="client">Description</label>
+                        <input required type="text" min="" name="description" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <input type="file" id="file-input" class="hidden" accept="image/*" onchange="previewImage(event)">
+                        <button type="button" id="add-image-button" class="w-10/12 h-10 text-white rounded-full bg-myBlack hover:animate-pulse" onclick="document.getElementById('file-input').click()">Add Image</button>
+                    </div>
+                    <div id="image-preview-container" class="flex flex-wrap gap-2"></div>
+                    <h1 class="pt-4 pb-1 text-xl font-bold">Referee</h1>
+                    <div class="flex flex-col mb-4">
+                        <label for="client">Name</label>
+                        <input required type="text" min="" name="name" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="client">Relationship</label>
+                        <select required type="text" min="" name="relationship" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                            <option value="">Friend</option>
+                            <option value="">Brother</option>
+                            <option value="">Sister</option>
+                            <option value="">Mother</option>
+                            <option value="">Father</option>
+                            <option value="">Uncle</option>
+                            <option value="">Auntie</option>
+                            <option value="">Son</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col mb-4">
+                        <label for="client">Phone No</label>
+                        <input required type="tel"  maxlength="10" name="tell" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                    </div>
+                    <button type="submit" class="w-10/12 h-10 mt-10 text-white rounded-full bg-myBlack">Add loan</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function showAll() {
+            const approved = document.querySelectorAll('#APPROVED')
+            const closed = document.querySelectorAll('#CLOSED')
+            const pending = document.querySelectorAll('#PENDING')   
+            const rejected = document.querySelectorAll('#REJECTED')
+            approved.forEach(approved => {
+                approved.classList.remove('hidden')
+            })
+            closed.forEach(rejected => {
+                rejected.classList.remove('hidden')
+            })
+            pending.forEach(rejected => {
+                rejected.classList.remove('hidden')
+            })
+            rejected.forEach(rejected => {
+                rejected.classList.remove('hidden')
+            })
+        }
+
+
+        function showApproved() {
+            const approved = document.querySelectorAll('#APPROVED')
+            const closed = document.querySelectorAll('#CLOSED')
+            const pending = document.querySelectorAll('#PENDING')   
+            const rejected = document.querySelectorAll('#REJECTED')
+            approved.forEach(approved => {
+                approved.classList.remove('hidden')
+            })
+            closed.forEach(rejected => {
+                rejected.classList.add('hidden')
+            })
+            pending.forEach(rejected => {
+                rejected.classList.add('hidden')
+            })
+            rejected.forEach(rejected => {
+                rejected.classList.add('hidden')
+            })
+        }
+
+        function showClosed() {
+            const approved = document.querySelectorAll('#APPROVED')
+            const closed = document.querySelectorAll('#CLOSED')
+            const pending = document.querySelectorAll('#PENDING')   
+            const rejected = document.querySelectorAll('#REJECTED')
+            approved.forEach(approved => {
+                approved.classList.add('hidden')
+            })
+            closed.forEach(rejected => {
+                rejected.classList.remove('hidden')
+            })
+            pending.forEach(rejected => {
+                rejected.classList.add('hidden')
+            })
+            rejected.forEach(rejected => {
+                rejected.classList.add('hidden')
+            })
+        }
+
+        function showPending() {
+            const approved = document.querySelectorAll('#APPROVED')
+            const closed = document.querySelectorAll('#CLOSED')
+            const pending = document.querySelectorAll('#PENDING')   
+            const rejected = document.querySelectorAll('#REJECTED')
+            approved.forEach(approved => {
+                approved.classList.add('hidden')
+            })
+            closed.forEach(rejected => {
+                rejected.classList.add('hidden')
+            })
+            pending.forEach(rejected => {
+                rejected.classList.remove('hidden')
+            })
+            rejected.forEach(rejected => {
+                rejected.classList.add('hidden')
+            })
+        }
+    </script>
+
+    <script>
+        const closeButton = document.getElementById('closePopup');
+        const popup = document.getElementById('popup');
+        const openButton = document.getElementById('openPopup');
+
+        openButton.addEventListener('click', () => {
+            popup.classList.remove('hidden');
+        });
+
+        closeButton.addEventListener('click', () => {
+            popup.classList.add('hidden');
+        });
+    </script>
+    {% endblock %}
