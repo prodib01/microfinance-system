@@ -384,7 +384,7 @@
                 <div id="image-preview-container" class="flex flex-wrap gap-2"></div>
                 <h1 class="pt-4 pb-1 text-xl font-bold">Guarantor</h1>
                 <div class="relative flex flex-col mb-4">
-                    <label for="client">Name</label>
+                    
                     {% comment %} <input type="text" id="searchGuarantor"
                         class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
                         placeholder="Search Guarantor" name="guarantor">
@@ -394,12 +394,18 @@
                     <input type="text" id="selectedUserId"
                         class="hidden w-64 px-4 py-2 mt-2 border border-gray-300 rounded" placeholder="Selected user ID"
                         readonly> {% endcomment %}
-                        <Select name="guarantor" id="guarantor" class="w-10/12 h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
-                            <option value=""></option>
-                        {% for client in people %}
-                        <option value="{{client.id}}">{{client.full_name}} - {{client.nin}}</option>
-                        {% endfor %}
-                    </Select>
+                        <fieldset class="space-y-2">
+                            <legend class="block text-sm font-medium text-gray-700">Select Guarantor(s)</legend>
+                            <input type="text" id="guarantor-search" placeholder="Search for guarantors" class="block w-full mt-2 p-2 border rounded">
+                            <div id="guarantor-results" class="mt-2">
+                                <!-- Search results will be added here -->
+                            </div>
+                            <div id="selected-guarantors" class="mt-2">
+                                <!-- Selected guarantors will be added here -->
+                            </div>
+                            
+                            
+                        </fieldset>
                 </div>
                 <div class="flex flex-col mb-4">
                     <label for="client">Relationship</label>
@@ -644,6 +650,66 @@
 
 
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const guarantorSearchInput = document.getElementById('guarantor-search');
+        const guarantorResultsDiv = document.getElementById('guarantor-results');
+        
+        if (guarantorSearchInput && guarantorResultsDiv) {
+            guarantorSearchInput.addEventListener('input', function() {
+                let query = this.value.trim();
+                if (query.length > 0) {
+                    fetch(`/search-guarantors/?q=${query}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            guarantorResultsDiv.innerHTML = ''; // Clear previous results
+                            if (data.length > 0) {
+                                data.forEach(item => {
+                                    let option = document.createElement('div');
+                                    option.classList.add('option');
+                                    option.textContent = item.text;
+                                    option.addEventListener('click', function() {
+                                        addSelectedGuarantor(item);
+                                        guarantorResultsDiv.innerHTML = ''; // Clear dropdown after selection
+                                        guarantorSearchInput.value = ''; // Clear input field after selection
+                                    });
+                                    guarantorResultsDiv.appendChild(option);
+                                });
+                            } else {
+                                guarantorResultsDiv.innerHTML = '<div class="option">No results found</div>';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching search results:', error);
+                        });
+                } else {
+                    guarantorResultsDiv.innerHTML = ''; // Clear dropdown when input is empty
+                }
+            });
+        } else {
+            console.error('Guarantor search input or results div not found.');
+        }
+    
+        function addSelectedGuarantor(guarantor) {
+            // Implement logic to add selected guarantor to selected-guarantors div
+            let selectedGuarantorsDiv = document.getElementById('selected-guarantors');
+            if (selectedGuarantorsDiv) {
+                let checkBoxId = `guarantor_${guarantor.id}`;
+                let checkbox = `<input type="checkbox" name="guarantor[]" id="${checkBoxId}" value="${guarantor.id}" checked>`;
+                let label = `<label for="${checkBoxId}">${guarantor.text}</label>`;
+                let div = document.createElement('div');
+                div.innerHTML = checkbox + label;
+                selectedGuarantorsDiv.appendChild(div);
+            } else {
+                console.error('Selected guarantors div not found.');
+            }
+        }
+    });
+     
+</script>
 
 
 

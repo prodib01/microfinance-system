@@ -52,8 +52,6 @@ class Loan(models.Model):
     approved_at = models.DateTimeField(null=True, blank=True)
     deposit_made_at = models.DateTimeField(null=True, blank=True)
     approved_by = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, blank=True, related_name="approved_by")
-    guarantor = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True, blank=True, related_name="guarantor")
-    guarantor_relationship = models.CharField(max_length=255, null=True, blank=True)
     status_choices = [
         ('PENDING', 'Pending'),
         ('APPROVED', 'Approved'),
@@ -82,6 +80,17 @@ class Loan(models.Model):
         self.approved_by = approved_by
         self.save()
         
+class LoanGuarantor(models.Model):
+    loan = models.ForeignKey(Loan, on_delete=models.CASCADE)
+    guarantor = models.ForeignKey(Person, on_delete=models.CASCADE)
+    guarantee = models.ForeignKey(Person, on_delete=models.CASCADE, related_name="guarantee")
+    relationship = models.CharField(max_length=255, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.guarantor.full_name + ' -'+ self.guarantee.full_name  + ' -'+ str(self.loan)
+
 class Document(models.Model):
     loan = models.ForeignKey(Loan, on_delete=models.CASCADE)
     title = models.CharField(max_length=255, null=True, blank=True)
@@ -113,7 +122,7 @@ class LoanImage(models.Model):
     image = models.ImageField(upload_to='loan_images/')
 
     def __str__(self):
-        return self.loan.branch.name + ' - ' + self.loan.loan_officer.user.fullname + ' - ' + self.loan.status + ' - ' + self.security_type.name
+        return self.loan.branch.name + ' - ' + self.loan.loan_officer.user.fullname + ' - ' + self.loan.status
     
 class Deposit(models.Model):
     deposit = models.IntegerField(null=True, blank=True)

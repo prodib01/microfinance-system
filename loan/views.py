@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 import datetime
 from dateutil.relativedelta import relativedelta
-from .models import Loan, LoanProduct, SecurityType, LoanImage, Remarks, LoanAmortization, Document, Deposit
+from .models import Loan, LoanProduct, SecurityType, LoanImage, Remarks, LoanAmortization, Document, Deposit, LoanGuarantor
 from clientApp.models import Person
 from branch.models import Branch
 from homeApp.models import Notification
@@ -151,8 +151,6 @@ def calculate_loan_request(request):
 
 def add_loan_request(request):
     if request.method == 'POST':
-        print(request.POST)
-        print(request.FILES)
         client_id = request.POST.get('client')
         loan_product_id = request.POST.get('loanProduct')
         requested_amount = request.POST.get('requestedAmount')
@@ -163,15 +161,14 @@ def add_loan_request(request):
         security_type_id = request.POST.get('securityType')
         security_description = request.POST.get('securityDescription')
         security_image = request.FILES['securityImage2']
-        print(security_image)
-        guarantor = request.POST.get('guarantor')
+        guarantor = request.POST.getlist('guarantor[]')
         guarantor_relationship = request.POST.get('guarantorRelationship')
 
         client = Person.objects.filter(id=client_id).first()
         loan_product = LoanProduct.objects.filter(id=loan_product_id).first()
         security_type = SecurityType.objects.filter(
             id=security_type_id).first()
-        guarantor = Person.objects.filter(id=guarantor).first()
+        guarantors = Person.objects.filter(id__in=guarantor)
 
         loan = Loan()
         loan.client = client
@@ -191,6 +188,13 @@ def add_loan_request(request):
         loan.approved_at = datetime.datetime.now()
         loan.save()
 
+        for guarantor in guarantors:
+            loan_guarantor = LoanGuarantor()
+            loan_guarantor.loan = loan
+            loan_guarantor.guarantor = guarantor
+            loan_guarantor.guarantee = client
+            loan_guarantor.save()
+
         notification = Notification()
         notification.loan = loan
         notification.title = 'Loan Request'
@@ -207,15 +211,15 @@ def add_loan_request(request):
 
 
 def load_requests(request):
-    loan_requests = Loan.objects.all()
+    # loan_requests = Loan.objects.all()
+    # include guarantors in the loan request
+    loan_requests = Loan.objects.
     rejected_loans = Loan.objects.filter(status='REJECTED').count()
     approved_loans = Loan.objects.filter(status='APPROVED').count()
     pending_loans = Loan.objects.filter(status='PENDING').count()
     remarks = Remarks.objects.all()
     branches = Branch.objects.all()
     user = request.user
-    for loan_request in loan_requests:
-        print(loan_request.loan_officer.user.fullname)
     return render(request, 'pages/requests.html', {'user': user, 'loan_requests': loan_requests, 'active': 'requests', 'loan_count': [rejected_loans, pending_loans, approved_loans], 'remarks': remarks, 'branches': branches})
 
 
@@ -376,7 +380,6 @@ def loanview(request, loan_id):
     docs = Document.objects.filter(loan=loan).order_by('-id')
     ammortizations = LoanAmortization.objects.filter(loan=loan)
     for ammortization in ammortizations:
-        print(ammortization.payment_date)
         if ammortization.payment_date.date() < datetime.datetime.now().date():
             if ammortization.status == "PENDING":
                 arrear_days = (datetime.datetime.now().date() -

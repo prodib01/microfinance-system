@@ -8,7 +8,6 @@ from datetime import datetime
 @login_required(login_url='login')
 def guarontor_list_view(request):
     guarantors = Person.objects.all()
-    print(guarantors)
     return render(request, 'pages/guarantors.html', {'guarantors': guarantors, 'active':'guarantors'})
 
 @login_required(login_url='login')
@@ -24,10 +23,6 @@ def search_guarontor(request):
 @login_required(login_url='login')
 def clients_view(request):
     clients = Person.objects.all()
-    if clients:
-        print(clients)
-    else:
-        print('No clients found')
     return render(request, 'pages/clients.html', {'clients': clients, 'active':'clients'})
 
 
@@ -83,12 +78,7 @@ def add_clients_view(request):
         else:
             marital_status = request.POST.get('MS')
             person = Person(full_name=name, nationality=nationality, nin=nin, phone=phone, email=email, gender=gender, dob=date_of_birth, business=business, address=address, marital_status=marital_status, client_code=code)
-        print(person)
         person.save()
         clients = Person.objects.all()
-        if clients:
-            print(clients)
-        else:
-            print('No clients found')
         return render(request, 'pages/clients.html', {'clients': clients, 'active':'clients'})
             

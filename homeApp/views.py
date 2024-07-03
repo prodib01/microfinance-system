@@ -6,6 +6,7 @@ from homeApp.models import Notification
 from dateutil.relativedelta import relativedelta
 from loan.views import calculate_loan_payment
 from django.db import models
+from django.http import JsonResponse
 import datetime
 
 def welcome_view(request):
@@ -30,6 +31,15 @@ def all_loans_about_to_expire():
                         notification.message = 'A loan by ' + loan.client.full_name + ' expired by ' + loan_amortization.payment_date.strftime('%d, %a, %b, %Y') + ' and it is beyond pament. Please take necessary action.'
                         notification.save()
 
+@login_required(login_url='login')
+def search_guarantors(request):
+    query = request.GET.get('q', '')
+    if query:
+        people = Person.objects.filter(full_name__icontains=query)
+        results = [{'id': person.id, 'text': f"{person.full_name} - {person.nin}"} for person in people]
+    else:
+        results = []
+    return JsonResponse(results, safe=False)
 
 @login_required(login_url='login')
 def home_view(request):
