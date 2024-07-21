@@ -26,6 +26,7 @@ NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
 
 INSTALLED_APPS = [
     'jazzmin',
+    'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -140,5 +141,5 @@ CSRF_TRUSTED_ORIGINS = [
     ]
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 X_FRAME_OPTIONS = 'SAMEORIGIN'

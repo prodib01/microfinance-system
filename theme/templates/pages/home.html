@@ -557,7 +557,7 @@
                             <p class="font-bold loan-amount"></p>
                         </div>
                         <div>
-                            <p>Intrest Rate</p>
+                            <p>Interest Rate</p>
                             <p class="font-bold interest-rate"></p>
                         </div>
                         <div>
@@ -909,7 +909,7 @@
                 const totalLoanCost = document.querySelector('.total-loan-cost');
 
                 loanAmount.textContent = `UGX ${data.principal.toLocaleString()}`;
-                interestRate.textContent = `${data.annual_interest_rate.toLocaleString()}% PM`;
+                interestRate.textContent = `${data.annual_interest_rate.toLocaleString()}% PM (Reducing)`;
                 loanPeriod.textContent = `${data.loan_term_years} years`;
                 loanStartDate.textContent = `${data.start_date}`;
                 loanInstallments.textContent = `UGX ${data.installment.toLocaleString()}`;

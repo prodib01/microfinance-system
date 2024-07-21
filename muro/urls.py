@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import loans, reports, test, search_loan, sec_page
+from .views import loans, financialstatements, download_loans_pdf, reports, test, search_loan, sec_page
 from users.views import logout_view
 from django.conf.urls.static import static
 from django.conf import settings
@@ -12,7 +12,9 @@ urlpatterns = [
     path('', include('homeApp.urls')),
     path('loans/', loans, name='loans'),
     path('loan/', include('loan.urls')),
+    path('financialstatements/', financialstatements, name='financialstatements'),
     path('reports/', reports, name='reports'),
+    path('reports/download/pdf/', download_loans_pdf, name='download-loans-pdf'),
     # path('clientview/', clientview, name='clientview'),
     path('clients/', include('clientApp.urls')),
     path('users/', include('users.urls')),

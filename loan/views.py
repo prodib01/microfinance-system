@@ -160,7 +160,7 @@ def add_loan_request(request):
         payment_frequency = request.POST.get('paymentFrequency')
         security_type_id = request.POST.get('securityType')
         security_description = request.POST.get('securityDescription')
-        security_image = request.FILES['securityImage2']
+        security_image = request.FILES.get('securityImage2')
         guarantor = request.POST.getlist('guarantor[]')
         guarantor_relationship = request.POST.get('guarantorRelationship')
 
@@ -211,9 +211,10 @@ def add_loan_request(request):
 
 
 def load_requests(request):
-    # loan_requests = Loan.objects.all()
+    loan_requests = Loan.objects.all()
+    print(loan_requests)
     # include guarantors in the loan request
-    loan_requests = Loan.objects.
+    # loan_requests = Loan.objects.
     rejected_loans = Loan.objects.filter(status='REJECTED').count()
     approved_loans = Loan.objects.filter(status='APPROVED').count()
     pending_loans = Loan.objects.filter(status='PENDING').count()
@@ -399,8 +400,20 @@ def loanview(request, loan_id):
         loan_increment_by_interest = None
         loan_inrement_by_interest_today = None
     deposits = Deposit.objects.filter(loan=loan)
+    
+    loan_image = LoanImage.objects.filter(loan=loan).first()
+    loan_image_url = loan_image.image.url if loan_image else None
 
-    return render(request, 'pages/loanview.html', {'loan': loan, 'docs': docs, 'arreas': arreas, 'loan_increment_by_interest': loan_increment_by_interest, 'ammortizations': ammortizations, 'deposits': deposits})
+
+    return render(request, 'pages/loanview.html', {
+        'loan': loan, 
+        'docs': docs, 
+        'arreas': arreas, 
+        'loan_increment_by_interest': loan_increment_by_interest, 
+        'ammortizations': ammortizations, 
+        'deposits': deposits,
+        'loan_image_url': loan_image_url  
+    })
 
 
 def search_loan(request):

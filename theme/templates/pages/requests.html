@@ -340,10 +340,15 @@
                                                     <div class="mt-4">
                                                         <div>
                                                             <p class="font-bold">Security</p>
-                                                            <h1 class="">{{ loan_request.security_type}}</h1>  
+                                                            <h1>{{ loan_request.security_type }}</h1>  
                                                         </div>
-                                                        {% comment %} <img src="{% static "/img/bg.png" %}" alt="" srcset="" class="object-cover w-full bg-cover h-52 rounded-xl"> {% endcomment %}
+                                                        {% if loan_image_url %}
+                                                            <img src="{{ loan_image_url }}" alt="Loan Security Image" class="object-cover w-full bg-cover h-52 rounded-xl">
+                                                        {% else %}
+                                                            <p>No image available.</p>
+                                                        {% endif %}
                                                     </div>
+                                                    
                                                     <div class="mt-6">
                                                         <p class="font-bold">Staff</p>
                                                         <h1 class="">{{ loan_request.loan_officer.user.fullname}}</h1>  
