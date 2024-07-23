@@ -80,8 +80,10 @@
                                                         </div>
                                                         <div class="flex items-end gap-6 mt-4">
                                                             <div>
-                                                                <p class="font-bold">Referee</p>
-                                                                <h1 class="">{{ loan_request.guarantor}} <span>({{ loan_request.guarantor_relationship}})</span></h1>  
+                                                                <p class="font-bold">Referees</p>
+                                                                {% for guarantor in loan_request.loanguarantor_set.all %}
+                                                                    <h1 class="">{{ guarantor.guarantor.full_name }}</h1>  
+                                                                {% endfor %}
                                                             </div>
                                                             <p>{{ loan_request.guarantor.phone}}</p>
                                                         </div>
@@ -96,50 +98,6 @@
                                                             <p class="font-bold">Staff</p>
                                                             <h1 class="">{{ loan_request.loan_officer.user.fullname}}</h1>  
                                                         </div>
-                                                        {% comment %} {% if loan_request.status != 'REJECTED' and loan_request.status != 'APPROVED' %}
-                                                            <div>
-                                                            <div class="flex items-center w-full gap-6 mt-6 max-md:gap-2">
-                                                                <button id="loan_{{loan_request.id}}" class="h-10 px-12 text-white rounded-full bg-myBlack max-md:px-8 active:animate-spin">Confirm</button>
-                                                                <form action="reject-loan-request/{{ loan_request.id}}" method="post">
-                                                                    {% csrf_token %}
-                                                                    <button type="submit" class="h-10 px-12 text-white rounded-full bg-myRed max-md:px-8">Reject</button>
-                                                                </form>
-                                                            </div>
-                                                            <div id="loanfields__{{loan_request.id}}" class="hidden mt-4">
-                                                                <form action="accept-loan/{{ loan_request.id}}" method="post">
-                                                                    {% csrf_token %}
-                                                                    <div class="flex flex-col mb-4">
-                                                                        <label for="amount">Amount</label>
-                                                                        <input required type="number" name="amount" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
-                                                                    </div>
-                                                                    <div class="flex flex-col mb-4">
-                                                                        <label for="rate">Rate %</label>
-                                                                        <input required type="number" name="rate" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
-                                                                    </div>
-                                                                    <div class="flex flex-col mb-4">
-                                                                        <label for="loanTerm">Loan Term</label>
-                                                                        <input required type="number" min="" name="loanTermNumber" id=""
-                                                                            class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
-                                                                            required>
-                                                                    </div>
-                                                                    <div class="flex flex-col mb-4">
-                                                                        <label for="loanTermType">Loan Term Type</label>
-                                                                        <select name="loanTermTypeOfPeriod" id=""
-                                                                            class="w-10/12 h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
-                                                                            required>
-                                                                            <option value="weeks">Weeks</option>
-                                                                            <option value="months">Months</option>
-                                                                            <option value="years">Years</option>
-                                                                        </select>
-                                                    
-                                                                    </div>
-                                                                    <button type="submit" class="w-10/12 h-10 mt-8 text-white rounded-full bg-myBlack">Confirm</button>
-                                                                </form>
-                                                            </div>
-                                                            </div>
-                                                        {% else %}
-                                                            <div></div>
-                                                        {% endif %} {% endcomment %}
                                                     </div>
                                                 </div>
                                     
@@ -200,9 +158,11 @@
                                                                 <p>{{ loan_request.loan_term}} {{ loan_request.loan_term_type_of_period}} ({{ loan_request.payment_frequency}})</p>
                                                             </div>
                                                             <div class="flex items-end gap-6 mt-4">
-                                                                <div>
-                                                                    <p class="font-bold">Referee</p>
-                                                                    <h1 class="">{{ loan_request.guarantor}} <span>({{ loan_request.guarantor_relationship}})</span></h1>  
+                                                               <div>
+                                                                    <p class="font-bold">Referees</p>
+                                                                    {% for guarantor in loan_request.loanguarantor_set.all %}
+                                                                        <h1 class="">{{ guarantor.guarantor.full_name }}</h1>  
+                                                                    {% endfor %}
                                                                 </div>
                                                                 <p>{{ loan_request.guarantor.phone}}</p>
                                                             </div>
@@ -225,52 +185,7 @@
 
                                                                     {% endif %}
                                                                 {% endfor %}
-                                                                {% comment %} <h1 class="">{{ loan_request.laon_officer.user.fullname}}</h1>   {% endcomment %}
                                                             </div>
-                                                            {% comment %} {% if loan_request.status != 'REJECTED' and loan_request.status != 'APPROVED' %}
-                                                                <div>
-                                                                <div class="flex items-center w-full gap-6 mt-6 max-md:gap-2">
-                                                                    <button id="loan_{{loan_request.id}}" class="h-10 px-12 text-white rounded-full bg-myBlack max-md:px-8 active:animate-spin">Confirm</button>
-                                                                    <form action="reject-loan-request/{{ loan_request.id}}" method="post">
-                                                                        {% csrf_token %}
-                                                                        <button type="submit" class="h-10 px-12 text-white rounded-full bg-myRed max-md:px-8">Reject</button>
-                                                                    </form>
-                                                                </div>
-                                                                <div id="loanfields__{{loan_request.id}}" class="hidden mt-4">
-                                                                    <form action="accept-loan/{{ loan_request.id}}" method="post">
-                                                                        {% csrf_token %}
-                                                                        <div class="flex flex-col mb-4">
-                                                                            <label for="amount">Amount</label>
-                                                                            <input required type="number" name="amount" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
-                                                                        </div>
-                                                                        <div class="flex flex-col mb-4">
-                                                                            <label for="rate">Rate %</label>
-                                                                            <input required type="number" name="rate" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
-                                                                        </div>
-                                                                        <div class="flex flex-col mb-4">
-                                                                            <label for="loanTerm">Loan Term</label>
-                                                                            <input required type="number" min="" name="loanTermNumber" id=""
-                                                                                class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
-                                                                                required>
-                                                                        </div>
-                                                                        <div class="flex flex-col mb-4">
-                                                                            <label for="loanTermType">Loan Term Type</label>
-                                                                            <select name="loanTermTypeOfPeriod" id=""
-                                                                                class="w-10/12 h-10 p-2 bg-transparent border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack"
-                                                                                required>
-                                                                                <option value="weeks">Weeks</option>
-                                                                                <option value="months">Months</option>
-                                                                                <option value="years">Years</option>
-                                                                            </select>
-                                                        
-                                                                        </div>
-                                                                        <button type="submit" class="w-10/12 h-10 mt-8 text-white rounded-full bg-myBlack">Confirm</button>
-                                                                    </form>
-                                                                </div>
-                                                                </div>
-                                                            {% else %}
-                                                                <div></div>
-                                                            {% endif %} {% endcomment %}
                                                         </div>
                                                     </div>
                                         
@@ -331,24 +246,19 @@
                                                     </div>
                                                     <div class="flex items-end gap-6 mt-4">
                                                         <div>
-                                                            <p class="font-bold">Referee</p>
-                                                            
-                                                            <h1 class="">{{ loan_request.guarantor}} <span>({{ loan_request.guarantor_relationship}})</span></h1>  
+                                                            <p class="font-bold">Referees</p>
+                                                                {% for guarantor in loan_request.loanguarantor_set.all %}
+                                                                    <h1 class="">{{ guarantor.guarantor.full_name }}</h1>  
+                                                                {% endfor %}
                                                         </div>
-                                                        <p>{{ loan_request.guarantor.phone}}</p>
                                                     </div>
                                                     <div class="mt-4">
                                                         <div>
                                                             <p class="font-bold">Security</p>
-                                                            <h1>{{ loan_request.security_type }}</h1>  
+                                                            <h1 class="">{{ loan_request.security_type}}</h1>  
                                                         </div>
-                                                        {% if loan_image_url %}
-                                                            <img src="{{ loan_image_url }}" alt="Loan Security Image" class="object-cover w-full bg-cover h-52 rounded-xl">
-                                                        {% else %}
-                                                            <p>No image available.</p>
-                                                        {% endif %}
+                                                        {% comment %} <img src="{% static "/img/bg.png" %}" alt="" srcset="" class="object-cover w-full bg-cover h-52 rounded-xl"> {% endcomment %}
                                                     </div>
-                                                    
                                                     <div class="mt-6">
                                                         <p class="font-bold">Staff</p>
                                                         <h1 class="">{{ loan_request.loan_officer.user.fullname}}</h1>  
@@ -547,8 +457,10 @@
                                                     </div>
                                                     <div class="flex items-end gap-6 mt-4">
                                                         <div>
-                                                            <p class="font-bold">Referee</p>
-                                                            <h1 class="">{{ loan_request.guarantor}} <span>({{ loan_request.guarantor_relationship}})</span></h1>  
+                                                            <p class="font-bold">Referees</p>
+                                                                {% for guarantor in loan_request.loanguarantor_set.all %}
+                                                                    <h1 class="">{{ guarantor.guarantor.full_name }}</h1>  
+                                                                {% endfor %}
                                                         </div>
                                                         <p>{{ loan_request.guarantor.phone}}</p>
                                                     </div>

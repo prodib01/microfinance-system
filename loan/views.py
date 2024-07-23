@@ -9,7 +9,7 @@ from homeApp.models import Notification
 from .serializers import LoanAmortizationSerializer, LoanSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from users.models import Profile
+from django.db.models import Prefetch
 
 
 def calculate_loan_payment(principal, monthly_interest_rate, loan_term_years, payment_frequency='weekly', start_date=datetime.date.today()):
@@ -211,17 +211,32 @@ def add_loan_request(request):
 
 
 def load_requests(request):
-    loan_requests = Loan.objects.all()
-    print(loan_requests)
-    # include guarantors in the loan request
-    # loan_requests = Loan.objects.
-    rejected_loans = Loan.objects.filter(status='REJECTED').count()
-    approved_loans = Loan.objects.filter(status='APPROVED').count()
-    pending_loans = Loan.objects.filter(status='PENDING').count()
+    loan_guarantors = LoanGuarantor.objects.select_related(
+        "guarantor", "guarantee"
+    ).all()
+    loan_requests = Loan.objects.prefetch_related(
+        Prefetch("loanguarantor_set", queryset=loan_guarantors)
+    ).all()
+    for loan in loan_requests:
+        print(loan.loanguarantor_set.all())
+    rejected_loans = Loan.objects.filter(status="REJECTED").count()
+    approved_loans = Loan.objects.filter(status="APPROVED").count()
+    pending_loans = Loan.objects.filter(status="PENDING").count()
     remarks = Remarks.objects.all()
     branches = Branch.objects.all()
     user = request.user
-    return render(request, 'pages/requests.html', {'user': user, 'loan_requests': loan_requests, 'active': 'requests', 'loan_count': [rejected_loans, pending_loans, approved_loans], 'remarks': remarks, 'branches': branches})
+    return render(
+        request,
+        "pages/requests.html",
+        {
+            "user": user,
+            "loan_requests": loan_requests,
+            "active": "requests",
+            "loan_count": [rejected_loans, pending_loans, approved_loans],
+            "remarks": remarks,
+            "branches": branches,
+        },
+    )
 
 
 def accept_loan(request, loan_id):
@@ -400,19 +415,18 @@ def loanview(request, loan_id):
         loan_increment_by_interest = None
         loan_inrement_by_interest_today = None
     deposits = Deposit.objects.filter(loan=loan)
-    
+
     loan_image = LoanImage.objects.filter(loan=loan).first()
     loan_image_url = loan_image.image.url if loan_image else None
 
-
     return render(request, 'pages/loanview.html', {
-        'loan': loan, 
-        'docs': docs, 
-        'arreas': arreas, 
-        'loan_increment_by_interest': loan_increment_by_interest, 
-        'ammortizations': ammortizations, 
+        'loan': loan,
+        'docs': docs,
+        'arreas': arreas,
+        'loan_increment_by_interest': loan_increment_by_interest,
+        'ammortizations': ammortizations,
         'deposits': deposits,
-        'loan_image_url': loan_image_url  
+        'loan_image_url': loan_image_url
     })
 
 

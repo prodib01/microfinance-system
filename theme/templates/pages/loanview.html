@@ -431,10 +431,10 @@
                     <div class="grid grid-cols-4 gap-4">
                         <div>
                             <p class="">Loan Amount</p>
-                            <p class="font-bold">UGX {{loan.given_amount}}</p>
+                            <p class="font-bold">UGX {{loan.given_amount}}/=</p>
                         </div>
                         <div>
-                            <p>Intrest Rate</p>
+                            <p>Interest Rate</p>
                             <p class="font-bold">{{loan.interest_rate}}%</p>
                         </div>
                         <div>
@@ -448,20 +448,16 @@
                         </div>
                         <div>
                             <p>Instalment</p>
-                            <p class="font-bold">UGX {{loan.installment}}</p>
+                            <p class="font-bold">UGX {{loan.installment}}/=</p>
                         </div>
                         <div>
                             <p>No of payments</p>
                             <p class="font-bold">{{ ammortizations|length }}</p>
                         </div>
                         <div>
-                            <p>Total Intrest</p>
-                            <p class="font-bold">UGX {{loan.account_interest}}</p>
+                            <p>Total Interest</p>
+                            <p class="font-bold">UGX {{loan.account_interest}}/=</p>
                         </div>
-                        {% comment %} <div>
-                            <p>Total Loan Cost</p>
-                            <p class="font-bold">UGX {{}}</p>
-                        </div> {% endcomment %}
                     </div>
                     <div class="mt-8 w-full">
                         <table class="w-full">
@@ -472,7 +468,7 @@
                                     {% comment %} <th class="py-3 px-5 text-left">Begining Balance</th>
                                     <th class="py-3 px-5 text-left">Payment</th> {% endcomment %}
                                     <th class="px-6 py-3 text-left">Principal</th>
-                                    <th class="px-6 py-3 text-left">Intrest</th>
+                                    <th class="px-6 py-3 text-left">Interest</th>
                                     <th class="px-6 py-3 text-left">Ending Balance</th>
                                 </tr>
                             </thead>
@@ -483,9 +479,9 @@
                                     <td class="py-3 px-5">{{ammortization.payment_date | date:"Y-m-d"}}</td>
                                     {% comment %} <td class="py-3 px-5">20,000</td>
                                     <td class="py-3 px-5">20,000</td> {% endcomment %}
-                                    <td class="py-3 px-5">{{ammortization.principal}}</td>
-                                    <td class="py-3 px-5">{{ammortization.interest}}</td>
-                                    <td class="py-3 px-5">{{ammortization.ending_balance}}</td>
+                                    <td class="py-3 px-5">{{ammortization.principal}}/=</td>
+                                    <td class="py-3 px-5">{{ammortization.interest}}/=</td>
+                                    <td class="py-3 px-5">{{ammortization.ending_balance}}/=</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

@@ -1,34 +1,38 @@
+from datetime import datetime
 import io
-from django.shortcuts import render 
-from loan.models import Loan,LoanAmortization
+from django.shortcuts import render
+from loan.models import Loan, LoanAmortization
 from django.utils.dateparse import parse_date
 from django.http import FileResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from django.utils import timezone
-  
-def index(request): 
+
+
+def index(request):
     return render(request, 'index.html')
+
 
 def loans(request):
     loans = Loan.objects.all()
-    return render(request, 'pages/loans.html', {'active': 'loans', 'loans':loans})
+    return render(request, 'pages/loans.html', {'active': 'loans', 'loans': loans})
+
 
 def search_loan(request):
     if request.method == 'POST':
         search = request.POST['search']
         loans = Loan.objects.filter(client__full_name__icontains=search)
-        return render(request, 'pages/loans.html', {'active': 'loans', 'loans':loans})
+        return render(request, 'pages/loans.html', {'active': 'loans', 'loans': loans})
     else:
-        return render(request, 'pages/loans.html', {'active': 'loans', 'loans':loans})
+        return render(request, 'pages/loans.html', {'active': 'loans', 'loans': loans})
+
 
 def financialstatements(request):
     rejected_loans = Loan.objects.filter(status='REJECTED').count()
     approved_loans = Loan.objects.filter(status='APPROVED').count()
     pending_loans = Loan.objects.filter(status='PENDING').count()
-    return render(request, 'pages/financialstatements.html', {'active': 'financialstatements', 'loan_count':[]})
+    return render(request, 'pages/financialstatements.html', {'active': 'financialstatements', 'loan_count': []})
 
-from datetime import datetime
 
 def reports(request):
     # Get the current date
@@ -80,7 +84,7 @@ def download_loans_pdf(request):
     column_widths = {
         'branch': 80,
         'loan_officer': 55,
-        'client': 60,
+        'client': 100,
         'amount': 60,
         'date': 80,
         'status': 73,
@@ -115,18 +119,23 @@ def download_loans_pdf(request):
         p.setFont("Helvetica", 10)
         y -= row_height
         p.drawString(column_positions['branch'], y, loan.branch.name)
-        p.drawString(column_positions['loan_officer'], y, loan.loan_officer.user.fullname)
-        p.drawString(column_positions['client'], y, loan.client.full_name if loan.client else '')
+        p.drawString(column_positions['loan_officer'],
+                     y, loan.loan_officer.user.fullname)
+        p.drawString(column_positions['client'], y,
+                     loan.client.full_name if loan.client else '')
         p.drawString(column_positions['amount'], y, str(loan.requested_amount))
-        p.drawString(column_positions['date'], y, loan.created_at.strftime('%Y-%m-%d'))
+        p.drawString(column_positions['date'], y,
+                     loan.created_at.strftime('%Y-%m-%d'))
         p.drawString(column_positions['status'], y, loan.status)
 
         # Add LoanAmortization details if available
         amortizations = LoanAmortization.objects.filter(loan=loan)
         for amortization in amortizations:
             y -= row_height
-            p.drawString(column_positions['payment_date'], y, amortization.payment_date.strftime('%Y-%m-%d') if amortization.payment_date else '')
-            p.drawString(column_positions['amount_paid'], y, str(amortization.amount_paid) if amortization.amount_paid else '')
+            p.drawString(column_positions['payment_date'], y, amortization.payment_date.strftime(
+                '%Y-%m-%d') if amortization.payment_date else '')
+            p.drawString(column_positions['amount_paid'], y, str(
+                amortization.amount_paid) if amortization.amount_paid else '')
 
     p.setFont("Helvetica-Bold", 16)
     p.drawString(margin, height - margin + 20, "Loans Report")
@@ -139,13 +148,14 @@ def download_loans_pdf(request):
     p.save()
 
     buffer.seek(0)
-    response = FileResponse(buffer, as_attachment=True, filename='loans_report.pdf')
+    response = FileResponse(buffer, as_attachment=True,
+                            filename='loans_report.pdf')
     return response
-
 
 
 def test(request):
     return render(request, 'pages/test.html')
 
+
 def sec_page(request):
-    return render(request, 'pages/secPage.html')    
+    return render(request, 'pages/secPage.html')
