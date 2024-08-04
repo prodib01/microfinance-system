@@ -57,7 +57,8 @@ class Loan(models.Model):
     account_interest = models.IntegerField(null=True, blank=True)
     recommended_amount = models.IntegerField()
     given_amount = models.IntegerField(null=True, blank=True)
-    demanded_amount = models.IntegerField(null=True, blank=True)
+    demanded_amount = models.DecimalField(
+        null=True, blank=True, max_digits=10, decimal_places=2)
     loan_term = models.IntegerField()
     loan_term_type_of_period = models.CharField(
         max_length=20, default="months")
@@ -186,11 +187,12 @@ class LoanImage(models.Model):
 
 
 class Deposit(models.Model):
-    deposit = models.IntegerField(null=True, blank=True)
-    previous_balance = models.IntegerField(null=True, blank=True)
+    deposit = models.DecimalField(
+        null=True, blank=True, max_digits=10, decimal_places=2)
+    previous_balance = models.DecimalField(
+        null=True, blank=True, max_digits=10, decimal_places=2)
     loan = models.ForeignKey(Loan, on_delete=models.CASCADE)
-    deposited_at = models.DateTimeField(
-        auto_now_add=True, null=True, blank=True)
+    deposited_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 

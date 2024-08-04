@@ -94,6 +94,8 @@ def make_deposit(request):
         loan = Loan.objects.filter(id=loan_id).first()
         person = Person.objects.filter(id=person_id).first()
         total_balance = amount_brought + float(person.account_balance)
+        Deposit.objects.create(loan=loan, deposit=amount_brought,
+                               deposited_at=deposit_made_at, previous_balance=person.account_balance)
         person.account_balance = 0
         deposit_made_at_dtime = datetime.datetime.strptime(
             deposit_made_at, "%Y-%m-%d").replace(tzinfo=datetime.timezone.utc)
@@ -112,26 +114,6 @@ def make_deposit(request):
                     raise Exception('Loan fully paid')
                 if loan_amortization.payment_date < deposit_made_at_dtime:
                     if loan_amortization.status == 'PENDING':
-                        """
-                        days_in_arreas = int(
-                            (deposit_made_at_dtime - loan_amortization.payment_date).days)
-                        deposit_needed = (loan_amortization.principal + loan_amortization.interest + (loan_amortization.principal * penalty.percentage / 100 *
-                                                                                                      days_in_arreas))
-                        if amount >= deposit_needed:
-                            Deposit.objects.create(loan=loan, deposit=deposit_needed, deposited_at=deposit_made_at, interest=int(
-                                loan.interest_rate), ammortization=loan_amortization, previous_balance=loan.demanded_amount)
-                            amount -= (loan_amortization.principal + loan_amortization.interest + (
-                                loan_amortization.principal * penalty.percentage / 100))
-                            loan.demanded_amount -= (
-                                loan_amortization.principal + loan_amortization.interest)
-                            loan_amortization.status = 'PAID'
-                            loan_amortization.save()
-                            loan.save()
-                        else:
-                            person.account_balance += amount
-                            person.save()
-                            amount = 0
-                            """
                         days_in_arreas = int(
                             (deposit_made_at_dtime - loan_amortization.payment_date).days)
                         penalty_amount = (
@@ -147,32 +129,44 @@ def make_deposit(request):
                         elif total_balance >= penalty_amount:
                             penalty_paid = penalty_amount
                             Payments.objects.create(
-                                loan=loan, amount=penalty_paid, payment_date=deposit_made_at)
+                                loan=loan, amount=penalty_paid, payment_date=deposit_made_at, ammortization=loan_amortization, payment_type='PENALTY')
                             total_balance -= penalty_paid
                             if total_balance < loan_amortization.interest_balance:
                                 interest_paid = total_balance
                                 total_balance = 0
                                 loan.demanded_amount -= interest_paid
                                 loan_amortization.interest_balance -= interest_paid
+                                Payments.objects.create(
+                                    loan=loan, amount=interest_paid, payment_date=deposit_made_at, ammortization=loan_amortization, payment_type='INTEREST')
+                            elif total_balance >= loan_amortization.interest_balance:
+                                interest_paid = loan_amortization.interest_balance
+                                total_balance -= interest_paid
+                                loan.demanded_amount -= interest_paid
+                                loan_amortization.interest_balance -= interest_paid
+                                Payments.objects.create(
+                                    loan=loan, amount=interest_paid, payment_date=deposit_made_at, ammortization=loan_amortization, payment_type='INTEREST')
+                                if total_balance < loan_amortization.principal_balance:
+                                    principal_paid = total_balance
+                                    total_balance = 0
+                                    loan.demanded_amount -= principal_paid
+                                    loan_amortization.principal_balance -= principal_paid
+                                    Payments.objects.create(
+                                        loan=loan, amount=principal_paid, payment_date=deposit_made_at, ammortization=loan_amortization, payment_type='PRINCIPAL')
+                                elif total_balance >= loan_amortization.principal_balance:
+                                    principal_paid = loan_amortization.principal_balance
+                                    total_balance -= principal_paid
+                                    loan.demanded_amount -= principal_paid
+                                    loan_amortization.principal_balance -= principal_paid
+                                    Payments.objects.create(
+                                        loan=loan, amount=principal_paid, payment_date=deposit_made_at, ammortization=loan_amortization, payment_type='PRINCIPAL')
 
-                elif loan_amortization.payment_date == deposit_made_at_dtime:
-                    if loan.demanded_amount <= 0:
-                        break
-                    if loan_amortization.status == 'PENDING':
-                        if total_balance >= (loan_amortization.principal + loan_amortization.interest):
-                            Deposit.objects.create(loan=loan, deposit=(loan_amortization.principal + loan_amortization.interest + (loan_amortization.principal * penalty.percentage / 100)),
-                                                   deposited_at=deposit_made_at, interest=int(loan.interest_rate), ammortization=loan_amortization, previous_balance=loan.demanded_amount)
-                            total_balance -= (loan_amortization.principal +
-                                              loan_amortization.interest)
-                            loan.demanded_amount -= (
-                                loan_amortization.principal + loan_amortization.interest)
-                            loan_amortization.status = 'PAID'
-                            loan_amortization.save()
-                            loan.save()
-                else:
+                            if loan_amortization.principal_balance == 0 and loan_amortization.interest_balance == 0:
+                                loan_amortization.status = 'PAID'
+                if total_balance > 0:
                     person.account_balance += total_balance
-                    person.save()
-                    total_balance = 0
+                person.save()
+                loan.save()
+                loan_amortization.save()
         else:
             raise Exception('Penalty not set')
     return redirect('/home')
