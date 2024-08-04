@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.db import models
 from django.core.validators import RegexValidator
+from utilities.choices import role_choices
 
 
 class MuroUserManager(BaseUserManager):
@@ -50,14 +50,6 @@ class MuroUser(AbstractBaseUser, PermissionsMixin):
 class Profile(models.Model):
     user = models.OneToOneField(MuroUser, on_delete=models.CASCADE)
     location = models.CharField(max_length=30, blank=True)
-    role_choices = [
-        ('MURO_MANAGER', 'Muro Manager'),
-        ('BUSINESS_SUPERVISOR', 'Business Supervisor'),
-        ('RELATIONSHIP_OFFICER', 'Relationship Officer'),
-        ('LOAN_OFFICER', 'Loan Officer'),   
-        ('ACCOUNTANT', 'Accountant'),
-        ('BRANCH_MANAGER', 'Branch Manager'),
-    ]
     role = models.CharField(
         max_length=20, choices=role_choices, default='LOAN_OFFICER')
     branch = models.ForeignKey(

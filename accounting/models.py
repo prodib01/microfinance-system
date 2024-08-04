@@ -1,22 +1,17 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from utilities.choices import type_choices
 
 
 class Account(models.Model):
-    TYPE_CHOICES = [
-        ('ASSET', 'Asset'),
-        ('LIABILITY', 'Liability'),
-        ('EQUITY', 'Equity'),
-        ('REVENUE', 'Revenue'),
-        ('EXPENSE', 'Expense'),
-    ]
+
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=255, unique=True)
     description = models.TextField(null=True, blank=True)
     parent = models.ForeignKey(
         'self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
     account_type = models.CharField(
-        max_length=10, choices=TYPE_CHOICES, default='ASSET')
+        max_length=10, choices=type_choices, default='ASSET')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -3,6 +3,7 @@ from users.models import Profile
 from branch.models import Branch
 from django.utils import timezone
 from clientApp.models import Person
+from utilities.choices import payment_type_choices, status_choices
 
 
 class LoanProduct(models.Model):
@@ -11,7 +12,7 @@ class LoanProduct(models.Model):
     code = models.CharField(max_length=10, blank=True, null=True)
 
     def __str__(self):
-        return self.name + ' - ' + str(self.interest) + '%'
+        return self.name + " - " + str(self.interest) + "%"
 
 
 class SecurityType(models.Model):
@@ -23,19 +24,30 @@ class SecurityType(models.Model):
 
 
 class Remarks(models.Model):
-    loan = models.ForeignKey('Loan', on_delete=models.CASCADE)
+    loan = models.ForeignKey("Loan", on_delete=models.CASCADE)
     remarks = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.loan.branch.name + ' - ' + self.loan.loan_officer.user.fullname + ' - ' + self.remarks
+        return (
+            self.loan.branch.name
+            + " - "
+            + self.loan.loan_officer.user.fullname
+            + " - "
+            + self.remarks
+        )
 
 
 class Loan(models.Model):
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     disbursment_branch = models.ForeignKey(
-        Branch, on_delete=models.SET_NULL, null=True, blank=True, related_name="disbursment_branch")
+        Branch,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="disbursment_branch",
+    )
     loan_officer = models.ForeignKey(Profile, on_delete=models.CASCADE)
     client = models.ForeignKey(
         Person, on_delete=models.SET_NULL, null=True, blank=True)
@@ -48,10 +60,11 @@ class Loan(models.Model):
     demanded_amount = models.IntegerField(null=True, blank=True)
     loan_term = models.IntegerField()
     loan_term_type_of_period = models.CharField(
-        max_length=20, default='months')
-    payment_frequency = models.CharField(max_length=20, default='monthly')
+        max_length=20, default="months")
+    payment_frequency = models.CharField(max_length=20, default="monthly")
     security_type = models.ForeignKey(
-        SecurityType, on_delete=models.CASCADE, null=True, blank=True)
+        SecurityType, on_delete=models.CASCADE, null=True, blank=True
+    )
     security_description = models.CharField(
         max_length=255, null=True, blank=True)
     interest_rate = models.DecimalField(max_digits=5, decimal_places=2)
@@ -60,32 +73,39 @@ class Loan(models.Model):
     approved_at = models.DateTimeField(null=True, blank=True)
     deposit_made_at = models.DateTimeField(null=True, blank=True)
     approved_by = models.ForeignKey(
-        Profile, on_delete=models.SET_NULL, null=True, blank=True, related_name="approved_by")
-    status_choices = [
-        ('PENDING', 'Pending'),
-        ('APPROVED', 'Approved'),
-        ('REJECTED', 'Rejected'),
-        ('DISBURSED', 'Disbursed'),
-        ('DEFAULTING', 'Defaulting'),
-        ('CLOSED', 'Closed'),
-        ('WRITTEN_OFF', 'Written Off'),
-
-    ]
+        Profile,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="approved_by",
+    )
     status = models.CharField(
-        max_length=20, choices=status_choices, default='PENDING')
+        max_length=20, choices=status_choices, default="PENDING")
     loan_product = models.ForeignKey(LoanProduct, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.branch.name + ' - ' + self.loan_officer.user.fullname + ' - ' + str(self.given_amount) + ' - ' + str(self.loan_term) + ' - ' + str(self.interest_rate) + ' - ' + self.status
+        return (
+            self.branch.name
+            + " - "
+            + self.loan_officer.user.fullname
+            + " - "
+            + str(self.given_amount)
+            + " - "
+            + str(self.loan_term)
+            + " - "
+            + str(self.interest_rate)
+            + " - "
+            + self.status
+        )
 
     def approve(self, approved_by):
-        self.status = 'APPROVED'
+        self.status = "APPROVED"
         self.approved_at = timezone.now()
         self.approved_by = approved_by
         self.save()
 
     def reject(self, approved_by):
-        self.status = 'REJECTED'
+        self.status = "REJECTED"
         self.approved_at = timezone.now()
         self.approved_by = approved_by
         self.save()
@@ -95,54 +115,80 @@ class LoanGuarantor(models.Model):
     loan = models.ForeignKey(Loan, on_delete=models.CASCADE)
     guarantor = models.ForeignKey(Person, on_delete=models.CASCADE)
     guarantee = models.ForeignKey(
-        Person, on_delete=models.CASCADE, related_name="guarantee")
+        Person, on_delete=models.CASCADE, related_name="guarantee"
+    )
     relationship = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.guarantor.full_name + ' -' + self.guarantee.full_name + ' -' + str(self.loan)
+        return (
+            self.guarantor.full_name
+            + " -"
+            + self.guarantee.full_name
+            + " -"
+            + str(self.loan)
+        )
 
 
 class Document(models.Model):
     loan = models.ForeignKey(Loan, on_delete=models.CASCADE)
     title = models.CharField(max_length=255, null=True, blank=True)
-    document = models.FileField(upload_to='loan_documents/')
+    document = models.FileField(upload_to="loan_documents/")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.loan.branch.name + ' - ' + self.loan.loan_officer.user.fullname + ' - ' + self.loan.status
+        return (
+            self.loan.branch.name
+            + " - "
+            + self.loan.loan_officer.user.fullname
+            + " - "
+            + self.loan.status
+        )
 
 
 class LoanAmortization(models.Model):
     loan = models.ForeignKey(Loan, on_delete=models.CASCADE)
     payment_date = models.DateTimeField(null=True, blank=True)
     principal = models.IntegerField(null=True, blank=True)
+    principal_balance = models.IntegerField(null=True, blank=True)
     interest = models.IntegerField(null=True, blank=True)
+    interest_balance = models.IntegerField(null=True, blank=True)
     ending_balance = models.IntegerField(null=True, blank=True)
-    status = models.CharField(max_length=20, default='PENDING')
+    status = models.CharField(max_length=20, default="PENDING")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.loan.branch.name + ' - ' + self.loan.loan_officer.user.fullname + ' - ' + self.loan.status + ' - ' + self.status
+        return (
+            self.loan.branch.name
+            + " - "
+            + self.loan.loan_officer.user.fullname
+            + " - "
+            + self.loan.status
+            + " - "
+            + self.status
+        )
 
 
 class LoanImage(models.Model):
     loan = models.ForeignKey(Loan, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='loan_images/')
+    image = models.ImageField(upload_to="loan_images/")
 
     def __str__(self):
-        return self.loan.branch.name + ' - ' + self.loan.loan_officer.user.fullname + ' - ' + self.loan.status
+        return (
+            self.loan.branch.name
+            + " - "
+            + self.loan.loan_officer.user.fullname
+            + " - "
+            + self.loan.status
+        )
 
 
 class Deposit(models.Model):
     deposit = models.IntegerField(null=True, blank=True)
     previous_balance = models.IntegerField(null=True, blank=True)
     loan = models.ForeignKey(Loan, on_delete=models.CASCADE)
-    interest = models.IntegerField(null=True, blank=True)
-    ammortization = models.ForeignKey(
-        LoanAmortization, on_delete=models.CASCADE, null=True, blank=True)
     deposited_at = models.DateTimeField(
         auto_now_add=True, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
@@ -155,4 +201,17 @@ class Penalty(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
-        return (str(self.percentage)) + '%'
+        return (str(self.percentage)) + "%"
+
+
+class Payments(models.Model):
+    loan = models.ForeignKey(Loan, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_date = models.DateTimeField()
+    ammortization = models.ForeignKey(
+        LoanAmortization, on_delete=models.CASCADE, null=True, blank=True
+    )
+    payment_type = models.CharField(
+        max_length=20, choices=payment_type_choices, default="INTEREST")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
