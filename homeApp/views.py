@@ -149,22 +149,26 @@ def make_deposit(request):
                                 if total_balance < loan_amortization.principal_balance:
                                     principal_paid = total_balance
                                     total_balance = 0
-                                    loan.demanded_amount -= principal_paid
-                                    loan_amortization.principal_balance -= principal_paid
+                                    loan.demanded_amount -= Decimal(
+                                        principal_paid)
+                                    loan_amortization.principal_balance -= Decimal(
+                                        principal_paid)
                                     Payments.objects.create(
                                         loan=loan, amount=principal_paid, payment_date=deposit_made_at, ammortization=loan_amortization, payment_type='PRINCIPAL')
                                 elif total_balance >= loan_amortization.principal_balance:
                                     principal_paid = loan_amortization.principal_balance
                                     total_balance -= principal_paid
-                                    loan.demanded_amount -= principal_paid
-                                    loan_amortization.principal_balance -= principal_paid
+                                    loan.demanded_amount -= Decimal(
+                                        principal_paid)
+                                    loan_amortization.principal_balance -= Decimal(
+                                        principal_paid)
                                     Payments.objects.create(
                                         loan=loan, amount=principal_paid, payment_date=deposit_made_at, ammortization=loan_amortization, payment_type='PRINCIPAL')
 
                             if loan_amortization.principal_balance == 0 and loan_amortization.interest_balance == 0:
                                 loan_amortization.status = 'PAID'
                 if total_balance > 0:
-                    person.account_balance += total_balance
+                    person.account_balance += Decimal(total_balance)
                 person.save()
                 loan.save()
                 loan_amortization.save()

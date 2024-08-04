@@ -767,12 +767,12 @@
                 row.appendChild(dateCell);
 
                 const principalCell = document.createElement('td');
-                principalCell.textContent = schedule.principal.toLocaleString();
+                principalCell.textContent = schedule.principal_balance.toLocaleString();
                 principalCell.classList.add('py-3', 'px-2');
                 row.appendChild(principalCell);
 
                 const interestCell = document.createElement('td');
-                interestCell.textContent = schedule.interest.toLocaleString();
+                interestCell.textContent = schedule.interest_balance.toLocaleString();
                 interestCell.classList.add('py-3', 'px-2');
                 row.appendChild(interestCell);
 
