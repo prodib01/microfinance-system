@@ -217,3 +217,14 @@ class Payments(models.Model):
         max_length=20, choices=payment_type_choices, default="INTEREST")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return (
+            self.loan.branch.name
+            + " - "
+            + self.loan.loan_officer.user.fullname
+            + " - "
+            + self.loan.status
+            + " - "
+            + self.payment_type
+        )

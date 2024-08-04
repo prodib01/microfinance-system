@@ -8,6 +8,7 @@ from loan.views import calculate_loan_payment
 from django.db import models
 from django.http import JsonResponse
 import datetime
+from decimal import Decimal
 
 
 def welcome_view(request):
@@ -134,7 +135,7 @@ def make_deposit(request):
                             if total_balance < loan_amortization.interest_balance:
                                 interest_paid = total_balance
                                 total_balance = 0
-                                loan.demanded_amount -= interest_paid
+                                loan.demanded_amount -= Decimal(interest_paid)
                                 loan_amortization.interest_balance -= interest_paid
                                 Payments.objects.create(
                                     loan=loan, amount=interest_paid, payment_date=deposit_made_at, ammortization=loan_amortization, payment_type='INTEREST')
