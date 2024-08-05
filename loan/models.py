@@ -58,7 +58,7 @@ class Loan(models.Model):
     recommended_amount = models.IntegerField()
     given_amount = models.IntegerField(null=True, blank=True)
     demanded_amount = models.DecimalField(
-        null=True, blank=True, max_digits=10, decimal_places=2)
+        max_digits=10, decimal_places=2, default=0)
     loan_term = models.IntegerField()
     loan_term_type_of_period = models.CharField(
         max_length=20, default="months")

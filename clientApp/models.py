@@ -8,7 +8,7 @@ class Person(models.Model):
     nin = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
     email = models.EmailField(unique=True, null=True, blank=True, default=None)
-    account_balance = models.FloatField(default=0, null=True, blank=True)
+    account_balance = models.FloatField(default=0)
     gender = models.CharField(
         max_length=15, choices=gender_choices, default='M')
     dob = models.DateField(null=True, blank=True, default=None)

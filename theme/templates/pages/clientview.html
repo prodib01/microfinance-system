@@ -69,22 +69,12 @@
                                     <div class="flex items-end justify-between p-2 bg-gray-100 border border-gray-200 rounded-xl ">
                                         <div>
                                             <p class="text-lg font-semibold font-myMono">{{client.client_code}}</p>
-                                            <p class="text-gray-600">UGX {{client.account_balance}}</p>
+                                            <p class="text-gray-600">UGX {{client.account_balance}}/=</p>
                                         </div>
                                         <div>
                                             <p>{{active_loans}} Active Loans</p>
                                         </div>
                                     </div>
-                                    <!-- {% comment %} <div class="flex items-start justify-between p-2 bg-gray-100 border border-gray-200 rounded-xl">
-                                        <div>
-                                            <p class="text-lg font-semibold font-myMono">MF-54212654</p>
-                                            <p class="text-gray-600">UGX 25,000</p>
-                                        </div>
-                                        <div>
-                                            <p>0 Active Loans</p>
-                                        </div>
-                                    </div>  -->
-                                    <!-- {% endcomment %} -->
                                 </div>
                                 <div class="flex flex-wrap items-center justify-between gap-6 py-4 mt-8 border-t-2 border-gray-100">
                                     <div class="">
@@ -97,7 +87,7 @@
                                     </div>
                                     <div class="">
                                         <h1 class="text-gray-700">Total Balance</h1>
-                                        <p class="text-2xl font-bold">UGX {{active_balance}}</p>
+                                        <p class="text-2xl font-bold">UGX {{active_balance}}/=</p>
                                     </div>
                                 </div>
                                 <div class="mt-8">
@@ -108,24 +98,10 @@
                                             <p class="font-medium">{{loan.client.full_name}}</p>
                                             <div class="flex items-center text-sm italic text-gray-500 truncate">
                                                 <p>school fees loan<span class="px-2 font-black">·</span></p>
-                                                <p class="truncate">{{loan.given_amount}}</p>
+                                                <p class="truncate">{{loan.given_amount}}/=</p>
                                             </div>
                                         </div>
                                         {% endfor %}
-                                        {% comment %} <div class="p-1 bg-gray-200 rounded">
-                                            <p class="font-medium">Mukisa John</p>
-                                            <div class="flex items-center text-sm italic text-gray-500 truncate">
-                                                <p>school fees loan<span class="px-2 font-black">·</span></p>
-                                                <p class="truncate">UGX 350,000</p>
-                                            </div>
-                                        </div>
-                                        <div class="p-1 bg-gray-200 rounded">
-                                            <p class="font-medium">Mukisa John</p>
-                                            <div class="flex items-center text-sm italic text-gray-500 truncate">
-                                                <p>school fees loan<span class="px-2 font-black">·</span></p>
-                                                <p class="truncate">UGX 350,000</p>
-                                            </div>
-                                        </div> {% endcomment %}
                                     </div>
                                 </div>
                             </div>
