@@ -100,13 +100,6 @@ def make_deposit(request):
         person.account_balance = 0
         deposit_made_at_dtime = datetime.datetime.strptime(
             deposit_made_at, "%Y-%m-%d").replace(tzinfo=datetime.timezone.utc)
-        """
-            if amount less than deposit_needed:
-                pay off penalty
-                pay off interest
-                pay off principal
-                update loan demanded amount
-        """
         loan_amortizations = LoanAmortization.objects.filter(loan=loan)
         penalty = Penalty.objects.all().first()
         if penalty:
@@ -123,7 +116,7 @@ def make_deposit(request):
                             if total_balance > 0:
                                 penalty_paid = total_balance
                                 Payments.objects.create(
-                                    loan=loan, amount=penalty_paid, payment_date=deposit_made_at)  # TODO: Record this as an income transaction.
+                                    loan=loan, amount=penalty_paid, payment_date=deposit_made_at, payment_type='PENALTY')  # TODO: Record this as an income transaction.
                                 total_balance = 0
                             else:
                                 raise Exception('Amount is less than 0')

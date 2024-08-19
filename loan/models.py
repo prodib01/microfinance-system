@@ -83,6 +83,8 @@ class Loan(models.Model):
     status = models.CharField(
         max_length=20, choices=status_choices, default="PENDING")
     loan_product = models.ForeignKey(LoanProduct, on_delete=models.CASCADE)
+    client_loan_account_balance = models.DecimalField(
+        default=0, max_digits=10, decimal_places=2)
 
     def __str__(self):
         return (
