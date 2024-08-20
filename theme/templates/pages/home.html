@@ -483,7 +483,7 @@
                             <th class="px-2 py-3 text-left">Interest</th>
                             <th class="px-2 py-3 text-left">Ending Balance</th>
                             {% comment %} <th class="px-2 py-3 text-left">Actual Balance</th> {% endcomment %}
-                            <th class="px-2 py-3 text-left">Penalty</th>
+                            {% comment %} <th class="px-2 py-3 text-left">Penalty</th> {% endcomment %}
                             <th class="px-2 py-3 text-left">Status</th>
                         </tr>
                     </thead>
@@ -746,7 +746,7 @@
                 <th class="px-2 py-3 text-left">Interest</th>
                 <th class="px-2 py-3 text-left">Ending Balance</th>
                 {% comment %} <th class="px-2 py-3 text-left">Actual Balance</th> {% endcomment %}
-                <th class="px-2 py-3 text-left">Penalty</th>
+                {% comment %} <th class="px-2 py-3 text-left">Penalty</th> {% endcomment %}
                 <th class="px-2 py-3 text-left">Status</th>
             </tr>
         `;
@@ -781,7 +781,7 @@
                 balanceCell.classList.add('py-3', 'px-2');
                 row.appendChild(balanceCell);
 
-                const penaltyRate = {{ penalty }};
+                {% comment %} const penaltyRate = {{ penalty }};
                 const penalty = schedule.principal * penaltyRate;
                 const cancelPenaltBtn = document.createElement('button')
                 cancelPenaltBtn.setAttribute("id", "cancelPenalty")
@@ -791,7 +791,7 @@
                 penaltyCell.classList.add('py-3', 'px-2');
                 penaltyCell.textContent = penalty.toLocaleString();
                 penaltyCell.appendChild(cancelPenaltBtn);
-                row.appendChild(penaltyCell);
+                row.appendChild(penaltyCell); {% endcomment %}
 
                 document.addEventListener("DOMContentLoaded", function() {
                 const openCancelPenaltyModal = document.getElementById('cancelPenalty');

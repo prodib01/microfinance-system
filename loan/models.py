@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Profile
+from users.models import MuroUser, Profile
 from branch.models import Branch
 from django.utils import timezone
 from clientApp.models import Person
@@ -49,25 +49,21 @@ class Loan(models.Model):
         related_name="disbursment_branch",
     )
     loan_officer = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    client = models.ForeignKey(
-        Person, on_delete=models.SET_NULL, null=True, blank=True)
+    client = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True, blank=True)
     requested_amount = models.IntegerField()
     unit_interest = models.IntegerField(null=True, blank=True)
     installment = models.IntegerField(null=True, blank=True)
     account_interest = models.IntegerField(null=True, blank=True)
     recommended_amount = models.IntegerField()
     given_amount = models.IntegerField(null=True, blank=True)
-    demanded_amount = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0)
+    demanded_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     loan_term = models.IntegerField()
-    loan_term_type_of_period = models.CharField(
-        max_length=20, default="months")
+    loan_term_type_of_period = models.CharField(max_length=20, default="months")
     payment_frequency = models.CharField(max_length=20, default="monthly")
     security_type = models.ForeignKey(
         SecurityType, on_delete=models.CASCADE, null=True, blank=True
     )
-    security_description = models.CharField(
-        max_length=255, null=True, blank=True)
+    security_description = models.CharField(max_length=255, null=True, blank=True)
     interest_rate = models.DecimalField(max_digits=5, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -80,11 +76,11 @@ class Loan(models.Model):
         blank=True,
         related_name="approved_by",
     )
-    status = models.CharField(
-        max_length=20, choices=status_choices, default="PENDING")
+    status = models.CharField(max_length=20, choices=status_choices, default="PENDING")
     loan_product = models.ForeignKey(LoanProduct, on_delete=models.CASCADE)
     client_loan_account_balance = models.DecimalField(
-        default=0, max_digits=10, decimal_places=2)
+        default=0, max_digits=10, decimal_places=2
+    )
 
     def __str__(self):
         return (
@@ -189,36 +185,25 @@ class LoanImage(models.Model):
 
 
 class Deposit(models.Model):
-    deposit = models.DecimalField(
-        null=True, blank=True, max_digits=10, decimal_places=2)
+    amount_deposited = models.DecimalField(
+        null=True, blank=True, max_digits=10, decimal_places=2
+    )
     previous_balance = models.DecimalField(
-        null=True, blank=True, max_digits=10, decimal_places=2)
+        null=True, blank=True, max_digits=10, decimal_places=2
+    )
     loan = models.ForeignKey(Loan, on_delete=models.CASCADE)
     deposited_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
-
-
-class Penalty(models.Model):
-    percentage = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
-
-    def __str__(self):
-        return (str(self.percentage)) + "%"
-
-
-class Payments(models.Model):
-    loan = models.ForeignKey(Loan, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_date = models.DateTimeField()
-    ammortization = models.ForeignKey(
-        LoanAmortization, on_delete=models.CASCADE, null=True, blank=True
+    amount_found_on_account = models.DecimalField(
+        default=0, max_digits=10, decimal_places=2
     )
-    payment_type = models.CharField(
-        max_length=20, choices=payment_type_choices, default="INTEREST")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    balance_on_account_after_payments = models.DecimalField(
+        default=0, max_digits=10, decimal_places=2
+    )
+    received_by = models.ForeignKey(
+        MuroUser, on_delete=models.PROTECT, null=True, blank=True
+    )
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return (
@@ -227,6 +212,58 @@ class Payments(models.Model):
             + self.loan.loan_officer.user.fullname
             + " - "
             + self.loan.status
-            + " - "
-            + self.payment_type
         )
+
+    def save(self, *args, **kwargs):
+        if self.deposit:
+            self.balance_on_account_after_payments = (
+                self.previous_balance + self.deposit
+            )
+        super(Deposit, self).save(*args, **kwargs)
+
+
+class Payments(models.Model):
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    narration = models.TextField(null=True, blank=True)
+    payment_date = models.DateTimeField()
+    ammortization = models.ForeignKey(
+        LoanAmortization, on_delete=models.CASCADE, null=True, blank=True
+    )
+    payment_type = models.CharField(
+        max_length=20, choices=payment_type_choices, default="INTEREST"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return (
+            self.ammortization.loan.branch.name
+            + " - "
+            + self.ammortization.loan.loan_officer.user.fullname
+            + " - "
+            + self.ammortization.loan.status
+        )
+
+
+class SystemParameters(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.CharField(max_length=255, null=True, blank=True)
+    string_value = models.CharField(max_length=255, null=True, blank=True)
+    int_value = models.IntegerField(null=True, blank=True)
+    decimal_value = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
+    bool_value = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        self.name = self.name.upper()
+        super(SystemParameters, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name_plural = "System Parameters"
+        ordering = ["name"]
