@@ -20,6 +20,13 @@ from .serializers import LoanAmortizationSerializer, LoanSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.db.models import Prefetch
+from utilities.helpers import get_account, record_transaction, record_journal_entry
+from utilities.enums import (
+    CashFlowClassification,
+    IncomeStatementClassification,
+    TransactionTitle,
+    TransactionType,
+)
 
 
 def calculate_loan_payment(
@@ -431,6 +438,15 @@ def accept_loan(request, loan_id):
             f"A loan request has been approved for {loan.client.full_name}."
         )
         notification.save()
+        description = f"Loan Disbursement for {loan.client.full_name}"
+        transaction = record_transaction(
+            TransactionTitle.LOAN_DISBURSEMENT.value,
+            description,
+            cash_flow_classification=CashFlowClassification.FINANCING_ACTIVITIES.value,
+            income_statement_classification=IncomeStatementClassification.EXPENSE.value,
+        )
+        account = get_account("GIVE_LOAN_ACCOUNT")
+
     return redirect("/loan", {"loan_requests": loan_requests, "active": "requests"})
 
 

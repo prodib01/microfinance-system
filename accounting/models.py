@@ -6,6 +6,12 @@ from utilities.choices import (
     cash_flow_classification_choices,
     income_statement_classification_choices,
 )
+from utilities.enums import (
+    AccountType,
+    TransactionType,
+    CashFlowClassification,
+    IncomeStatementClassification,
+)
 
 
 class Account(models.Model):
@@ -16,8 +22,9 @@ class Account(models.Model):
         "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
     )
     account_type = models.CharField(
-        max_length=10, choices=account_type_choices, default="ASSET"
+        max_length=10, choices=account_type_choices, default=AccountType.ASSET.value
     )
+    balance = models.DecimalField(max_digits=20, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -30,12 +37,12 @@ class Transaction(models.Model):
     cash_flow_classification = models.CharField(
         max_length=255,
         choices=cash_flow_classification_choices,
-        default="OPERATING_ACTIVITIES",
+        default=CashFlowClassification.OPERATING_ACTIVITIES.value,
     )
     income_statement_classification = models.CharField(
         max_length=255,
         choices=income_statement_classification_choices,
-        default="REVENUE",
+        default=IncomeStatementClassification.REVENUE.value,
     )
     description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -53,7 +60,9 @@ class JournalEntries(models.Model):
         Account, on_delete=models.CASCADE, related_name="journal_entries"
     )
     entry_type = models.CharField(
-        max_length=10, choices=transaction_type_choices, default="DEBIT"
+        max_length=10,
+        choices=transaction_type_choices,
+        default=TransactionType.DEBIT.value,
     )
     amount = models.DecimalField(max_digits=20, decimal_places=2)
     account_balance_before_transaction = models.DecimalField(
