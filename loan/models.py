@@ -10,6 +10,8 @@ class LoanProduct(models.Model):
     name = models.CharField(max_length=255)
     interest = models.DecimalField(max_digits=5, decimal_places=2)
     code = models.CharField(max_length=10, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name + " - " + str(self.interest) + "%"
@@ -18,6 +20,8 @@ class LoanProduct(models.Model):
 class SecurityType(models.Model):
     name = models.CharField(max_length=255)
     power = models.IntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -150,6 +154,7 @@ class Document(models.Model):
 class LoanAmortization(models.Model):
     loan = models.ForeignKey(Loan, on_delete=models.CASCADE)
     payment_date = models.DateTimeField(null=True, blank=True)
+    penalty_date = models.DateTimeField(null=True, blank=True)
     principal = models.IntegerField(null=True, blank=True)
     principal_balance = models.IntegerField(null=True, blank=True)
     interest = models.IntegerField(null=True, blank=True)
@@ -157,6 +162,7 @@ class LoanAmortization(models.Model):
     ending_balance = models.IntegerField(null=True, blank=True)
     status = models.CharField(max_length=20, default="PENDING")
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return (
@@ -173,6 +179,8 @@ class LoanAmortization(models.Model):
 class LoanImage(models.Model):
     loan = models.ForeignKey(Loan, on_delete=models.CASCADE)
     image = models.ImageField(upload_to="loan_images/")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return (

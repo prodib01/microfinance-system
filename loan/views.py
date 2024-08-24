@@ -214,8 +214,7 @@ def add_loan_request(request):
 
         client = Person.objects.filter(id=client_id).first()
         loan_product = LoanProduct.objects.filter(id=loan_product_id).first()
-        security_type = SecurityType.objects.filter(
-            id=security_type_id).first()
+        security_type = SecurityType.objects.filter(id=security_type_id).first()
         guarantors = Person.objects.filter(id__in=guarantor)
 
         loan = Loan()
@@ -416,6 +415,7 @@ def accept_loan(request, loan_id):
             loan_amortization.payment_date = datetime.datetime.strptime(
                 entry["payment_date"], "%d, %a, %b, %Y"
             ).strftime("%Y-%m-%d")
+            loan_amortization.penalty_date = loan_amortization.payment_date
             loan_amortization.principal = entry["principal"]
             loan_amortization.principal_balance = entry["principal"]
             loan_amortization.status = "PENDING"
@@ -525,8 +525,7 @@ def loanview(request, loan_id):
 def search_loan(request):
     if request.method == "POST":
         search = request.POST.get("search")
-        loan_requests = Loan.objects.filter(
-            client__full_name__icontains=search)
+        loan_requests = Loan.objects.filter(client__full_name__icontains=search)
         rejected_loans = Loan.objects.filter(status="REJECTED").count()
         approved_loans = Loan.objects.filter(status="APPROVED").count()
         pending_loans = Loan.objects.filter(status="PENDING").count()

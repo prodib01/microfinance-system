@@ -142,7 +142,7 @@ def make_deposit(request):
                     if loan_amortization.status == "PENDING":
                         days_in_arreas = int(
                             (
-                                deposit_made_at_dtime - loan_amortization.payment_date
+                                deposit_made_at_dtime - loan_amortization.penalty_date
                             ).days
                         )
                         if days_in_arreas > 0:
@@ -170,6 +170,7 @@ def make_deposit(request):
                                 deposit=deposit,
                             )
                             total_balance -= penalty_paid
+                            loan_amortization.penalty_date = deposit_made_at_dtime
 
                         if total_balance > 0:
                             if loan_amortization.interest_balance > 0:
@@ -232,7 +233,6 @@ def make_deposit(request):
 
             loan.client_loan_account_balance = total_balance
             loan.save()
-
         else:
             raise Exception("Penalty not set")
     return redirect("/home")

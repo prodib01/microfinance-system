@@ -14,7 +14,7 @@ status_choices = [
     ("WRITTEN_OFF", "Written Off"),
 ]
 
-type_choices = [
+account_type_choices = [
     ("ASSET", "Asset"),
     ("LIABILITY", "Liability"),
     ("EQUITY", "Equity"),
@@ -32,12 +32,28 @@ role_choices = [
 ]
 
 marital_status_choices = [
-    ('S', 'Single'),
-    ('M', 'Married'),
-    ('D', 'Divorced'),
-    ('W', 'Widowed'),
+    ("S", "Single"),
+    ("M", "Married"),
+    ("D", "Divorced"),
+    ("W", "Widowed"),
 ]
 gender_choices = [
-    ('M', 'Male'),
-    ('F', 'Female'),
+    ("M", "Male"),
+    ("F", "Female"),
+]
+
+transaction_type_choices = [
+    ("DEBIT", "Debit"),
+    ("CREDIT", "Credit"),
+]
+
+cash_flow_classification_choices = [
+    ("INVESTING_ACTIVITIES", "Investing Activities"),
+    ("FINANCING_ACTIVITIES", "Financing Activities"),
+    ("OPERATING_ACTIVITIES", "Operating Activities"),
+]
+
+income_statement_classification_choices = [
+    ("REVENUE", "Revenue"),
+    ("EXPENSE", "Expense"),
 ]
