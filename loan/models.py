@@ -188,16 +188,10 @@ class Deposit(models.Model):
     amount_deposited = models.DecimalField(
         null=True, blank=True, max_digits=10, decimal_places=2
     )
-    previous_balance = models.DecimalField(
-        null=True, blank=True, max_digits=10, decimal_places=2
-    )
     loan = models.ForeignKey(Loan, on_delete=models.CASCADE)
     deposited_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     amount_found_on_account = models.DecimalField(
-        default=0, max_digits=10, decimal_places=2
-    )
-    balance_on_account_after_payments = models.DecimalField(
         default=0, max_digits=10, decimal_places=2
     )
     received_by = models.ForeignKey(
@@ -214,13 +208,6 @@ class Deposit(models.Model):
             + self.loan.status
         )
 
-    def save(self, *args, **kwargs):
-        if self.deposit:
-            self.balance_on_account_after_payments = (
-                self.previous_balance + self.deposit
-            )
-        super(Deposit, self).save(*args, **kwargs)
-
 
 class Payments(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -232,16 +219,19 @@ class Payments(models.Model):
     payment_type = models.CharField(
         max_length=20, choices=payment_type_choices, default="INTEREST"
     )
+    deposit = models.ForeignKey(
+        Deposit, on_delete=models.CASCADE, null=True, blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return (
-            self.ammortization.loan.branch.name
+            self.payment_type
             + " - "
-            + self.ammortization.loan.loan_officer.user.fullname
+            + str(self.amount)
             + " - "
-            + self.ammortization.loan.status
+            + str(self.payment_date)
         )
 
 

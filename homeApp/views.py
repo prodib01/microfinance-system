@@ -113,6 +113,7 @@ def home_view(request):
     }
     return render(request, "pages/home.html", context)
 
+
 def make_deposit(request):
     if request.method == "POST":
         loan_id = request.POST.get("loan")
@@ -124,12 +125,11 @@ def make_deposit(request):
             raise Exception("Loan fully paid")
 
         total_balance = amount_brought + Decimal(loan.client_loan_account_balance)
-        Deposit.objects.create(
+        deposit = Deposit.objects.create(
             loan=loan,
             amount_deposited=amount_brought,
             deposited_at=deposit_made_at,
             amount_found_on_account=loan.client_loan_account_balance,
-            balance_on_account_after_payments=total_balance,
         )
         deposit_made_at_dtime = datetime.datetime.strptime(
             deposit_made_at, "%Y-%m-%d"
@@ -146,9 +146,9 @@ def make_deposit(request):
                             ).days
                         )
                         if days_in_arreas > 0:
-                            penalty_amount = (
+                            penalty_amount = Decimal(
                                 loan_amortization.principal_balance
-                                * penalty.percentage
+                                * penalty
                                 / 100
                                 * days_in_arreas
                             )
@@ -159,11 +159,15 @@ def make_deposit(request):
                                     raise Exception("Amount is less than 0")
                             else:
                                 penalty_paid = penalty_amount
+                            # use 2 decimal places
+                            narration = f"Penalty of {penalty_paid.__round__(2)} was paid for {days_in_arreas} days of arrears"
                             Payments.objects.create(
                                 amount=penalty_paid,
                                 payment_date=deposit_made_at,
                                 ammortization=loan_amortization,
                                 payment_type="PENALTY",
+                                narration=narration,
+                                deposit=deposit,
                             )
                             total_balance -= penalty_paid
 
@@ -175,14 +179,24 @@ def make_deposit(request):
                                     interest_paid = loan_amortization.interest_balance
                                 total_balance -= interest_paid
                                 loan.demanded_amount -= Decimal(interest_paid)
-                                loan_amortization.interest_balance -= Decimal(
+                                old_interest_balance = (
+                                    loan_amortization.interest_balance
+                                )
+                                new_interest_balance = old_interest_balance - Decimal(
                                     interest_paid
                                 )
+                                narration = f"Interest of {interest_paid.__round__(2)} was paid of the total balance of {old_interest_balance} making the new balance {new_interest_balance.__round__(2)}"
+                                loan_amortization.interest_balance = (
+                                    new_interest_balance
+                                )
+
                                 Payments.objects.create(
                                     amount=interest_paid,
                                     payment_date=deposit_made_at,
                                     ammortization=loan_amortization,
                                     payment_type="INTEREST",
+                                    deposit=deposit,
+                                    narration=narration,
                                 )
 
                         if total_balance > 0:
@@ -193,14 +207,19 @@ def make_deposit(request):
 
                             total_balance -= principal_paid
                             loan.demanded_amount -= Decimal(principal_paid)
-                            loan_amortization.principal_balance -= Decimal(
+                            old_principal_balance = loan_amortization.principal_balance
+                            new_principal_balance = old_principal_balance - Decimal(
                                 principal_paid
                             )
+                            narration = f"Principal of {principal_paid.__round__(2)} was paid of the total balance of {old_principal_balance} making the new balance {new_principal_balance.__round__(2)}"
+                            loan_amortization.principal_balance = new_principal_balance
                             Payments.objects.create(
                                 amount=principal_paid,
                                 payment_date=deposit_made_at,
                                 ammortization=loan_amortization,
                                 payment_type="PRINCIPAL",
+                                deposit=deposit,
+                                narration=narration,
                             )
 
                         if (
