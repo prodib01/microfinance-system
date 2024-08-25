@@ -7,31 +7,69 @@ from django.http import FileResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from django.utils import timezone
+from accounting.models import Account
+from utilities.enums import AccountGroup
 
 
 def index(request):
-    return render(request, 'index.html')
+    return render(request, "index.html")
 
 
 def loans(request):
     loans = Loan.objects.all()
-    return render(request, 'pages/loans.html', {'active': 'loans', 'loans': loans})
+    return render(request, "pages/loans.html", {"active": "loans", "loans": loans})
 
 
 def search_loan(request):
-    if request.method == 'POST':
-        search = request.POST['search']
+    if request.method == "POST":
+        search = request.POST["search"]
         loans = Loan.objects.filter(client__full_name__icontains=search)
-        return render(request, 'pages/loans.html', {'active': 'loans', 'loans': loans})
+        return render(request, "pages/loans.html", {"active": "loans", "loans": loans})
     else:
-        return render(request, 'pages/loans.html', {'active': 'loans', 'loans': loans})
+        return render(request, "pages/loans.html", {"active": "loans", "loans": loans})
 
 
 def financialstatements(request):
-    rejected_loans = Loan.objects.filter(status='REJECTED').count()
-    approved_loans = Loan.objects.filter(status='APPROVED').count()
-    pending_loans = Loan.objects.filter(status='PENDING').count()
-    return render(request, 'pages/financialstatements.html', {'active': 'financialstatements', 'loan_count': []})
+    all_accounts = Account.objects.all().order_by("name")
+    current_assets = Account.objects.filter(group=AccountGroup.CURRENT_ASSETS.value)
+    sum_current_assets = sum([account.balance for account in current_assets])
+    fixed_assets = Account.objects.filter(group=AccountGroup.FIXED_ASSETS.value)
+    sum_fixed_assets = sum([account.balance for account in fixed_assets])
+    current_liabilities = Account.objects.filter(group=AccountGroup.CURRENT_LIABILITIES.value)
+    sum_current_liabilities = sum([account.balance for account in current_liabilities])
+    long_term_liabilities = Account.objects.filter(
+        group=AccountGroup.LONG_TERM_LIABILITIES.value
+    )
+    sum_long_term_liabilities = sum(
+        [account.balance for account in long_term_liabilities]
+    )
+    equity = Account.objects.filter(group=AccountGroup.EQUITY.value)
+    sum_equity = sum([account.balance for account in equity])
+    total_assets = sum_fixed_assets + sum_current_assets
+    total_liabilities = sum_current_liabilities + sum_long_term_liabilities
+    total_equity_and_liabilities = sum_equity + total_liabilities
+
+    return render(
+        request,
+        "pages/financialstatements.html",
+        {
+            "active": "financialstatements",
+            "accounts": all_accounts,
+            "current_assets": current_assets,
+            "sum_current_assets": sum_current_assets,
+            "fixed_assets": fixed_assets,
+            "sum_fixed_assets": sum_fixed_assets,
+            "current_liabilities": current_liabilities,
+            "sum_current_liabilities": sum_current_liabilities,
+            "long_term_liabilities": long_term_liabilities,
+            "sum_long_term_liabilities": sum_long_term_liabilities,
+            "equity": equity,
+            "sum_equity": sum_equity,
+            "total_assets": total_assets,
+            "total_liabilities": total_liabilities,
+            "total_equity_and_liabilities": total_equity_and_liabilities
+        },
+    )
 
 
 def reports(request):
@@ -41,36 +79,34 @@ def reports(request):
     current_year = now.year
 
     # Fetch the selected month and year from the request
-    selected_month = request.GET.get('month', current_month)
-    selected_year = request.GET.get('year', current_year)
+    selected_month = request.GET.get("month", current_month)
+    selected_year = request.GET.get("year", current_year)
 
     # Fetch loans based on the selected month and year
     loans = Loan.objects.filter(
-        created_at__year=selected_year,
-        created_at__month=selected_month
+        created_at__year=selected_year, created_at__month=selected_month
     )
 
     # Generate a range of years for the year select dropdown
     year_range = range(current_year - 10, current_year + 1)
 
     context = {
-        'loans': loans,
-        'year_range': year_range,
-        'selected_month': selected_month,
-        'selected_year': selected_year
+        "loans": loans,
+        "year_range": year_range,
+        "selected_month": selected_month,
+        "selected_year": selected_year,
     }
-    return render(request, 'pages/reports.html', context)
+    return render(request, "pages/reports.html", context)
 
 
 def download_loans_pdf(request):
-    selected_month = request.GET.get('month')
-    selected_year = request.GET.get('year')
+    selected_month = request.GET.get("month")
+    selected_year = request.GET.get("year")
 
     loans = Loan.objects.all()
     if selected_month and selected_year:
         loans = loans.filter(
-            created_at__year=int(selected_year),
-            created_at__month=int(selected_month)
+            created_at__year=int(selected_year), created_at__month=int(selected_month)
         )
 
     buffer = io.BytesIO()
@@ -82,14 +118,14 @@ def download_loans_pdf(request):
     y = height - margin - header_height
 
     column_widths = {
-        'branch': 80,
-        'loan_officer': 55,
-        'client': 100,
-        'amount': 60,
-        'date': 80,
-        'status': 73,
-        'payment_date': 95,
-        'amount_paid': 60
+        "branch": 80,
+        "loan_officer": 55,
+        "client": 100,
+        "amount": 60,
+        "date": 80,
+        "status": 73,
+        "payment_date": 95,
+        "amount_paid": 60,
     }
 
     column_positions = {}
@@ -101,14 +137,14 @@ def download_loans_pdf(request):
     def add_header():
         p.setFont("Helvetica-Bold", 12)
         y = height - margin - header_height
-        p.drawString(column_positions['branch'], y, "Branch")
-        p.drawString(column_positions['loan_officer'], y, "Officer")
-        p.drawString(column_positions['client'], y, "Client")
-        p.drawString(column_positions['amount'], y, "Amount")
-        p.drawString(column_positions['date'], y, "Created At")
-        p.drawString(column_positions['status'], y, "Status")
-        p.drawString(column_positions['payment_date'], y, "Payment Date")
-        p.drawString(column_positions['amount_paid'], y, "Paid")
+        p.drawString(column_positions["branch"], y, "Branch")
+        p.drawString(column_positions["loan_officer"], y, "Officer")
+        p.drawString(column_positions["client"], y, "Client")
+        p.drawString(column_positions["amount"], y, "Amount")
+        p.drawString(column_positions["date"], y, "Created At")
+        p.drawString(column_positions["status"], y, "Status")
+        p.drawString(column_positions["payment_date"], y, "Payment Date")
+        p.drawString(column_positions["amount_paid"], y, "Paid")
 
     def add_row(loan):
         nonlocal y
@@ -118,24 +154,35 @@ def download_loans_pdf(request):
             add_header()
         p.setFont("Helvetica", 10)
         y -= row_height
-        p.drawString(column_positions['branch'], y, loan.branch.name)
-        p.drawString(column_positions['loan_officer'],
-                     y, loan.loan_officer.user.fullname)
-        p.drawString(column_positions['client'], y,
-                     loan.client.full_name if loan.client else '')
-        p.drawString(column_positions['amount'], y, str(loan.requested_amount))
-        p.drawString(column_positions['date'], y,
-                     loan.created_at.strftime('%Y-%m-%d'))
-        p.drawString(column_positions['status'], y, loan.status)
+        p.drawString(column_positions["branch"], y, loan.branch.name)
+        p.drawString(
+            column_positions["loan_officer"], y, loan.loan_officer.user.fullname
+        )
+        p.drawString(
+            column_positions["client"], y, loan.client.full_name if loan.client else ""
+        )
+        p.drawString(column_positions["amount"], y, str(loan.requested_amount))
+        p.drawString(column_positions["date"], y, loan.created_at.strftime("%Y-%m-%d"))
+        p.drawString(column_positions["status"], y, loan.status)
 
         # Add LoanAmortization details if available
         amortizations = LoanAmortization.objects.filter(loan=loan)
         for amortization in amortizations:
             y -= row_height
-            p.drawString(column_positions['payment_date'], y, amortization.payment_date.strftime(
-                '%Y-%m-%d') if amortization.payment_date else '')
-            p.drawString(column_positions['amount_paid'], y, str(
-                amortization.amount_paid) if amortization.amount_paid else '')
+            p.drawString(
+                column_positions["payment_date"],
+                y,
+                (
+                    amortization.payment_date.strftime("%Y-%m-%d")
+                    if amortization.payment_date
+                    else ""
+                ),
+            )
+            p.drawString(
+                column_positions["amount_paid"],
+                y,
+                str(amortization.amount_paid) if amortization.amount_paid else "",
+            )
 
     p.setFont("Helvetica-Bold", 16)
     p.drawString(margin, height - margin + 20, "Loans Report")
@@ -148,14 +195,13 @@ def download_loans_pdf(request):
     p.save()
 
     buffer.seek(0)
-    response = FileResponse(buffer, as_attachment=True,
-                            filename='loans_report.pdf')
+    response = FileResponse(buffer, as_attachment=True, filename="loans_report.pdf")
     return response
 
 
 def test(request):
-    return render(request, 'pages/test.html')
+    return render(request, "pages/test.html")
 
 
 def sec_page(request):
-    return render(request, 'pages/secPage.html')
+    return render(request, "pages/secPage.html")

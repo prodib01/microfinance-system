@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 {% load static %}
+{% load humanize %}
 
                 <div class="w-full">
                     <div class="flex items-center justify-between w-full max-myMob:flex-col max-myMob:items-start max-myMob:gap-4 max-md:mt-10">
@@ -10,12 +11,12 @@
                         
                     </div>
                     <div class="flex items-center gap-3 overflow-x-scroll mt-7">
-                        <button id="tab1" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn active">Acounts</button>
-                        <button id="tab2" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn">Trail Balance</button>
+                        <button id="tab1" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn active">Charts Of Acounts</button>
+                        {% comment %} <button id="tab2" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn">Trail Balance</button>
                         <button id="tab3" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn">Ledger</button>
-                        <button id="tab4" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn">Cash Flow</button>
+                        <button id="tab4" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn">Cash Flow</button> {% endcomment %}
                         <button id="tab5" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn">Balance Sheet</button>
-                        <button id="tab6" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn">Income Statement</button>
+                        {% comment %} <button id="tab6" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn">Income Statement</button> {% endcomment %}
                     </div>
                     <div class="w-full mt-7">
                             <!-- accounts start  -->
@@ -23,44 +24,28 @@
                         <div id="content1" class="w-full mt-4 tabContent">
                             <div class="my-8 text-center">
                                 <p class="text-xl font-bold">Muro Finance LTD</p>
-                                <p>Accounts</p>
-                                <button type="button" id="addAccountBtn" class="text-blue-500">Add Account</button>
+                                <p>Charts Of Accounts</p>
+                                {% comment %} <button type="button" id="addAccountBtn" class="text-blue-500">Add Account</button> {% endcomment %}
                             </div>
                             <div class="w-full">
                                 <table class="w-9/12 mx-auto">
                                     <thead>
                                         <tr class="text-left text-white bg-myBlack">
-                                            <th class="px-4 py-3">Accounts</th>
-                                            <th class="px-4 py-3">Debit (Total Amount)</th>
-                                            <th class="px-4 py-3">Credit (Total Amount)</th>
+                                            <th class="px-4 py-3">Account</th>
+                                            <th class="px-4 py-3">Group </th>
+                                            <th class="px-4 py-3">Type</th>
+                                            <th class="px-4 py-3">Balance</th>
                                         </trb>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="px-4 py-3"><a href="{% url "sec-page" %}">Assets</a></td>
-                                            <td class="px-4 py-3">UGX 500000</td>
-                                            <td class="px-4 py-3">UGX 20000</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-4 py-3"><a href="">liabilities</a></td>
-                                            <td class="px-4 py-3">UGX 50000</td>
-                                            <td class="px-4 py-3">UGX 320100</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-4 py-3"><a href="">Equity</a></td>
-                                            <td class="px-4 py-3">UGX 50000</td>
-                                            <td class="px-4 py-3">UGX 50000</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-4 py-3"><a href="">Expenses</a></td>
-                                            <td class="px-4 py-3">UGX 50000</td>
-                                            <td class="px-4 py-3">UGX 20000</td>
-                                        </tr>
-                                        <tr class="border-t-2 border-b-2 border-b-gray-900">
-                                            <td class="px-4 py-3 text-lg font-bold text-right">TOTAL</td>
-                                            <td class="px-4 py-3 text-lg font-bold">UGX 50000</td>
-                                            <td class="px-4 py-3 text-lg font-bold">UGX 20000</td>
-                                        </tr>
+                                        {% for account in accounts %}
+                                            <tr>
+                                                <td class="px-4 py-3">{{ account.name }}</td>
+                                                <td class="px-4 py-3">{{ account.group }}</td>
+                                                <td class="px-4 py-3">{{ account.account_type }}</td>
+                                                <td class="px-4 py-3">{{ account.balance }}</td>
+                                            </tr>
+                                        {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
@@ -68,7 +53,7 @@
 
                         <!-- trail balance starts here  -->
 
-                        <div id="content2" class="w-full mt-4 tabContent">
+                        {% comment %} <div id="content2" class="w-full mt-4 tabContent">
                             <div class="my-8 text-center">
                                 <p class="text-xl font-bold">Muro Finance LTD</p>
                                 <p>Adjuted Trail Balance</p>
@@ -111,10 +96,10 @@
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+                        </div> {% endcomment %}
                         
                         <!-- Ledger starts here  -->
-
+                        {% comment %} 
                         <div id="content3" class="w-full mt-4 tabContent">
                             <div class="my-8 text-center">
                                 <p class="text-xl font-bold">Muro Finance LTD</p>
@@ -188,7 +173,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+                        </div> {% endcomment %}
 
                         <!-- Cash flow starts here  -->
 
@@ -288,38 +273,38 @@
                                             <th class="px-4 py-3 font-bold capitalize">current assets</th>
                                             <th class="px-4 py-3 font-bold"></th>
                                         </tr>
-                                        <tr>
-                                            <td class="px-4 py-3">Car</td>
-                                            <td class="px-4 py-3">UGX 20000</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-4 py-3">Funiture</td>
-                                            <td class="px-4 py-3">UGX 2010000</td>
-                                        </tr>
+                                        {% for account in current_assets %}
+                                                <tr>
+                                                    <td class="px-4 py-3">{{ account.name }}</td>
+                                                    <td class="px-4 py-3 normal-nums">UGX {{ account.balance | intcomma }}/=</td>
+                                                </tr>    
+                                        {% endfor %}
                                         <tr class="text-left border-t-2 border-b-2 border-b-gray-700 border-t-gray-700">
                                             <th class="px-4 py-3 font-bold capitalize">Total current assets</th>
-                                            <th class="px-4 py-3 font-bold">UGX 5100100</th>
+                                            <th class="px-4 py-3 font-bold"> {{sum_current_assets | intcomma }}/= </th>
                                         </tr>
+
                                         <tr class="text-left">
                                             <th class="px-4 py-3 font-bold capitalize">fixed assets</th>
                                             <th class="px-4 py-3 font-bold"></th>
                                         </tr>
+                                        {% for account in fixed_assets %}
                                         <tr>
-                                            <td class="px-4 py-3">Car</td>
-                                            <td class="px-4 py-3">UGX 20000</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-4 py-3">Funiture</td>
-                                            <td class="px-4 py-3">UGX 2010000</td>
+                                            <td class="px-4 py-3">{{ account.name }}</td>
+                                            <td class="px-4 py-3 normal-nums">UGX {{ account.balance | intcomma }}/=</td>
+                                        </tr>    
+                                        {% endfor %}
                                         </tr>
                                         <tr class="text-left border-t-2 border-b-2 border-b-gray-700 border-t-gray-700">
                                             <th class="px-4 py-3 font-bold capitalize">Total fixed assets</th>
-                                            <th class="px-4 py-3 font-bold">UGX 5100100</th>
+                                            <th class="px-4 py-3 font-bold">{{sum_fixed_assets | intcomma }}/=</th>
                                         </tr>
+
                                         <tr class="border-t-2 border-b-2 border-b-gray-900">
                                             <td class="px-4 py-3 text-lg font-bold text-right">Total Assets</td>
-                                            <td class="px-4 py-3 text-lg font-bold">UGX 554700</td>
+                                            <td class="px-4 py-3 text-lg font-bold"> {{ total_assets | intcomma }}/=</td>
                                         </tr>
+
                                         <tr class="text-left">
                                             <th class="px-4 py-3 text-2xl font-bold">Liabilities</th>
                                             <th></th>
@@ -328,38 +313,52 @@
                                             <th class="px-4 py-3 font-bold capitalize">current liabilities</th>
                                             <th class="px-4 py-3 font-bold"></th>
                                         </tr>
+                                        {% for account in current_liabilities %}
                                         <tr>
-                                            <td class="px-4 py-3">Car</td>
-                                            <td class="px-4 py-3">UGX 20000</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-4 py-3">Funiture</td>
-                                            <td class="px-4 py-3">UGX 2010000</td>
-                                        </tr>
+                                            <td class="px-4 py-3">{{ account.name }}</td>
+                                            <td class="px-4 py-3 normal-nums">UGX {{ account.balance | intcomma }}/=</td>
+                                        </tr>    
+                                        {% endfor %}
                                         <tr class="text-left border-t-2 border-b-2 border-b-gray-700 border-t-gray-700">
                                             <th class="px-4 py-3 font-bold capitalize">Total current liabilities</th>
-                                            <th class="px-4 py-3 font-bold">UGX 5100100</th>
+                                            <th class="px-4 py-3 font-bold">{{sum_current_liabilities | intcomma }}/=</th>
                                         </tr>
+
                                         <tr class="text-left">
                                             <th class="px-4 py-3 font-bold capitalize">long term liabilities</th>
                                             <th class="px-4 py-3 font-bold"></th>
                                         </tr>
+                                        {% for account in long_term_liabilities %}
                                         <tr>
-                                            <td class="px-4 py-3">Car</td>
-                                            <td class="px-4 py-3">UGX 20000</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-4 py-3">Funiture</td>
-                                            <td class="px-4 py-3">UGX 2010000</td>
-                                        </tr>
+                                            <td class="px-4 py-3">{{ account.name }}</td>
+                                            <td class="px-4 py-3 normal-nums">UGX {{ account.balance | intcomma }}/=</td>
+                                        </tr>    
+                                        {% endfor %}
                                         <tr class="text-left border-t-2 border-b-2 border-b-gray-700 border-t-gray-700">
                                             <th class="px-4 py-3 font-bold capitalize">Total long term liabilities</th>
-                                            <th class="px-4 py-3 font-bold">UGX 5100100</th>
+                                            <th class="px-4 py-3 font-bold">{{sum_long_term_liabilities | intcomma }}/=</th>
                                         </tr>
+
+                                        <tr class="text-left">
+                                            <th class="px-4 py-3 text-2xl font-bold">Equity</th>
+                                            <th class="px-4 py-3 font-bold"></th>
+                                        </tr>
+                                        {% for account in equity %}
+                                        <tr>
+                                            <td class="px-4 py-3">{{ account.name }}</td>
+                                            <td class="px-4 py-3 normal-nums">UGX {{ account.balance | intcomma }}/=</td>
+                                        </tr>    
+                                        {% endfor %}
+                                        <tr class="text-left border-t-2 border-b-2 border-b-gray-700 border-t-gray-700">
+                                            <th class="px-4 py-3 font-bold capitalize">Total Equity</th>
+                                            <th class="px-4 py-3 font-bold">{{sum_equity | intcomma }}/=</th>
+                                        </tr>
+                                        
                                         <tr class="border-t-2 border-b-2 border-b-gray-900">
-                                            <td class="px-4 py-3 text-lg font-bold text-right">Total Liabilities</td>
-                                            <td class="px-4 py-3 text-lg font-bold">UGX 554700</td>
+                                            <td class="px-4 py-3 text-lg font-bold text-right">Total Liabilities and Equity </td>
+                                            <td class="px-4 py-3 text-lg font-bold">{{ total_equity_and_liabilities| intcomma }}/=</td>
                                         </tr>
+                                        
                                     </tbody>
                                 </table>
                             </div>

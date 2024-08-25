@@ -447,7 +447,7 @@ def accept_loan(request, loan_id):
             transaction = record_transaction(
                 title=TransactionTitle.LOAN_DISBURSEMENT.value,
                 narration=narration,
-                cash_flow_classification=CashFlowClassification.FINANCING_ACTIVITIES.value,
+                cash_flow_classification=CashFlowClassification.OPERATING_ACTIVITIES.value,
                 income_statement_classification=IncomeStatementClassification.EXPENSE.value,
             )
             record_journal_entry(
