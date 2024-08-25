@@ -27,6 +27,7 @@ from utilities.enums import (
     TransactionTitle,
     TransactionType,
 )
+from django.db import transaction as django_transaction
 
 
 def calculate_loan_payment(
@@ -296,156 +297,180 @@ def load_requests(request):
 
 
 def accept_loan(request, loan_id):
-    if request.user.profile.role == "BUSINESS_SUPERVISOR":
-        loan_requests = Loan.objects.all()
-        loan = Loan.objects.filter(id=loan_id).first()
-        remark = request.POST.get("remark")
-        remarks = Remarks()
-        remarks.loan = loan
-        remarks.remarks = remark
-        remarks.created_by = request.user.profile
-        remarks.save()
+    disbursing_account = get_account("DISBURSEMENT_ACCOUNT")
+    loan_receivables_account = get_account("LOAN_RECEIVABLES_ACCOUNT")
+    interest_account = get_account("INTEREST_RECEIVING_ACCOUNT")
+    with django_transaction.atomic():
+        if request.user.profile.role == "BUSINESS_SUPERVISOR":
+            loan_requests = Loan.objects.all()
+            loan = Loan.objects.filter(id=loan_id).first()
+            remark = request.POST.get("remark")
+            remarks = Remarks()
+            remarks.loan = loan
+            remarks.remarks = remark
+            remarks.created_by = request.user.profile
+            remarks.save()
 
-        notification = Notification()
-        notification.title = "Loan Remarked"
-        notification.loan = loan
-        notification.message = (
-            f"A loan request has been remarked for {loan.client.full_name}."
-        )
-        notification.save()
-    else:
-        loan_requests = Loan.objects.all()
-        loan = Loan.objects.filter(id=loan_id).first()
-        amount = request.POST.get("amount")
-        rate = request.POST.get("rate")
-        dod = request.POST.get("dod")
-        branch = request.POST.get("disbursementbranch")
-        disbursement_branch = Branch.objects.filter(id=branch).first()
-        duration_num = request.POST.get("loanTermNumber")
-        duration_type = request.POST.get("loanTermTypeOfPeriod")
-        loan.given_amount = int(amount)
-        loan.disbursment_branch = disbursement_branch
-        loan.interest_rate = rate
-        loan.loan_term = duration_num
-        loan.approved_at = dod
-        loan.loan_term_type_of_period = str(duration_type).lower()
-        loan.status = "APPROVED"
-
-        principal = int(amount)
-        annual_interest_rate = int(rate)
-        annual_interest_rate = annual_interest_rate / 100
-        loan_term_number = int(duration_num)
-        loan_term_type_of_period = duration_type
-        payment_frequency = loan.payment_frequency
-
-        if loan_term_type_of_period == "years":
-            loan_term_years = loan_term_number
-        elif loan_term_type_of_period == "months":
-            loan_term_years = loan_term_number / 12
-        elif loan_term_type_of_period == "weeks":
-            loan_term_years = loan_term_number / 52
-        elif loan_term_type_of_period == "week":
-            loan_term_years = loan_term_number / 52
-        elif loan_term_type_of_period == "days":
-            loan_term_years = loan_term_number / 365
-        else:
-            raise ValueError(
-                "Invalid loan term type of period. Please use 'years', 'months', 'weeks', or 'days'."
+            notification = Notification()
+            notification.title = "Loan Remarked"
+            notification.loan = loan
+            notification.message = (
+                f"A loan request has been remarked for {loan.client.full_name}."
             )
-
-        if payment_frequency == "weekly":
-            start_date = datetime.datetime.strptime(
-                loan.approved_at, "%Y-%m-%d"
-            ) + relativedelta(weeks=1)
-        elif payment_frequency == "bi-weekly":
-            start_date = datetime.datetime.strptime(
-                loan.approved_at, "%Y-%m-%d"
-            ) + relativedelta(weeks=2)
-        elif payment_frequency == "daily":
-            start_date = datetime.datetime.strptime(
-                loan.approved_at, "%Y-%m-%d"
-            ) + datetime.timedelta(days=1)
-        elif payment_frequency == "monthly":
-            start_date = datetime.datetime.strptime(
-                loan.approved_at, "%Y-%m-%d"
-            ) + relativedelta(months=1)
-        elif payment_frequency == "quarterly":
-            start_date = datetime.datetime.strptime(
-                loan.approved_at, "%Y-%m-%d"
-            ) + relativedelta(months=3)
-        elif payment_frequency == "semi-annually":
-            start_date = datetime.datetime.strptime(
-                loan.approved_at, "%Y-%m-%d"
-            ) + relativedelta(months=6)
-        elif payment_frequency == "yearly":
-            start_date = datetime.datetime.strptime(
-                loan.approved_at, "%Y-%m-%d"
-            ) + relativedelta(years=1)
+            notification.save()
         else:
-            raise ValueError(
-                "Invalid payment frequency. Please use 'weekly', 'bi-weekly', 'daily', 'monthly', 'quarterly', or 'yearly'."
+            loan_requests = Loan.objects.all()
+            loan = Loan.objects.filter(id=loan_id).first()
+            amount = request.POST.get("amount")
+            rate = request.POST.get("rate")
+            dod = request.POST.get("dod")
+            branch = request.POST.get("disbursementbranch")
+            disbursement_branch = Branch.objects.filter(id=branch).first()
+            duration_num = request.POST.get("loanTermNumber")
+            duration_type = request.POST.get("loanTermTypeOfPeriod")
+            loan.given_amount = int(amount)
+            loan.disbursment_branch = disbursement_branch
+            loan.interest_rate = rate
+            loan.loan_term = duration_num
+            loan.approved_at = dod
+            loan.loan_term_type_of_period = str(duration_type).lower()
+            loan.status = "APPROVED"
+
+            principal = int(amount)
+            annual_interest_rate = int(rate)
+            annual_interest_rate = annual_interest_rate / 100
+            loan_term_number = int(duration_num)
+            loan_term_type_of_period = duration_type
+            payment_frequency = loan.payment_frequency
+
+            if loan_term_type_of_period == "years":
+                loan_term_years = loan_term_number
+            elif loan_term_type_of_period == "months":
+                loan_term_years = loan_term_number / 12
+            elif loan_term_type_of_period == "weeks":
+                loan_term_years = loan_term_number / 52
+            elif loan_term_type_of_period == "week":
+                loan_term_years = loan_term_number / 52
+            elif loan_term_type_of_period == "days":
+                loan_term_years = loan_term_number / 365
+            else:
+                raise ValueError(
+                    "Invalid loan term type of period. Please use 'years', 'months', 'weeks', or 'days'."
+                )
+
+            if payment_frequency == "weekly":
+                start_date = datetime.datetime.strptime(
+                    loan.approved_at, "%Y-%m-%d"
+                ) + relativedelta(weeks=1)
+            elif payment_frequency == "bi-weekly":
+                start_date = datetime.datetime.strptime(
+                    loan.approved_at, "%Y-%m-%d"
+                ) + relativedelta(weeks=2)
+            elif payment_frequency == "daily":
+                start_date = datetime.datetime.strptime(
+                    loan.approved_at, "%Y-%m-%d"
+                ) + datetime.timedelta(days=1)
+            elif payment_frequency == "monthly":
+                start_date = datetime.datetime.strptime(
+                    loan.approved_at, "%Y-%m-%d"
+                ) + relativedelta(months=1)
+            elif payment_frequency == "quarterly":
+                start_date = datetime.datetime.strptime(
+                    loan.approved_at, "%Y-%m-%d"
+                ) + relativedelta(months=3)
+            elif payment_frequency == "semi-annually":
+                start_date = datetime.datetime.strptime(
+                    loan.approved_at, "%Y-%m-%d"
+                ) + relativedelta(months=6)
+            elif payment_frequency == "yearly":
+                start_date = datetime.datetime.strptime(
+                    loan.approved_at, "%Y-%m-%d"
+                ) + relativedelta(years=1)
+            else:
+                raise ValueError(
+                    "Invalid payment frequency. Please use 'weekly', 'bi-weekly', 'daily', 'monthly', 'quarterly', or 'yearly'."
+                )
+
+            (
+                periodic_payment,
+                amortization_schedule,
+                total_payments,
+                total_interest,
+                periodic_interest_rate,
+            ) = calculate_loan_payment(
+                principal,
+                annual_interest_rate,
+                loan_term_years,
+                payment_frequency,
+                start_date,
             )
+            loan.unit_interest = round(periodic_interest_rate)
+            loan.installment = round(periodic_payment)
+            loan.account_interest = round(total_interest)
+            loan.demanded_amount = round(loan.given_amount + total_interest)
+            loan.save()
+            amortization_schedule = [
+                {
+                    "payment_number": entry[0],
+                    "payment": round(entry[1]),
+                    "interest": round(entry[2]),
+                    "principal": round(entry[3]),
+                    "remaining_balance": round(entry[4]),
+                    "payment_date": entry[5].strftime("%d, %a, %b, %Y"),
+                }
+                for entry in amortization_schedule
+            ]
 
-        (
-            periodic_payment,
-            amortization_schedule,
-            total_payments,
-            total_interest,
-            periodic_interest_rate,
-        ) = calculate_loan_payment(
-            principal,
-            annual_interest_rate,
-            loan_term_years,
-            payment_frequency,
-            start_date,
-        )
-        loan.unit_interest = round(periodic_interest_rate)
-        loan.installment = round(periodic_payment)
-        loan.account_interest = round(total_interest)
-        loan.demanded_amount = round(loan.given_amount + total_interest)
-        loan.save()
-        amortization_schedule = [
-            {
-                "payment_number": entry[0],
-                "payment": round(entry[1]),
-                "interest": round(entry[2]),
-                "principal": round(entry[3]),
-                "remaining_balance": round(entry[4]),
-                "payment_date": entry[5].strftime("%d, %a, %b, %Y"),
-            }
-            for entry in amortization_schedule
-        ]
+            for entry in amortization_schedule:
+                loan_amortization = LoanAmortization()
+                loan_amortization.loan = loan
+                loan_amortization.payment_date = datetime.datetime.strptime(
+                    entry["payment_date"], "%d, %a, %b, %Y"
+                ).strftime("%Y-%m-%d")
+                loan_amortization.penalty_date = loan_amortization.payment_date
+                loan_amortization.principal = entry["principal"]
+                loan_amortization.principal_balance = entry["principal"]
+                loan_amortization.status = "PENDING"
+                loan_amortization.interest = entry["interest"]
+                loan_amortization.interest_balance = entry["interest"]
+                loan_amortization.ending_balance = entry["remaining_balance"]
+                loan_amortization.save()
 
-        for entry in amortization_schedule:
-            loan_amortization = LoanAmortization()
-            loan_amortization.loan = loan
-            loan_amortization.payment_date = datetime.datetime.strptime(
-                entry["payment_date"], "%d, %a, %b, %Y"
-            ).strftime("%Y-%m-%d")
-            loan_amortization.penalty_date = loan_amortization.payment_date
-            loan_amortization.principal = entry["principal"]
-            loan_amortization.principal_balance = entry["principal"]
-            loan_amortization.status = "PENDING"
-            loan_amortization.interest = entry["interest"]
-            loan_amortization.interest_balance = entry["interest"]
-            loan_amortization.ending_balance = entry["remaining_balance"]
-            loan_amortization.save()
-
-        notification = Notification()
-        notification.title = "Loan Approved"
-        notification.loan = loan
-        notification.message = (
-            f"A loan request has been approved for {loan.client.full_name}."
-        )
-        notification.save()
-        description = f"Loan Disbursement for {loan.client.full_name}"
-        transaction = record_transaction(
-            TransactionTitle.LOAN_DISBURSEMENT.value,
-            description,
-            cash_flow_classification=CashFlowClassification.FINANCING_ACTIVITIES.value,
-            income_statement_classification=IncomeStatementClassification.EXPENSE.value,
-        )
-        account = get_account("GIVE_LOAN_ACCOUNT")
+            notification = Notification()
+            notification.title = "Loan Approved"
+            notification.loan = loan
+            notification.message = (
+                f"A loan request has been approved for {loan.client.full_name}."
+            )
+            notification.save()
+            narration = f"Loan Disbursement for {loan.client.full_name}"
+            transaction = record_transaction(
+                title=TransactionTitle.LOAN_DISBURSEMENT.value,
+                narration=narration,
+                cash_flow_classification=CashFlowClassification.FINANCING_ACTIVITIES.value,
+                income_statement_classification=IncomeStatementClassification.EXPENSE.value,
+            )
+            record_journal_entry(
+                transaction=transaction,
+                account=disbursing_account,
+                amount=loan.given_amount,
+                entry_type=TransactionType.CREDIT.value,
+                narration=f"Reduce {disbursing_account.name} by {loan.given_amount} for loan disbursement to {loan.client.full_name}",
+            )
+            record_journal_entry(
+                transaction=transaction,
+                account=loan_receivables_account,
+                amount=loan.demanded_amount,
+                entry_type=TransactionType.DEBIT.value,
+                narration=f"Increase {loan_receivables_account.name} by interest amount of {loan.account_interest} and principal amount of {loan.given_amount} for loan disbursement to {loan.client.full_name}",
+            )
+            record_journal_entry(
+                transaction=transaction,
+                account=interest_account,
+                amount=loan.account_interest,
+                entry_type=TransactionType.CREDIT.value,
+                narration=f"Increase {interest_account.name} by {loan.account_interest} for loan disbursement to {loan.client.full_name}",
+            )
 
     return redirect("/loan", {"loan_requests": loan_requests, "active": "requests"})
 

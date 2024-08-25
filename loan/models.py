@@ -244,7 +244,7 @@ class Payments(models.Model):
 
 
 class SystemParameters(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    code = models.CharField(max_length=255, unique=True)
     description = models.CharField(max_length=255, null=True, blank=True)
     string_value = models.CharField(max_length=255, null=True, blank=True)
     int_value = models.IntegerField(null=True, blank=True)
@@ -256,12 +256,12 @@ class SystemParameters(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name
+        return self.code
 
     def save(self, *args, **kwargs):
-        self.name = self.name.upper()
+        self.code = self.code.upper()
         super(SystemParameters, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name_plural = "System Parameters"
-        ordering = ["name"]
+        ordering = ["code"]

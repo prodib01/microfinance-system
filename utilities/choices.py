@@ -57,3 +57,13 @@ income_statement_classification_choices = [
     ("REVENUE", "Revenue"),
     ("EXPENSE", "Expense"),
 ]
+
+account_group_choices = [
+    ("CURRENT_ASSETS", "Current Assets"),
+    ("FIXED_ASSETS", "Fixed Assets"),
+    ("CURRENT_LIABILITIES", "Current Liabilities"),
+    ("LONG_TERM_LIABILITIES", "Long Term Liabilities"),
+    ("EQUITY", "Equity"),
+    ("REVENUE", "Revenue"),
+    ("EXPENSE", "Expense"),
+]

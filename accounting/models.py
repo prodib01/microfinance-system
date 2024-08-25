@@ -5,22 +5,26 @@ from utilities.choices import (
     transaction_type_choices,
     cash_flow_classification_choices,
     income_statement_classification_choices,
+    account_group_choices,
 )
 from utilities.enums import (
     AccountType,
     TransactionType,
     CashFlowClassification,
     IncomeStatementClassification,
+    AccountGroup,
 )
 
 
 class Account(models.Model):
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=255, unique=True)
-    description = models.TextField(null=True, blank=True)
-    parent = models.ForeignKey(
-        "self", on_delete=models.CASCADE, null=True, blank=True, related_name="children"
+    group = models.CharField(
+        max_length=255,
+        choices=account_group_choices,
+        default=AccountGroup.CURRENT_ASSETS.value,
     )
+    description = models.TextField(null=True, blank=True)
     account_type = models.CharField(
         max_length=10, choices=account_type_choices, default=AccountType.ASSET.value
     )
@@ -44,7 +48,7 @@ class Transaction(models.Model):
         choices=income_statement_classification_choices,
         default=IncomeStatementClassification.REVENUE.value,
     )
-    description = models.TextField(null=True, blank=True)
+    narration = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -71,11 +75,9 @@ class JournalEntries(models.Model):
     account_balance_after_transaction = models.DecimalField(
         max_digits=20, decimal_places=2
     )
+    narration = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(
-        MuroUser, on_delete=models.CASCADE, related_name="journal_entries_created_by"
-    )
 
     def __str__(self):
         return f"{self.transaction} - {self.account} - {self.entry_type}"

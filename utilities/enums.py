@@ -28,3 +28,13 @@ class CashFlowClassification(Enum):
 class IncomeStatementClassification(Enum):
     REVENUE = "REVENUE"
     EXPENSE = "EXPENSE"
+
+
+class AccountGroup(Enum):
+    CURRENT_ASSETS = "CURRENT_ASSETS"
+    FIXED_ASSETS = "FIXED_ASSETS"
+    CURRENT_LIABILITIES = "CURRENT_LIABILITIES"
+    LONG_TERM_LIABILITIES = "LONG_TERM_LIABILITIES"
+    EQUITY = "EQUITY"
+    REVENUE = "REVENUE"
+    EXPENSE = "EXPENSE"

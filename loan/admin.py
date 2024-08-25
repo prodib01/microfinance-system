@@ -99,7 +99,7 @@ class PaymentsAdmin(admin.ModelAdmin):
 
 class SystemParametersAdmin(admin.ModelAdmin):
     list_display = (
-        "name",
+        "code",
         "description",
         "string_value",
         "int_value",
@@ -107,8 +107,8 @@ class SystemParametersAdmin(admin.ModelAdmin):
         "bool_value",
         "created_at",
     )
-    list_filter = ("name", "description", "created_at")
-    search_fields = ("name", "description", "created_at")
+    list_filter = ("code", "description", "created_at")
+    search_fields = ("code", "description", "created_at")
 
 
 admin.site.register(Loan, LoanAdmin)
