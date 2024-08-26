@@ -9,18 +9,6 @@ from .models import (
     SystemParameters,
 )
 
-# admin.site.register(Loan)
-# admin.site.register(LoanProduct)
-# admin.site.register(SecurityType)
-# admin.site.register(Deposit)
-# admin.site.register(Document)
-# admin.site.register(LoanGuarantor)
-# admin.site.register(LoanImage)
-# admin.site.register(LoanAmortization)
-# admin.site.register(Payments)
-# admin.site.register(SystemParameters)
-
-
 class LoanAdmin(admin.ModelAdmin):
     list_display = (
         "loan_product",

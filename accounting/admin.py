@@ -14,6 +14,8 @@ class TransactionAdmin(admin.ModelAdmin):
         "title",
         "cash_flow_classification",
         "income_statement_classification",
+        "narration",
+        "created_at",
     )
     list_filter = ("cash_flow_classification", "income_statement_classification")
     search_fields = ("title",)
@@ -21,7 +23,7 @@ class TransactionAdmin(admin.ModelAdmin):
 
 
 class JournalEntriesAdmin(admin.ModelAdmin):
-    list_display = ("transaction", "account", "amount", "entry_type")
+    list_display = ("transaction", "account", "amount", "entry_type", "narration", "created_at")
     list_filter = ("entry_type",)
     search_fields = ("transaction", "account")
     list_per_page = 20

@@ -2,6 +2,7 @@
 {% block content %}
 {% load static %}
 {% load custom_filters %}
+{% load humanize %}
                 <div class="w-full">
                     <div class="w-full max-myMob:flex-col max-myMob:items-start max-myMob:gap-4 max-md:mt-10">
                         <div class="flex items-center gap-4">
@@ -23,10 +24,10 @@
                                 <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
                                     <div>
                                         <h1>{{loan.loan_product}}</h1>
-                                        <p class="text-xl font-bold">{{loan.given_amount}}</p>
+                                        <p class="text-xl font-bold">{{loan.given_amount}}/=</p>
                                     </div>
                                     <div>
-                                        <p>{{loan.interest_rate}}%</p>
+                                        <p>{{loan.interest_rate | floatformat:0}}%</p>
                                     </div>
                                     <div>
                                         <p>{{loan.loan_term}} {{loan.loan_term_type_of_period}} ({{loan.payment_frequency}})</p>
@@ -35,16 +36,16 @@
                                 <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
                                     <div>
                                         <h1>Total Loan Value</h1>
-                                       <p class="text-xl font-bold">{{ loan.account_interest|add:loan.given_amount }}</p>
+                                       <p class="text-xl font-bold">{{ loan.account_interest|add:loan.given_amount |floatformat:0}}/=</p>
 
                                     </div>
                                     <div>
                                         <h1>Acc Interest</h1>
-                                        <p class="text-xl font-bold">{{loan.account_interest}}</p>
+                                        <p class="text-xl font-bold">{{loan.account_interest | floatformat:0}}/=</p>
                                     </div>
                                     <div>
                                         <h1>Installment</h1>
-                                        <p class="text-xl font-bold">{{loan.installment}}</p>
+                                        <p class="text-xl font-bold">{{loan.installment | floatformat:0}}/=</p>
                                     </div>
                                 </div>
                                 
@@ -54,8 +55,8 @@
                                 <h2 class="text-xl">{{loan.security_type}}</h2>
                                 <h1> {{loan.security_description}} </h1>
                                 {% comment %} <div class="grid w-full grid-cols-5 gap-4 mt-4">
-                                    <img src="{% static "/img/bg.png" %}" alt="" srcset="" class="object-cover bg-cover w-28 h-28 rounded-xl" onclick="openPopup('{% static "/img/bg.png" %}')">
-                                    <img src="{% static "/img/shot.png" %}" alt="" srcset="" class="object-cover h-28 w-28 rounded-xl" onclick="openPopup('{% static "/img/shot.png" %}')">
+                                    <img src="{% static '/img/bg.png' %}" alt="" srcset="" class="object-cover bg-cover w-28 h-28 rounded-xl" onclick="openPopup('{% static "/img/bg.png" %}')">
+                                    <img src="{% static '/img/shot.png' %}" alt="" srcset="" class="object-cover h-28 w-28 rounded-xl" onclick="openPopup('{% static "/img/shot.png" %}')">
                                 </div>
                                 <div id="imagePopup" class="z-50 hidden fixed top-0 left-0 w-full h-full bg-black backdrop-blur-sm bg-opacity-75 items-center justify-center">
                                     <img id="popupImage" class="mx-auto h-screen max-md:w-full max-md:h-auto" src="" alt="Popup Image">
@@ -98,10 +99,10 @@
                         </div>
                         <div class="w-5/12 max-md:w-full max-md:mt-8">
                             <h1 class="text-2xl font-bold">Payments</h1>
-                            <!-- <div class="flex items-center gap-3 overflow-x-scroll mt-7">
+                            <div class="flex items-center gap-3 overflow-x-scroll mt-7">
                                 <button id="tab1" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn active">History</button>
                                 <button id="tab2" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn">Plans</button>
-                            </div> -->
+                            </div> 
                             <div id="content1" class="tabContent">
                                 <div class="mt-4 space-y-2">
                                     {% if arreas != 0%}
@@ -116,7 +117,7 @@
                                             <p class="tetx-gray-700">Total Accumulated:</p> {% endcomment %}
                                         </div>
                                         <div class="">
-                                            <p class="font-bold">UGX {{loan.given_amount|add:loan.account_interest}}</p>
+                                            <p class="font-bold">UGX {{loan.given_amount|add:loan.account_interest | floatformat:0}}/=</p>
                                             {% comment %} <p class="font-bold">UGX 750,000</p> {% endcomment %}
                                             {% comment %} <p class="font-bold">UGX 14,000,000</p> {% endcomment %}
                                         </div>
@@ -125,11 +126,10 @@
                                 <div class="grid grid-cols-1 gap-5 mt-4">
                                     {% for deposit in deposits%}
                                     <div onclick="showPaymentPopup('{{deposit.id}}')" class="py-4 border-b-2 border-dashed cursor-pointer border-b-gray-300">
-                                        <p class="mb-2 italic">{{deposit.deposited_at}}</p> 
+                                        <p class="mb-2 italic">{{deposit.deposited_at | naturalday}}</p>
                                         <div class="flex flex-wrap items-center justify-between">
                                          <div class="">
-                                             <h1 class="">paid</h1>
-                                             <h1 class="text-2xl font-bold">UGX {{deposit.amount_deposited}}/=</h1>
+                                             <h1 class="text-2xl font-bold">UGX {{deposit.amount_deposited | floatformat:0}}/=</h1>
                                          </div>
                                         </div>
                                      </div>
@@ -146,73 +146,45 @@
                                                 <div class="flex flex-wrap items-center justify-between mt-6 space-y-2">
                                                     <div class="">
                                                         <h1 class="">Total Loan Value</h1>
-                                                        <h1 class="text-xl font-bold">UGX {{loan.given_amount}}</h1>
+                                                        <h1 class="text-xl font-bold">UGX {{loan.given_amount}}/=</h1>
                                                     </div>
-                                                    <div class="">
-                                                        <h1 class="">Balance Before Payment</h1>
-                                                        <h1 class="text-xl font-bold">UGX {{deposit.previous_balance}}</h1>
-                                                    </div>
-                                                </div>
-                                                {% comment %} <span class="text-sm font-normal">(Penalty included)</span> {% endcomment %}
-                                                <div class="mt-6 space-y-4">
-                                                    <div class="">
-                                                        <h1 class="italic">Actual Date</h1>
-                                                        <h1 class="">{{deposit.ammortization.payment_date}}</h1>
-                                                    </div>
+
                                                     <div class="">
                                                         <h1 class="italic">Date Of Payment</h1>
-                                                        <h1 class="">{{deposit.deposited_at}}</h1>
+                                                        <h1 class="">{{deposit.deposited_at | naturalday}}</h1>
                                                     </div>
+                                   
+                                                </div>
+                                                <div class="mt-6 space-y-4">
+                                           
+
                                                     <div class="">
                                                         <h1 class="">Paid</h1>
-                                                        <h1 class="text-xl font-bold">UGX {{deposit.deposit}}</h1>
+                                                        <h1 class="text-xl font-bold">UGX {{deposit.amount_deposited | floatformat:0}}/=</h1>
                                                     </div>
                                                 </div>
-                                                <div class="flex flex-wrap items-center justify-between mt-6 space-y-2">
-                                                    <div class="">
-                                                        <h1 class="">Days delayed</h1>
-                                                        {% if deposit.ammortization%}
-                                                            <h1 class="font-bold">{{ deposit.deposited_at|subtract:deposit.ammortization.payment_date }} Days</h1>
-                                                        {% endif %}
-                                                    </div>
-                                                    <div class="">
-                                                        <h1 class="">Penalty %</h1>
-                                                        <h1 class="font-bold">0.03%</h1>
-                                                    </div>
-                                                    <div class="">
-                                                        <h1 class="">Penalty</h1>
-                                                        <h1 class="font-bold">UGX 75,000</h1>
-                                                    </div>
+
+<!--                                                payments -->
+                                                <div class="mt-6">
+                                                    <h1 class="text-xl font-bold">Payments</h1>
+<!--                                                    A list payments with their payment type-->
+                                                        {% for payment in deposit.payments.all  %}
+                                                            <div class="py-4 border-b-2 border-b-gray-300">
+                                                                <p class="mb-2 italic">{{payment.amount | floatformat:0 | intcomma }}/=</p>
+                                                                <div class="flex items-center justify-between">
+                                                                    <div class="">
+                                                                        <h1 class="">Payment Type</h1>
+                                                                        <h1 class="text-xl font-bold">{{payment.payment_type}}</h1>
+                                                                    </div>
+                                                                    <div class="">
+                                                                        <h1 class="">Ammortization Payment Date</h1>
+                                                                        <h1 class="text-xl font-bold">{{payment.ammortization.payment_date | naturalday}}</h1>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% endfor %}
                                                 </div>
-                                                <div class="flex flex-wrap items-center justify-between mt-6 space-y-2">
-                                                    <div class="">
-                                                        <h1 class="">Princ. Earned</h1>
-                                                        <h1 class="text-xl font-bold">UGX 225,000</h1>
-                                                    </div>
-                                                    <div class="">
-                                                        <h1 class="">Princ. Balance</h1>
-                                                        <h1 class="text-xl font-bold">UGX 275,000</h1>
-                                                    </div>
-                                                </div>
-                                                <div class="flex flex-wrap items-center justify-between mt-6 space-y-2">
-                                                    <div class="">
-                                                        <h1 class="">Interest Earned</h1>
-                                                        <h1 class="text-xl font-bold">UGX 200,000</h1>
-                                                    </div>
-                                                    <div class="">
-                                                        <h1 class="">Interest Balance</h1>
-                                                        <h1 class="text-xl font-bold">UGX 0</h1>
-                                                    </div>
-                                                </div>
-                                                <div class="flex flex-wrap items-center justify-between pt-4 mt-6 space-y-2 border-t-2 border-gray-200">
-                                                    <div class="">
-                                                        <h1 class="">Balance On Loan</h1>
-                                                        <h1 class="text-xl font-bold">UGX 275,000</h1>
-                                                    </div>
-                                                    <div class="">
-                                                        <h1 class="">Balance On Installment</h1>
-                                                        <h1 class="text-xl font-bold">UGX 275,000</h1>
-                                                    </div>
+
                                                 </div>
                                             </div>
 
@@ -220,32 +192,7 @@
                                     </div>
 
                                      {% endfor %}
-                                     {% comment %} <div class="py-4 border-b-2 border-dashed cursor-pointer border-b-gray-300">
-                                         <p class="mb-2 italic">28 jan 2024</p> 
-                                         <div class="flex flex-wrap items-center justify-between">
-                                          <div class="">
-                                              <h1 class="">paid</h1>
-                                              <h1 class="text-2xl font-bold">UGX 700,000</h1>
-                                          </div>
-                                          <div class="">
-                                              <h1 class="">Balance</h1>
-                                              <h1 class="text-2xl font-bold">UGX 700,000</h1>
-                                          </div>
-                                         </div>
-                                      </div> {% endcomment %}
-                                     {% comment %} <div class="py-4 border-b-2 border-dashed cursor-pointer border-b-gray-300">
-                                         <p class="mb-2 italic">28 jan 2024</p> 
-                                         <div class="flex flex-wrap items-center justify-between">
-                                          <div class="">
-                                              <h1 class="">paid</h1>
-                                              <h1 class="text-2xl font-bold">UGX 700,000</h1>
-                                          </div>
-                                          <div class="">
-                                              <h1 class="">Balance</h1>
-                                              <h1 class="text-2xl font-bold">UGX 700,000</h1>
-                                          </div>
-                                         </div>
-                                      </div> {% endcomment %}
+
                                 </div>
                             </div>
                             <div id="content2" class="grid hidden grid-cols-1 gap-5 mt-7 tabContent">
@@ -322,45 +269,51 @@
                             <p>{{loan.client.phone}}</p>
                         </div>
                     </div>
-                    <div class="flex items-end gap-6 mt-6">
-                        <div>
-                            <h1 class="font-bold">Maried to</h1>
-                            <p>{{loan.client.spouse_name}}</p>
+                    {% if loan.client.spouse_name %}
+                        <div class="flex items-end gap-6 mt-6">
+                            <div>
+                                <h1 class="font-bold">Maried to</h1>
+                                <p>{{loan.client.spouse_name}}</p>
+                            </div>
+                            <p>{{loan.client.spouse_phone}}</p>
                         </div>
-                        <p>{{loan.client.spouse_phone}}</p>
-                    </div>
+                    {% endif %}
                 </div>
                 <div class="mt-6">
                     <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
                         <div>
                             <h1>{{loan.loan_product}}</h1>
-                            <p class="text-xl font-bold">UGX {{loan.given_amount}}</p>
+                            <p class="text-xl font-bold">UGX {{loan.given_amount}}/=</p>
                         </div>
                         <div>
                             <p>{{loan.interest_rate}}%</p>
                         </div>
                         <div>
-                            <p>{{loan.loan_term}} {{loan.loan_term_type_of_period}} (weekly)</p>
+                            <p>{{loan.loan_term}} {{loan.loan_term_type_of_period}} ({{loan.payment_frequency}})</p>
                         </div>
                     </div>
                     <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
                         <div>
-                            <h1>Unit Interest</h1>
-                            <p class="text-xl font-bold">UGX {{loan.unit_interest}}</p>
+                            <h1>Total Interest</h1>
+                            <p class="text-xl font-bold">UGX {{loan.account_interest}}/=</p>
                         </div>
-                        <div>
-                            <h1>Acc Interest</h1>
-                            <p class="text-xl font-bold">UGX {{loan.account_interest}}</p>
-                        </div>
+                        {% comment %} <div>
+                            <h1>Total Principal</h1>
+                            <p class="text-xl font-bold">{{ loan.given_amount }}/=</p> 
+                        </div> {% endcomment %}
                         <div>
                             <h1>Total Loan</h1>
-                            <p class="text-xl font-bold">{{ loan.account_interest|add:loan.given_amount }}</p>
+                            <p class="text-xl font-bold">UGX {{ loan.account_interest|add:loan.given_amount }}/=</p>
                         </div>
                     </div>
                     <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
                         <div>
                             <h1>Installment</h1>
-                            <p class="text-xl font-bold">UGX {{loan.installment}}</p>
+                            <p class="text-xl font-bold">UGX {{loan.installment}}/=</p>
+                        </div>
+                        <div>
+                            <h1>Amount on Loan Deposit</h1>
+                            <p class="text-xl font-bold">UGX {{loan.client_loan_account_balance | floatformat:0}}/=</p>
                         </div>
                         {% comment %} <div>
                             <p>Mubiru Paul</p>
@@ -371,13 +324,12 @@
                     </div> 
                 </div>
                 <div class="flex items-end gap-8 mt-6">
-                    <div>
-                        <h1 class="font-bold">Referee</h1>
-                        <p>{{loan.guarantor}} <span>({{loan.guarantor_relationship}})</span></p>
-                    </div>
-                    <div>
-                        <p>{{loan.guarantor.phone}}</p>
-                    </div>
+                      <div>
+                          <p class="font-bold">Referees</p>
+                            {% for guarantor in loan.loanguarantor_set.all %}
+                                <p>{{ guarantor.guarantor.full_name }} <span>({{ guarantor.guarantor.phone }})</span></p>
+                            {% endfor %}
+                      </div>
                 </div>
                 <div class="mt-6">
                     <h1 class="font-bold">Security</h1>
@@ -427,7 +379,7 @@
                         </div>
                         <div>
                             <p>Interest Rate</p>
-                            <p class="font-bold">{{loan.interest_rate}}%</p>
+                            <p class="font-bold">{{loan.interest_rate | floatformat:0}}%</p>
                         </div>
                         <div>
                             <p>Period</p>
@@ -436,7 +388,7 @@
                         <div>
                             <p>Start Date</p>
                             {% comment %} date in format 2024-03-17 {% endcomment %}
-                            <p class="font-bold">{{ ammortizations.0.payment_date|date:"Y-m-d" }}</p>
+                            <p class="font-bold">{{ ammortizations.0.payment_date|date:"Y-m-d" | naturalday}}</p>
                         </div>
                         <div>
                             <p>Installment</p>
@@ -456,11 +408,11 @@
                             <thead class="  bg-gray-300 ">
                                 <tr class="">
                                     <th class="px-6 py-3 text-left">No</th>
-                                    <th class="px-6 py-3 text-left">Payment Date</th>
-                                    {% comment %} <th class="py-3 px-5 text-left">Begining Balance</th>
-                                    <th class="py-3 px-5 text-left">Payment</th> {% endcomment %}
-                                    <th class="px-6 py-3 text-left">Principal</th>
-                                    <th class="px-6 py-3 text-left">Interest</th>
+                                    <th class="px-6 py-3 text-left">Ammortization Date</th>
+                                    <th class="py-3 px-5 text-left">Total Interest</th>
+                                    <th class="py-3 px-5 text-left">Interest Balance</th>
+                                    <th class="px-6 py-3 text-left">Total Principal</th>
+                                    <th class="px-6 py-3 text-left">Principal Balance</th>
                                     <th class="px-6 py-3 text-left">Ending Balance</th>
                                 </tr>
                             </thead>
@@ -468,12 +420,12 @@
                                 {% for ammortization in ammortizations %}
                                 <tr class="border-b dark:bg-gray-800 dark:border-gray-700">
                                     <td class="py-3 px-5">{{ forloop.counter }}</td>
-                                    <td class="py-3 px-5">{{ammortization.payment_date | date:"Y-m-d"}}</td>
-                                    {% comment %} <td class="py-3 px-5">20,000</td>
-                                    <td class="py-3 px-5">20,000</td> {% endcomment %}
-                                    <td class="py-3 px-5">{{ammortization.principal}}/=</td>
-                                    <td class="py-3 px-5">{{ammortization.interest}}/=</td>
-                                    <td class="py-3 px-5">{{ammortization.ending_balance}}/=</td>
+                                    <td class="py-3 px-5">{{ammortization.payment_date | date:"Y-m-d" }}</td>
+                                    <td class="py-3 px-5">{{ammortization.interest | intcomma }}/=</td>
+                                    <td class="py-3 px-5">{{ammortization.interest_balance | intcomma }}/=</td>
+                                    <td class="py-3 px-5">{{ammortization.principal | intcomma }}/=</td>
+                                    <td class="py-3 px-5">{{ammortization.principal_balance | intcomma }}/=</td>
+                                    <td class="py-3 px-5">{{ammortization.ending_balance | intcomma }}/=</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

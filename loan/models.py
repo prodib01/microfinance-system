@@ -14,7 +14,7 @@ class LoanProduct(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name + " - " + str(self.interest) + "%"
+        return self.name
 
 
 class SecurityType(models.Model):
@@ -25,22 +25,6 @@ class SecurityType(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class Remarks(models.Model):
-    loan = models.ForeignKey("Loan", on_delete=models.CASCADE)
-    remarks = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(Profile, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return (
-            self.loan.branch.name
-            + " - "
-            + self.loan.loan_officer.user.fullname
-            + " - "
-            + self.remarks
-        )
 
 
 class Loan(models.Model):
@@ -88,17 +72,17 @@ class Loan(models.Model):
 
     def __str__(self):
         return (
-            self.branch.name
-            + " - "
-            + self.loan_officer.user.fullname
-            + " - "
-            + str(self.given_amount)
-            + " - "
-            + str(self.loan_term)
-            + " - "
-            + str(self.interest_rate)
-            + " - "
-            + self.status
+                self.branch.name
+                + " - "
+                + self.loan_officer.user.fullname
+                + " - "
+                + str(self.given_amount)
+                + " - "
+                + str(self.loan_term)
+                + " - "
+                + str(self.interest_rate)
+                + " - "
+                + self.status
         )
 
     def approve(self, approved_by):
@@ -114,6 +98,22 @@ class Loan(models.Model):
         self.save()
 
 
+class Remarks(models.Model):
+    loan = models.ForeignKey(Loan, on_delete=models.CASCADE)
+    remarks = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(Profile, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return (
+                self.loan.branch.name
+                + " - "
+                + self.loan.loan_officer.user.fullname
+                + " - "
+                + self.remarks
+        )
+
+
 class LoanGuarantor(models.Model):
     loan = models.ForeignKey(Loan, on_delete=models.CASCADE)
     guarantor = models.ForeignKey(Person, on_delete=models.CASCADE)
@@ -126,11 +126,11 @@ class LoanGuarantor(models.Model):
 
     def __str__(self):
         return (
-            self.guarantor.full_name
-            + " -"
-            + self.guarantee.full_name
-            + " -"
-            + str(self.loan)
+                self.guarantor.full_name
+                + " -"
+                + self.guarantee.full_name
+                + " -"
+                + str(self.loan)
         )
 
 
@@ -143,11 +143,11 @@ class Document(models.Model):
 
     def __str__(self):
         return (
-            self.loan.branch.name
-            + " - "
-            + self.loan.loan_officer.user.fullname
-            + " - "
-            + self.loan.status
+                self.loan.branch.name
+                + " - "
+                + self.loan.loan_officer.user.fullname
+                + " - "
+                + self.loan.status
         )
 
 
@@ -166,13 +166,13 @@ class LoanAmortization(models.Model):
 
     def __str__(self):
         return (
-            self.loan.branch.name
-            + " - "
-            + self.loan.loan_officer.user.fullname
-            + " - "
-            + self.loan.status
-            + " - "
-            + self.status
+                self.loan.branch.name
+                + " - "
+                + self.loan.loan_officer.user.fullname
+                + " - "
+                + self.loan.status
+                + " - "
+                + self.status
         )
 
 
@@ -184,11 +184,11 @@ class LoanImage(models.Model):
 
     def __str__(self):
         return (
-            self.loan.branch.name
-            + " - "
-            + self.loan.loan_officer.user.fullname
-            + " - "
-            + self.loan.status
+                self.loan.branch.name
+                + " - "
+                + self.loan.loan_officer.user.fullname
+                + " - "
+                + self.loan.status
         )
 
 
@@ -209,11 +209,11 @@ class Deposit(models.Model):
 
     def __str__(self):
         return (
-            self.loan.branch.name
-            + " - "
-            + self.loan.loan_officer.user.fullname
-            + " - "
-            + self.loan.status
+                self.loan.branch.name
+                + " - "
+                + self.loan.loan_officer.user.fullname
+                + " - "
+                + self.loan.status
         )
 
 
@@ -228,18 +228,18 @@ class Payments(models.Model):
         max_length=20, choices=payment_type_choices, default="INTEREST"
     )
     deposit = models.ForeignKey(
-        Deposit, on_delete=models.CASCADE, null=True, blank=True
+        Deposit, on_delete=models.CASCADE, null=True, blank=True, related_name="payments"
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return (
-            self.payment_type
-            + " - "
-            + str(self.amount)
-            + " - "
-            + str(self.payment_date)
+                self.payment_type
+                + " - "
+                + str(self.amount)
+                + " - "
+                + str(self.payment_date)
         )
 
 

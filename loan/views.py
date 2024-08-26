@@ -67,9 +67,9 @@ def calculate_loan_payment(
 
     # Calculate periodic payment amount using reducing balance formula
     periodic_payment = (
-        principal
-        * (periodic_interest_rate)
-        / (1 - (1 + periodic_interest_rate) ** (-total_payments))
+            principal
+            * periodic_interest_rate
+            / (1 - (1 + periodic_interest_rate) ** (-total_payments))
     )
 
     # Generate amortization schedule with payment dates
@@ -193,7 +193,8 @@ def calculate_loan_request(request):
                 "amortization_schedule": amortization_schedule,
                 "status": "success",
                 "principal": principal,
-                # monthly interest rate is gotten by dividing the annual interest rate by 12 months, so it means that it is a must for the user to input the annual interest rate
+                # monthly interest rate is gotten by dividing the annual interest rate by 12 months, so it means that
+                # it is a must for the user to input the annual interest rate
                 "annual_interest_rate": annual_interest_rate_to_return,
                 "loan_term_years": loan_term_years,
                 "payment_frequency": payment_frequency,
@@ -523,7 +524,7 @@ def get_loan_ammortization(request, loan_id):
 def loanview(request, loan_id):
     loan = Loan.objects.filter(id=loan_id).first()
     docs = Document.objects.filter(loan=loan).order_by("-id")
-    ammortizations = LoanAmortization.objects.filter(loan=loan)
+    ammortizations = LoanAmortization.objects.filter(loan=loan).order_by("payment_date")
     for ammortization in ammortizations:
         if ammortization.payment_date.date() < datetime.datetime.now().date():
             if ammortization.status == "PENDING":
