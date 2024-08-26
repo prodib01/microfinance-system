@@ -159,7 +159,7 @@ def make_deposit(request):
             )
             loan_amortizations = LoanAmortization.objects.filter(loan=loan)
             penalty = get_system_parameter("PENALTY").int_value
-            if penalty:
+            if penalty is not None:
                 for loan_amortization in loan_amortizations:
                     if loan_amortization.payment_date < deposit_made_at_dtime:
                         if loan_amortization.status == "PENDING":
