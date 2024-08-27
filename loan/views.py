@@ -539,10 +539,8 @@ def loanview(request, loan_id):
             break
     if loan.status != "PENDING":
         loan_inrement_by_interest_today = loan.given_amount * loan.interest_rate / 100
-        loan_increment_by_interest = loan_inrement_by_interest_today * arreas
     else:
         arreas = 0
-        loan_increment_by_interest = None
         loan_inrement_by_interest_today = None
     deposits = Deposit.objects.filter(loan=loan)
 
@@ -556,7 +554,6 @@ def loanview(request, loan_id):
             "loan": loan,
             "docs": docs,
             "arreas": arreas,
-            "loan_increment_by_interest": loan_increment_by_interest,
             "ammortizations": ammortizations,
             "deposits": deposits,
             "loan_image_url": loan_image_url,
