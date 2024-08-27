@@ -69,7 +69,6 @@
                                     <div class="flex items-end justify-between p-2 bg-gray-100 border border-gray-200 rounded-xl ">
                                         <div>
                                             <p class="text-lg font-semibold font-myMono">{{client.client_code}}</p>
-                                            <p class="text-gray-600">UGX {{client.account_balance}}/=</p>
                                         </div>
                                         <div>
                                             <p>{{active_loans}} Active Loans</p>
@@ -85,25 +84,23 @@
                                         <h1 class="text-gray-700">Total Active Loans</h1>
                                         <p class="text-2xl font-bold">{{active_loans}}</p>
                                     </div>
-                                    <div class="">
-                                        <h1 class="text-gray-700">Total Balance</h1>
-                                        <p class="text-2xl font-bold">UGX {{active_balance}}/=</p>
-                                    </div>
                                 </div>
-                                <div class="mt-8">
-                                    <p class="mb-2 text-xl font-bold">Guarented To</p>
-                                    <div class="grid grid-cols-2 gap-2 overflow-y-scroll max-h-28">
-                                        {% for loan in all_guaranted_loans%}
-                                        <div class="p-1 bg-gray-200 rounded">
-                                            <p class="font-medium">{{loan.client.full_name}}</p>
-                                            <div class="flex items-center text-sm italic text-gray-500 truncate">
-                                                <p>school fees loan<span class="px-2 font-black">·</span></p>
-                                                <p class="truncate">{{loan.given_amount}}/=</p>
+                                {% if all_guaranted_loans %}
+                                    <div class="mt-8">
+                                        <p class="mb-2 text-xl font-bold">Guarented To</p>
+                                        <div class="grid grid-cols-2 gap-2 overflow-y-scroll max-h-28">
+                                            {% for loan in all_guaranted_loans%}
+                                            <div class="p-1 bg-gray-200 rounded">
+                                                <p class="font-medium">{{loan.client.full_name}}</p>
+                                                <div class="flex items-center text-sm italic text-gray-500 truncate">
+                                                    <p>school fees loan<span class="px-2 font-black">·</span></p>
+                                                    <p class="truncate">{{loan.given_amount}}/=</p>
+                                                </div>
                                             </div>
+                                            {% endfor %}
                                         </div>
-                                        {% endfor %}
                                     </div>
-                                </div>
+                                {% endif %}
                             </div>
                             
                         </div>
