@@ -69,6 +69,8 @@ def add_clients_view(request):
         nin = request.POST.get('nin')
         phone = request.POST.get('phone')
         email = request.POST.get('email')
+        if email == '':
+            email = None
         address = request.POST.get('address')
         if Person.objects.all().count() == 0:
             code = generate_code(phone, datetime.now())

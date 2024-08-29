@@ -525,6 +525,7 @@ def loanview(request, loan_id):
     loan = Loan.objects.filter(id=loan_id).first()
     docs = Document.objects.filter(loan=loan).order_by("-id")
     ammortizations = LoanAmortization.objects.filter(loan=loan).order_by("payment_date")
+    arreas = 0
     for ammortization in ammortizations:
         if ammortization.payment_date.date() < datetime.datetime.now().date():
             if ammortization.status == "PENDING":
