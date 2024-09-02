@@ -121,7 +121,7 @@ def calculate_loan_payment(
 def calculate_loan_request(request):
     if request.method == "POST":
         principal = int(request.POST.get("principal"))
-        monthly_interest_rate = int(request.POST.get("annual_interest_rate"))
+        monthly_interest_rate = float(request.POST.get("annual_interest_rate"))   
         annual_interest_rate_to_return = monthly_interest_rate
         monthly_interest_rate = monthly_interest_rate / 100
         loan_term_number = int(request.POST.get("loan_term_number"))
@@ -323,7 +323,7 @@ def accept_loan(request, loan_id):
             loan_requests = Loan.objects.all()
             loan = Loan.objects.filter(id=loan_id).first()
             amount = request.POST.get("amount")
-            rate = request.POST.get("rate")
+            rate = float(request.POST.get("rate"))
             dod = request.POST.get("dod")
             branch = request.POST.get("disbursementbranch")
             disbursement_branch = Branch.objects.filter(id=branch).first()
@@ -338,7 +338,7 @@ def accept_loan(request, loan_id):
             loan.status = "APPROVED"
 
             principal = int(amount)
-            annual_interest_rate = int(rate)
+            annual_interest_rate = rate
             annual_interest_rate = annual_interest_rate / 100
             loan_term_number = int(duration_num)
             loan_term_type_of_period = duration_type

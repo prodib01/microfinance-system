@@ -27,7 +27,7 @@
                                         <p class="text-xl font-bold">{{loan.given_amount}}/=</p>
                                     </div>
                                     <div>
-                                        <p>{{loan.interest_rate | floatformat:0}}%</p>
+                                        <p>{{loan.interest_rate | floatformat:2}}%</p>
                                     </div>
                                     <div>
                                         <p>{{loan.loan_term}} {{loan.loan_term_type_of_period}} ({{loan.payment_frequency}})</p>
@@ -379,7 +379,7 @@
                         </div>
                         <div>
                             <p>Interest Rate</p>
-                            <p class="font-bold">{{loan.interest_rate | floatformat:0}}%</p>
+                            <p class="font-bold">{{loan.interest_rate | floatformat:2}}%</p>
                         </div>
                         <div>
                             <p>Period</p>
