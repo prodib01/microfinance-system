@@ -26,8 +26,10 @@ from utilities.enums import (
     IncomeStatementClassification,
     TransactionTitle,
     TransactionType,
+    UserRoles,
 )
 from django.db import transaction as django_transaction
+from django.db.models import Q
 
 
 def calculate_loan_payment(
@@ -67,9 +69,9 @@ def calculate_loan_payment(
 
     # Calculate periodic payment amount using reducing balance formula
     periodic_payment = (
-            principal
-            * periodic_interest_rate
-            / (1 - (1 + periodic_interest_rate) ** (-total_payments))
+        principal
+        * periodic_interest_rate
+        / (1 - (1 + periodic_interest_rate) ** (-total_payments))
     )
 
     # Generate amortization schedule with payment dates
@@ -121,7 +123,7 @@ def calculate_loan_payment(
 def calculate_loan_request(request):
     if request.method == "POST":
         principal = int(request.POST.get("principal"))
-        monthly_interest_rate = float(request.POST.get("annual_interest_rate"))   
+        monthly_interest_rate = float(request.POST.get("annual_interest_rate"))
         annual_interest_rate_to_return = monthly_interest_rate
         monthly_interest_rate = monthly_interest_rate / 100
         loan_term_number = int(request.POST.get("loan_term_number"))
@@ -272,14 +274,29 @@ def load_requests(request):
     loan_guarantors = LoanGuarantor.objects.select_related(
         "guarantor", "guarantee"
     ).all()
-    loan_requests = Loan.objects.prefetch_related(
-        Prefetch("loanguarantor_set", queryset=loan_guarantors)
-    ).all()
-    for loan in loan_requests:
-        print(loan.loanguarantor_set.all())
-    rejected_loans = Loan.objects.filter(status="REJECTED").count()
-    approved_loans = Loan.objects.filter(status="APPROVED").count()
-    pending_loans = Loan.objects.filter(status="PENDING").count()
+    if request.user.profile.role == UserRoles.RELATIONSHIP_OFFICER.value:
+        loan_requests = Loan.objects.prefetch_related(
+            Prefetch("loanguarantor_set", queryset=loan_guarantors)
+        ).all()
+        rejected_loans = Loan.objects.filter(status="REJECTED").count() or 0
+        approved_loans = Loan.objects.filter(status="APPROVED").count() or 0
+        pending_loans = Loan.objects.filter(status="PENDING").count() or 0
+    elif request.user.profile.role == UserRoles.LOAN_OFFICER.value:
+        loan_requests = Loan.objects.prefetch_related(
+            Prefetch("loanguarantor_set", queryset=loan_guarantors)
+        ).filter(loan_officer=request.user.profile)
+        rejected_loans = Loan.objects.filter(status="REJECTED", loan_officer=request.user.profile).count() or 0
+        approved_loans = Loan.objects.filter(status="APPROVED", loan_officer=request.user.profile).count() or 0
+        pending_loans = Loan.objects.filter(status="PENDING", loan_officer=request.user.profile).count() or 0
+    else:
+        loan_requests = Loan.objects.prefetch_related(
+            Prefetch("loanguarantor_set", queryset=loan_guarantors)
+        ).filter(Q(branch=request.user.profile.branch) | Q(disbursment_branch=request.user.profile.branch))
+        rejected_loans = Loan.objects.filter((Q(branch=request.user.profile.branch) | Q(disbursment_branch=request.user.profile.branch)), status="REJECTED").count() or 0
+        approved_loans = Loan.objects.filter((Q(branch=request.user.profile.branch) | Q(disbursment_branch=request.user.profile.branch)), status="APPROVED").count() or 0
+        pending_loans = Loan.objects.filter((Q(branch=request.user.profile.branch) | Q(disbursment_branch=request.user.profile.branch)), status="PENDING").count() or 0
+    
+
     remarks = Remarks.objects.all()
     branches = Branch.objects.all()
     user = request.user

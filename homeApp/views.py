@@ -19,6 +19,7 @@ from utilities.enums import (
     IncomeStatementClassification,
     TransactionTitle,
     TransactionType,
+    UserRoles,
 )
 from utilities.helpers import (
     get_account,
@@ -89,26 +90,85 @@ def search_guarantors(request):
 
 @login_required(login_url="login")
 def home_view(request):
+    print(request.user.profile.role)
     people = Person.objects.all()
     all_loans_about_to_expire()
     loan_products = LoanProduct.objects.all()
     security_types = SecurityType.objects.all()
-    active_loans = Loan.objects.filter(status="APPROVED").order_by("-approved_at")[:4]
-    approved_loans = Loan.objects.filter(status="APPROVED").count() or 0
-    total_amount_approved_loans = (
-        Loan.objects.filter(status="APPROVED").aggregate(
-            total_amount=models.Sum("given_amount")
-        )["total_amount"]
-        or 0
-    )
-    total_amount_given_today = (
-        Loan.objects.filter(
-            status="APPROVED", approved_at=datetime.datetime.now().date()
-        ).aggregate(total_amount=models.Sum("given_amount"))["total_amount"]
-        or 0
-    )
+
+    if request.user.profile.role == UserRoles.RELATIONSHIP_OFFICER.value:
+        active_loans = Loan.objects.filter(status="APPROVED").order_by("-approved_at")[
+            :4
+        ]
+        approved_loans = Loan.objects.filter(status="APPROVED").count() or 0
+
+        total_amount_approved_loans = (
+            Loan.objects.filter(status="APPROVED").aggregate(
+                total_amount=models.Sum("given_amount")
+            )["total_amount"]
+            or 0
+        )
+        total_amount_given_today = (
+            Loan.objects.filter(
+                status="APPROVED", approved_at=datetime.datetime.now().date()
+            ).aggregate(total_amount=models.Sum("given_amount"))["total_amount"]
+            or 0
+        )
+        notifications = Notification.objects.filter(is_read=False).order_by("-created_at")
+
+    elif request.user.profile.role == UserRoles.LOAN_OFFICER.value:
+        active_loans = Loan.objects.filter(
+            loan_officer=request.user.profile, status="APPROVED"
+        ).order_by("-approved_at")[:4]
+        approved_loans = (
+            Loan.objects.filter(
+                status="APPROVED", loan_officer=request.user.profile
+            ).count()
+            or 0
+        )
+        total_amount_approved_loans = (
+            Loan.objects.filter(
+                status="APPROVED", loan_officer=request.user.profile
+            ).aggregate(total_amount=models.Sum("given_amount"))["total_amount"]
+            or 0
+        )
+        total_amount_given_today = (
+            Loan.objects.filter(
+                status="APPROVED",
+                loan_officer=request.user.profile,
+                approved_at=datetime.datetime.now().date(),
+            ).aggregate(total_amount=models.Sum("given_amount"))["total_amount"]
+            or 0
+        )
+        notifications = Notification.objects.filter(is_read=False, loan__loan_officer=request.user.profile).order_by("-created_at")
+
+    else:
+        active_loans = Loan.objects.filter(
+            disbursment_branch=request.user.profile.branch
+        ).order_by("-approved_at")[:4]
+        approved_loans = (
+            Loan.objects.filter(
+                status="APPROVED", disbursment_branch=request.user.profile.branch
+            ).count()
+            or 0
+        )
+        total_amount_approved_loans = (
+            Loan.objects.filter(
+                status="APPROVED", disbursment_branch=request.user.profile.branch
+            ).aggregate(total_amount=models.Sum("given_amount"))["total_amount"]
+            or 0
+        )
+        total_amount_given_today = (
+            Loan.objects.filter(
+                status="APPROVED",
+                disbursment_branch=request.user.profile.branch,
+                approved_at=datetime.datetime.now().date(),
+            ).aggregate(total_amount=models.Sum("given_amount"))["total_amount"]
+            or 0
+        )
+        notifications = Notification.objects.filter(is_read=False, loan__disbursment_branch=request.user.profile.branch).order_by("-created_at")
+
     user_type = request.user.profile.role
-    notifications = Notification.objects.filter(is_read=False).order_by("-created_at")
     penalty = get_system_parameter("PENALTY").int_value
     context = {
         "people": people,

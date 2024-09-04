@@ -8,7 +8,8 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from django.utils import timezone
 from accounting.models import Account
-from utilities.enums import AccountGroup
+from utilities.enums import AccountGroup, UserRoles
+from django.db.models import Q
 
 
 def index(request):
@@ -16,7 +17,13 @@ def index(request):
 
 
 def loans(request):
-    loans = Loan.objects.all()
+    if request.user.profile.role == UserRoles.RELATIONSHIP_OFFICER.value:
+        loans = Loan.objects.all()
+    elif request.user.profile.role == UserRoles.LOAN_OFFICER.value:
+        loans = Loan.objects.filter(loan_officer=request.user.profile)
+    else:
+        # disbursment_branch or branch
+        loans = Loan.objects.filter(Q(branch=request.user.profile.branch) | Q(disbursment_branch=request.user.profile.branch))
     return render(request, "pages/loans.html", {"active": "loans", "loans": loans})
 
 

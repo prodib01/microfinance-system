@@ -97,13 +97,13 @@
                                 <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
                                 {% endif %}
                                 <i class="mr-3 leading-3 fi fi-sr-chart-simple"></i> Financial Statements</button></a>
-                            <a href="/reports" class="w-full">
+                            {% comment %} <a href="/reports" class="w-full">
                                 {% if active == 'rep'%}
                                 <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">
                                 {% else %}
                                 <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
                                 {% endif %}
-                                <i class="mr-3 leading-3 fi fi-sr-clipboard-list"></i> Reports</button></a>
+                                <i class="mr-3 leading-3 fi fi-sr-clipboard-list"></i> Reports</button></a> {% endcomment %}
                         {% endif %}
                     </div>
                     <div class="border-t-2 border-[#1b1b1b]">
