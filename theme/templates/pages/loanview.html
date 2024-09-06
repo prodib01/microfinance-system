@@ -27,7 +27,7 @@
                                         <p class="text-xl font-bold">{{loan.given_amount}}/=</p>
                                     </div>
                                     <div>
-                                        <p>{{loan.interest_rate | floatformat:2}}%</p>
+                                        <p>{{loan.demanded_amount | floatformat:2 | intcomma}}/=</p>
                                     </div>
                                     <div>
                                         <p>{{loan.loan_term}} {{loan.loan_term_type_of_period}} ({{loan.payment_frequency}})</p>
@@ -283,7 +283,7 @@
                     <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
                         <div>
                             <h1>{{loan.loan_product}}</h1>
-                            <p class="text-xl font-bold">UGX {{loan.given_amount}}/=</p>
+                            {% comment %} <p class="text-xl font-bold">UGX {{loan.given_amount}}/=</p> {% endcomment %}
                         </div>
                         <div>
                             <p>{{loan.interest_rate}}%</p>
@@ -297,13 +297,20 @@
                             <h1>Total Interest</h1>
                             <p class="text-xl font-bold">UGX {{loan.account_interest}}/=</p>
                         </div>
-                        {% comment %} <div>
+                         <div>
                             <h1>Total Principal</h1>
                             <p class="text-xl font-bold">{{ loan.given_amount }}/=</p> 
-                        </div> {% endcomment %}
+                        </div> 
+
+                    </div>
+                    <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
                         <div>
                             <h1>Total Loan</h1>
                             <p class="text-xl font-bold">UGX {{ loan.account_interest|add:loan.given_amount }}/=</p>
+                        </div>
+                        <div>
+                            <h1>Demanded Amount</h1>
+                            <p class="text-xl font-bold">UGX {{ loan.demanded_amount }}/=</p>
                         </div>
                     </div>
                     <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
@@ -315,13 +322,17 @@
                             <h1>Amount on Loan Deposit</h1>
                             <p class="text-xl font-bold">UGX {{loan.client_loan_account_balance | floatformat:0}}/=</p>
                         </div>
-                        {% comment %} <div>
-                            <p>Mubiru Paul</p>
+                    </div> 
+                    <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
+                        <div>
+                            <strong><h1>Loan Officer</h1></strong>
+                           <p>{{loan.loan_officer}}</p>
                         </div>
                         <div>
-                            <p><i class="mr-2 leading-3 fi fi-rr-calendar-lines-pen"></i>28 Oct 2023</p>
-                        </div> {% endcomment %}
-                    </div> 
+                            <strong><h1>Disbursed</h1></strong>
+                            <p><i class="mr-2 leading-3 fi fi-rr-calendar-lines-pen"></i>{{ loan.approved_at | naturalday}} </p>
+                        </div> 
+                    </div>
                 </div>
                 <div class="flex items-end gap-8 mt-6">
                       <div>
@@ -416,6 +427,7 @@
                                     <th class="px-6 py-3 text-left">Ending Balance</th>
                                 </tr>
                             </thead>
+                            
                             <tbody>
                                 {% for ammortization in ammortizations %}
                                 <tr class="border-b dark:bg-gray-800 dark:border-gray-700">
@@ -429,7 +441,45 @@
                                 </tr>
                                 {% endfor %}
                             </tbody>
+
                         </table>
+                        <br>
+                        
+                        <h1 class="text-xl font-bold mb-4">
+                            Preferred Payment Methods
+                        </h1>
+                        <table class="min-w-full border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="text-left px-4 py-2 border">Bank</th>
+                                    <th class="text-left px-4 py-2 border">MM A/c Name</th>
+                                    <th class="text-left px-4 py-2 border">A/c Number</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-t">
+                                    <td class="px-4 py-2 border">Equity Bank</td>
+                                    <td class="px-4 py-2 border">Ronald Muwanika</td>
+                                    <td class="px-4 py-2 border">1000102292684</td>
+                                </tr>
+                                <tr class="border-t">
+                                    <td class="px-4 py-2 border">Centenary Bank</td>
+                                    <td class="px-4 py-2 border">Ronald Muwanika</td>
+                                    <td class="px-4 py-2 border">3204730219</td>
+                                </tr>
+                                <tr class="border-t">
+                                    <td class="px-4 py-2 border">MTN-MoMo Pay</td>
+                                    <td class="px-4 py-2 border">Ronald Muwanika</td>
+                                    <td class="px-4 py-2 border">969183</td>
+                                </tr>
+                                <tr class="border-t">
+                                    <td class="px-4 py-2 border">Airtel Money Pay</td>
+                                    <td class="px-4 py-2 border">Goldener Kredit Uganda</td>
+                                    <td class="px-4 py-2 border">6399321</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
                     </div>
                 </div>
             </div>

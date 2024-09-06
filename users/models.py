@@ -56,4 +56,4 @@ class Profile(models.Model):
         'branch.Branch', on_delete=models.SET_NULL, null=True, blank=True, related_name="user_branch")
 
     def __str__(self):
-        return self.user.fullname + ' - ' + self.role + ' - ' + self.user.phone_number + ' - ' + self.location
+        return self.user.fullname

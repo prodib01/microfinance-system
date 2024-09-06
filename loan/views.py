@@ -29,7 +29,7 @@ from utilities.enums import (
     UserRoles,
 )
 from django.db import transaction as django_transaction
-from django.db.models import Q
+from django.db.models import Q, Sum
 
 
 def calculate_loan_payment(
@@ -285,17 +285,61 @@ def load_requests(request):
         loan_requests = Loan.objects.prefetch_related(
             Prefetch("loanguarantor_set", queryset=loan_guarantors)
         ).filter(loan_officer=request.user.profile)
-        rejected_loans = Loan.objects.filter(status="REJECTED", loan_officer=request.user.profile).count() or 0
-        approved_loans = Loan.objects.filter(status="APPROVED", loan_officer=request.user.profile).count() or 0
-        pending_loans = Loan.objects.filter(status="PENDING", loan_officer=request.user.profile).count() or 0
+        rejected_loans = (
+            Loan.objects.filter(
+                status="REJECTED", loan_officer=request.user.profile
+            ).count()
+            or 0
+        )
+        approved_loans = (
+            Loan.objects.filter(
+                status="APPROVED", loan_officer=request.user.profile
+            ).count()
+            or 0
+        )
+        pending_loans = (
+            Loan.objects.filter(
+                status="PENDING", loan_officer=request.user.profile
+            ).count()
+            or 0
+        )
     else:
         loan_requests = Loan.objects.prefetch_related(
             Prefetch("loanguarantor_set", queryset=loan_guarantors)
-        ).filter(Q(branch=request.user.profile.branch) | Q(disbursment_branch=request.user.profile.branch))
-        rejected_loans = Loan.objects.filter((Q(branch=request.user.profile.branch) | Q(disbursment_branch=request.user.profile.branch)), status="REJECTED").count() or 0
-        approved_loans = Loan.objects.filter((Q(branch=request.user.profile.branch) | Q(disbursment_branch=request.user.profile.branch)), status="APPROVED").count() or 0
-        pending_loans = Loan.objects.filter((Q(branch=request.user.profile.branch) | Q(disbursment_branch=request.user.profile.branch)), status="PENDING").count() or 0
-    
+        ).filter(
+            Q(branch=request.user.profile.branch)
+            | Q(disbursment_branch=request.user.profile.branch)
+        )
+        rejected_loans = (
+            Loan.objects.filter(
+                (
+                    Q(branch=request.user.profile.branch)
+                    | Q(disbursment_branch=request.user.profile.branch)
+                ),
+                status="REJECTED",
+            ).count()
+            or 0
+        )
+        approved_loans = (
+            Loan.objects.filter(
+                (
+                    Q(branch=request.user.profile.branch)
+                    | Q(disbursment_branch=request.user.profile.branch)
+                ),
+                status="APPROVED",
+            ).count()
+            or 0
+        )
+        pending_loans = (
+            Loan.objects.filter(
+                (
+                    Q(branch=request.user.profile.branch)
+                    | Q(disbursment_branch=request.user.profile.branch)
+                ),
+                status="PENDING",
+            ).count()
+            or 0
+        )
 
     remarks = Remarks.objects.all()
     branches = Branch.objects.all()
@@ -564,6 +608,10 @@ def loanview(request, loan_id):
 
     loan_image = LoanImage.objects.filter(loan=loan).first()
     loan_image_url = loan_image.image.url if loan_image else None
+    # add demanded amount to the loan
+    demanded_amount = calculate_loans_demanded_amount(Loan.objects.filter(id=loan_id))
+    loan.demanded_amount = demanded_amount
+    
 
     return render(
         request,
@@ -616,3 +664,15 @@ def add_doc(request, loan_id):
         "loanview",
         loan_id=loan_id,
     )
+
+
+def calculate_loans_demanded_amount(loans_queryset):
+    total_demanded_amount = loans_queryset.aggregate(
+        total_principal_balance=Sum("loanamortization__principal_balance"),
+        total_interest_balance=Sum("loanamortization__interest_balance"),
+    )
+    demanded_amount = (total_demanded_amount["total_principal_balance"] or 0) + (
+        total_demanded_amount["total_interest_balance"] or 0
+    )
+
+    return demanded_amount
