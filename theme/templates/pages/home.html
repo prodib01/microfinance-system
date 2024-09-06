@@ -890,52 +890,125 @@
 
 <script>
     const calcForm = document.querySelector('.loan-calculator form');
-    calcForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        fetch('/loan/calculate', {
-            method: 'POST',
-            body: new FormData(calcForm),
+calcForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    fetch('/loan/calculate', {
+        method: 'POST',
+        body: new FormData(calcForm),
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            const loanAmount = document.querySelector('.loan-amount');
+            const interestRate = document.querySelector('.interest-rate');
+            const loanPeriod = document.querySelector('.loan-period');
+            const loanStartDate = document.querySelector('.loan-start-date');
+            const loanInstallments = document.querySelector('.loan-installments');
+            const loanNumberOfPayments = document.querySelector('.loan-number-of-payments');
+            const totalLoanInterest = document.querySelector('.total-loan-interest');
+            const totalLoanCost = document.querySelector('.total-loan-cost');
+
+            loanAmount.textContent = `UGX ${data.principal.toLocaleString()}`;
+            interestRate.textContent = `${data.annual_interest_rate.toLocaleString()}% PM (Reducing)`;
+            loanPeriod.textContent = `${data.loan_term_years} years`;
+            loanStartDate.textContent = `${data.start_date}`;
+            loanInstallments.textContent = `UGX ${data.installment.toLocaleString()}`;
+            loanNumberOfPayments.textContent = `${data.total_payments.toLocaleString()}`;
+            totalLoanInterest.textContent = `UGX ${data.total_interest.toLocaleString()}`;
+            totalLoanCost.textContent = `UGX ${(data.principal + data.total_interest).toLocaleString()}`;
+
+
+            const table = document.querySelector('.results-table tbody');
+            table.innerHTML = '';
+            data.amortization_schedule.forEach((schedule) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-6 py-3">${schedule.payment_number}</td>
+                    <td class="px-6 py-3">${schedule.payment_date}</td>
+                    <td class="px-6 py-3">${schedule.principal.toLocaleString()}/=</td>
+                    <td class="px-6 py-3">${schedule.interest.toLocaleString()}/=</td>
+                    <td class="px-6 py-3">${schedule.remaining_balance.toLocaleString()}/=</td>
+                `;
+                table.appendChild(tr);
+            });
+
+            // Append preferred payment methods and key notes after the table
+            const paymentSection = document.createElement('div');
+            paymentSection.innerHTML = `
+                <h1 class="text-xl font-bold mb-4">List Of Preferred Payment Methods</h1>
+                <table class="min-w-full border-collapse mb-6">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="text-left px-4 py-2 border">Bank</th>
+                            <th class="text-left px-4 py-2 border">MM A/c Name</th>
+                            <th class="text-left px-4 py-2 border">A/c Number</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-t">
+                            <td class="px-4 py-2 border">Equity Bank</td>
+                            <td class="px-4 py-2 border">Ronald Muwanika</td>
+                            <td class="px-4 py-2 border">1000102292684</td>
+                        </tr>
+                        <tr class="border-t">
+                            <td class="px-4 py-2 border">Centenary Bank</td>
+                            <td class="px-4 py-2 border">Ronald Muwanika</td>
+                            <td class="px-4 py-2 border">3204730219</td>
+                        </tr>
+                        <tr class="border-t">
+                            <td class="px-4 py-2 border">MTN-MoMo Pay</td>
+                            <td class="px-4 py-2 border">Ronald Muwanika</td>
+                            <td class="px-4 py-2 border">969183</td>
+                        </tr>
+                        <tr class="border-t">
+                            <td class="px-4 py-2 border">Airtel Money Pay</td>
+                            <td class="px-4 py-2 border">Goldener Kredit Uganda</td>
+                            <td class="px-4 py-2 border">6399321</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2 class="text-lg font-semibold mb-4">Key Notes</h2>
+                <ul class="list-disc ml-6 space-y-2">
+                    <li>Every payment reduces your loan balance.</li>
+                    <li>Pay just in time to increase your loan limit in the future.</li>
+                    <li>Make a self-payment at any agent banking nearby or use your phone to pay.</li>
+                    <li>Make payment within banking hours, i.e., as early as 10:30 AM and as late as 1:30 PM.</li>
+                    <li>Use your name while banking.</li>
+                    <li>Any delayed payment will attract a penalty of 10% on loan balances.</li>
+                    <li>Use only authorized accounts to pay for the loan.</li>
+                    <li>A customer is responsible for their loan. Kindly use our recommended methods while paying for your loan.</li>
+                    <li>Do not leave the point of banking without the receipt.</li>
+                    <li>Share and keep the receipt after payment.</li>
+                    <li>Always ask for a statement to know your loan details.</li>
+                    <li>Recommend a new loan applicant to become the best customer of the year.</li>
+                </ul>
+
+                <p class="mt-6">
+                    By signing on this document, the borrower hereby confirms that <strong>ALL</strong> deposits or payments are only recognized by official accounts declared as per this form.
+                </p>
+
+                <div class="mt-6">
+                    <p>Borrower’s Name:</p>
+                    <div class="h-16 border-b border-black w-64"></div>
+                </div>
+
+                <div class="mt-6">
+                    <p>Borrower’s Signature:</p>
+                    <div class="h-16 border-b border-black w-64"></div>
+                </div>
+
+                <div class="mt-6">
+                    <p>FOR AUTHORIZED STAMP:</p>
+                    <div class="h-16 border-b border-black w-64"></div>
+                </div>
+            `;
+
+            // Append the new section below the results table
+            document.querySelector('.results-table').appendChild(paymentSection);
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                const loanAmount = document.querySelector('.loan-amount');
-                const interestRate = document.querySelector('.interest-rate');
-                const loanPeriod = document.querySelector('.loan-period');
-                const loanStartDate = document.querySelector('.loan-start-date');
-                const loanInstallments = document.querySelector('.loan-installments');
-                const loanNumberOfPayments = document.querySelector('.loan-number-of-payments');
-                const totalLoanInterest = document.querySelector('.total-loan-interest');
-                const totalLoanCost = document.querySelector('.total-loan-cost');
+});
 
-                loanAmount.textContent = `UGX ${data.principal.toLocaleString()}`;
-                interestRate.textContent = `${data.annual_interest_rate.toLocaleString()}% PM (Reducing)`;
-                loanPeriod.textContent = `${data.loan_term_years} years`;
-                loanStartDate.textContent = `${data.start_date}`;
-                loanInstallments.textContent = `UGX ${data.installment.toLocaleString()}`;
-                loanNumberOfPayments.textContent = `${data.total_payments.toLocaleString()}`;
-                totalLoanInterest.textContent = `UGX ${data.total_interest.toLocaleString()}`;
-                totalLoanCost.textContent = `UGX ${(data.principal + data.total_interest).toLocaleString()}`;
-
-
-                const table = document.querySelector('.results-table tbody');
-                table.innerHTML = '';
-                data.amortization_schedule.forEach((schedule) => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-            <td class="px-6 py-3">${schedule.payment_number}</td>
-            <td class="px-6 py-3">${schedule.payment_date}</td>
-            <td class="px-6 py-3">${schedule.principal.toLocaleString()}/=</td>
-            <td class="px-6 py-3">${schedule.interest.toLocaleString()}/=</td>
-            <td class="px-6 py-3">${schedule.remaining_balance.toLocaleString()}/=</td>
-        `;
-                    table.appendChild(tr);
-                });
-
-
-
-            })
-    });
 </script>
 
 
