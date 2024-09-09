@@ -93,7 +93,7 @@ def search_guarantors(request):
 def home_view(request):
     print(request.user.profile.role)
     people = Person.objects.all()
-    all_loans_about_to_expire()
+    # all_loans_about_to_expire()
     loan_products = LoanProduct.objects.all()
     security_types = SecurityType.objects.all()
 
