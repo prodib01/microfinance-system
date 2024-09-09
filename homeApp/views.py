@@ -14,6 +14,7 @@ from django.db import models
 from django.http import JsonResponse
 import datetime
 from decimal import Decimal
+from loan.views import calculate_loans_demanded_amount, calculate_total_principal_balance, calculate_total_interest_balance
 from utilities.enums import (
     CashFlowClassification,
     IncomeStatementClassification,
@@ -115,6 +116,7 @@ def home_view(request):
             or 0
         )
         notifications = Notification.objects.filter(is_read=False).order_by("-created_at")
+        total_loans_approved = Loan.objects.filter(status="APPROVED")
 
     elif request.user.profile.role == UserRoles.LOAN_OFFICER.value:
         active_loans = Loan.objects.filter(
@@ -141,6 +143,7 @@ def home_view(request):
             or 0
         )
         notifications = Notification.objects.filter(is_read=False, loan__loan_officer=request.user.profile).order_by("-created_at")
+        total_loans_approved = Loan.objects.filter(status="APPROVED", loan_officer=request.user.profile)
 
     else:
         active_loans = Loan.objects.filter(
@@ -167,7 +170,10 @@ def home_view(request):
             or 0
         )
         notifications = Notification.objects.filter(is_read=False, loan__disbursment_branch=request.user.profile.branch).order_by("-created_at")
-
+        total_loans_approved = Loan.objects.filter(status="APPROVED", disbursment_branch=request.user.profile.branch)
+    total_amount_demanded = calculate_loans_demanded_amount(total_loans_approved)
+    total_principal_balance = calculate_total_principal_balance(total_loans_approved)
+    total_interest_balance = calculate_total_interest_balance(total_loans_approved)
     user_type = request.user.profile.role
     penalty = get_system_parameter("PENALTY").int_value
     context = {
@@ -182,6 +188,9 @@ def home_view(request):
         "user_type": user_type,
         "notifications": notifications,
         "penalty": (penalty / 100) if penalty else "0",
+        "total_amount_demanded": total_amount_demanded,
+        "total_principal_balance": total_principal_balance,
+        "total_interest_balance": total_interest_balance,
     }
     return render(request, "pages/home.html", context)
 

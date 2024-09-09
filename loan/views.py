@@ -676,3 +676,19 @@ def calculate_loans_demanded_amount(loans_queryset):
     )
 
     return demanded_amount
+
+def calculate_total_principal_balance(loans_queryset):
+    total_principal_balance = loans_queryset.aggregate(
+        total_principal_balance=Sum("loanamortization__principal_balance"),
+    )
+    principal_balance = total_principal_balance["total_principal_balance"] or 0
+
+    return principal_balance
+
+def calculate_total_interest_balance(loans_queryset):
+    total_interest_balance = loans_queryset.aggregate(
+        total_interest_balance=Sum("loanamortization__interest_balance"),
+    )
+    interest_balance = total_interest_balance["total_interest_balance"] or 0
+
+    return interest_balance
