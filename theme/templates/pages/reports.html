@@ -30,6 +30,14 @@
                 </tr>
             </thead>
             <tbody>
+                <style>
+                    table {
+                        font-size: 12px;
+                    }
+                    th, td {
+                        padding: 5px; 
+                    }
+                </style>
                 {% for loan in loans %}
                 <tr>
                     <td class="py-2 text-center">{{ loan.disbursment_branch }}</td>
