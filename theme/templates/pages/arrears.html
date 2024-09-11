@@ -14,6 +14,14 @@
         <div>
             <h1 class="text-3xl font-bold">Loans In Arrears</h1>
         </div>
+        <style>
+            table {
+                font-size: 12px;
+            }
+            th, td {
+                padding: 5px; 
+            }
+        </style>
         {% if arrears %}
         <table class="min-w-full bg-white border border-gray-400 overflow-x-auto">
             <thead>
@@ -25,6 +33,8 @@
                     <th class="py-2">Amount</th>
                     <th class="py-2">Disbursed At</th>
                     <th class="py-2">Balance</th>
+                    <th class="py-2">Arrears Int</th>
+                    <th class="py-2">Arrears Princ</th>
                     <th class="py-2">Payment Frequency</th>
                     <th class="py-2">Loan Term</th>
                     <th class="py-2">Arrears Days</th>
@@ -41,8 +51,10 @@
                     <td class="py-2 text-center">{{ arrear.loan.given_amount | floatformat:0 | intcomma}}/=</td>
                     <td class="py-2 text-center">{{ arrear.loan.approved_at | naturalday}}</td>
                     <td class="py-2 text-center">{{ arrear.loan.demanded_amount | floatformat:0 | intcomma}}/=</td>
+                    <td class="py-2 text-center">{{ arrear.loan.arrears_interest | floatformat:0 | intcomma}}/=</td>
+                    <td class="py-2 text-center">{{ arrear.loan.arrears_principal | floatformat:0 | intcomma}}/=</td>
                     <td class="py-2 text-center">{{ arrear.loan.payment_frequency }}</td>
-                    <td class="py-2 text-center">{{ arrear.loan.loan_term }} {{loan.loan_term_type_of_period}}</td>
+                    <td class="py-2 text-center">{{ arrear.loan.loan_term }} {{arrear.loan.loan_term_type_of_period}}</td>
                     <td class="py-2 text-center">{{ arrear.loan.arrear_days }}</td>
                     <td class="py-2 text-center">{{ arrear.loan.arrear_date | naturalday}}</td>
                 </tr>

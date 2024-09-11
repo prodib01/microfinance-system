@@ -611,7 +611,6 @@ def loanview(request, loan_id):
     # add demanded amount to the loan
     demanded_amount = calculate_loans_demanded_amount(Loan.objects.filter(id=loan_id))
     loan.demanded_amount = demanded_amount
-    
 
     return render(
         request,
@@ -677,6 +676,7 @@ def calculate_loans_demanded_amount(loans_queryset):
 
     return demanded_amount
 
+
 def calculate_total_principal_balance(loans_queryset):
     total_principal_balance = loans_queryset.aggregate(
         total_principal_balance=Sum("loanamortization__principal_balance"),
@@ -684,6 +684,7 @@ def calculate_total_principal_balance(loans_queryset):
     principal_balance = total_principal_balance["total_principal_balance"] or 0
 
     return principal_balance
+
 
 def calculate_total_interest_balance(loans_queryset):
     total_interest_balance = loans_queryset.aggregate(
@@ -698,32 +699,51 @@ def loans_in_arrears(request):
     if request.user.profile.role == UserRoles.RELATIONSHIP_OFFICER.value:
         loans = Loan.objects.filter(status="APPROVED")
     elif request.user.profile.role == UserRoles.LOAN_OFFICER.value:
-        loans = Loan.objects.filter(status="APPROVED", loan_officer=request.user.profile)
+        loans = Loan.objects.filter(
+            status="APPROVED", loan_officer=request.user.profile
+        )
     else:
         loans = Loan.objects.filter(
             Q(branch=request.user.profile.branch)
             | Q(disbursment_branch=request.user.profile.branch)
         ).filter(status="APPROVED")
+
     arrears = []
     for loan in loans:
-        ammortizations = LoanAmortization.objects.filter(loan=loan).order_by("payment_date")
+        ammortizations = LoanAmortization.objects.filter(loan=loan).order_by(
+            "payment_date"
+        )
+        total_arrears_principal = 0
+        total_arrears_interest = 0
+
         for ammortization in ammortizations:
             if ammortization.payment_date.date() < datetime.datetime.now().date():
                 if ammortization.status == "PENDING":
                     arrear_days = (
-                        datetime.datetime.now().date() - ammortization.payment_date.date()
+                        datetime.datetime.now().date()
+                        - ammortization.payment_date.date()
                     ).days
                     loan.arrear_days = arrear_days
                     loan.arrear_date = ammortization.payment_date
-                    arrears.append(
-                        {
-                            "loan": loan,
-                        }
-                    )
-                    break
+
+                    total_arrears_principal += ammortization.principal_balance
+                    total_arrears_interest += ammortization.interest_balance
+
             else:
                 break
+
+        if total_arrears_principal > 0 or total_arrears_interest > 0:
+            loan.arrears_principal = total_arrears_principal
+            loan.arrears_interest = total_arrears_interest
+
+            arrears.append(
+                {
+                    "loan": loan,
+                }
+            )
+
     arrears = sorted(arrears, key=lambda x: x["loan"].arrear_days)
+
     return render(
         request,
         "pages/arrears.html",
