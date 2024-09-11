@@ -68,6 +68,13 @@
                             <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
                             {% endif %} 
                             <i class="mr-3 leading-3 fi fi-sr-coins"></i> Loans</button></a>
+                        <a href="/loan/arrears" class="w-full">
+                                {% if active == 'arrears'%}
+                                <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">
+                                {% else %}
+                                <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
+                                {% endif %} 
+                                <i class="mr-3 leading-3 fi fi-sr-coins"></i> Arrears</button></a>
                         <a href="{% url "clients" %}" class="w-full">
                             {% if active == 'clients'%}
                             <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">
@@ -97,13 +104,13 @@
                                 <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
                                 {% endif %}
                                 <i class="mr-3 leading-3 fi fi-sr-chart-simple"></i> Financial Statements</button></a>
-                            {% comment %} <a href="/reports" class="w-full">
+                            <a href="/reports" class="w-full">
                                 {% if active == 'rep'%}
                                 <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">
                                 {% else %}
                                 <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
                                 {% endif %}
-                                <i class="mr-3 leading-3 fi fi-sr-clipboard-list"></i> Reports</button></a> {% endcomment %}
+                                <i class="mr-3 leading-3 fi fi-sr-clipboard-list"></i> Active Loans</button></a>
                         {% endif %}
                     </div>
                     <div class="border-t-2 border-[#1b1b1b]">
@@ -128,7 +135,39 @@
                 <script src="{% static "/scripts/numbercomma.js" %}"></script>
                 <script src="{% static "/scripts/selectPDF.js" %}"></script>
                 <script src="{% static "/scripts/selectGuarantor.js" %}"></script>
+                <script>
+                    function printDiv(divId) {
+                        var originalContent = document.body.innerHTML;
                 
+                        var content = document.getElementById(divId).innerHTML;
+                
+                        var myWindow = window.open('', '', 'width=800,height=600');
+                        myWindow.document.write('<html><head><title>Print Report</title>');
+                
+                        myWindow.document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">'); 
+                
+                        myWindow.document.write('<style>');
+                        myWindow.document.write('body { font-family: Arial, sans-serif; font-size: 10px; margin: 20px; }'); 
+                        myWindow.document.write('table { width: 100%; border-collapse: collapse; }');
+                        myWindow.document.write('th, td { padding: 2px; border: 1px solid black; text-align: center; font-size: 9px; }');
+                        myWindow.document.write('h1 { text-align: center; font-size: 14px; }');  
+                        myWindow.document.write('</style>');
+                
+                        myWindow.document.write('</head><body>');
+                        myWindow.document.write(content); 
+                        myWindow.document.write('</body></html>');
+                        myWindow.document.close(); 
+                        myWindow.focus();  
+                        myWindow.print();
+                
+                        myWindow.onafterprint = function () {
+                            myWindow.close();
+                        };
+                
+                        document.body.innerHTML = originalContent;
+                    }
+                </script>
+                            
 
             </body>
             </html>

@@ -12,4 +12,5 @@ urlpatterns = [
     path('loanview/<int:loan_id>/', views.loanview, name='loanview'),
     path('search-loan/', views.search_loan, name='search-loan'),   
     path('add-doc/<int:loan_id>', views.add_doc, name='add-doc'), 
+    path('arrears', views.loans_in_arrears, name='arrears'),
 ]

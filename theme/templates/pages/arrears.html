@@ -8,40 +8,43 @@
 
 <div class="w-full">
     <div class="flex items-center justify-between w-full max-myMob:flex-col max-myMob:items-start max-myMob:gap-4 max-md:mt-10">
-        <div>
-            <h1 class="text-3xl font-bold">Disbursed Loans</h1>
-        </div>
+
     </div>
     <div class="mt-4" id="loanReport">
-        {% if loans %}
+        <div>
+            <h1 class="text-3xl font-bold">Loans In Arrears</h1>
+        </div>
+        {% if arrears %}
         <table class="min-w-full bg-white border border-gray-400 overflow-x-auto">
             <thead>
                 <tr>
                     <th class="py-2">Disbursment Branch</th>
                     <th class="py-2">Loan Officer</th>
                     <th class="py-2">Client</th>
+                    <th class="py-2">Number</th>
                     <th class="py-2">Amount</th>
-                    <th class="py-2">Interest Bal</th>
-                    <th class="py-2">Principal Bal</th>
                     <th class="py-2">Disbursed At</th>
                     <th class="py-2">Balance</th>
                     <th class="py-2">Payment Frequency</th>
                     <th class="py-2">Loan Term</th>
+                    <th class="py-2">Arrears Days</th>
+                    <th class="py-2">Arrears Date</th>
                 </tr>
             </thead>
             <tbody>
-                {% for loan in loans %}
+                {% for arrear in arrears %}
                 <tr>
-                    <td class="py-2 text-center">{{ loan.disbursment_branch }}</td>
-                    <td class="py-2 text-center">{{ loan.loan_officer.user.fullname }}</td>
-                    <td class="py-2 text-center">{{ loan.client.full_name }}</td>
-                    <td class="py-2 text-center">{{ loan.given_amount | floatformat:0 | intcomma}}/=</td>
-                    <td class="py-2 text-center">{{ loan.interest_balance | floatformat:0 | intcomma}}/=</td>
-                    <td class="py-2 text-center">{{ loan.principal_balance | floatformat:0 | intcomma}}/=</td>
-                    <td class="py-2 text-center">{{ loan.approved_at | naturalday}}</td>
-                    <td class="py-2 text-center">{{ loan.demanded_amount | floatformat:0 | intcomma}}/=</td>
-                    <td class="py-2 text-center">{{ loan.payment_frequency }}</td>
-                    <td class="py-2 text-center">{{ loan.loan_term }} {{loan.loan_term_type_of_period}}</td>
+                    <td class="py-2 text-center">{{ arrear.loan.disbursment_branch }}</td>
+                    <td class="py-2 text-center">{{ arrear.loan.loan_officer.user.fullname }}</td>
+                    <td class="py-2 text-center">{{ arrear.loan.client.full_name }}</td>
+                    <td class="py-2 text-center">{{ arrear.loan.client.phone }}</td>
+                    <td class="py-2 text-center">{{ arrear.loan.given_amount | floatformat:0 | intcomma}}/=</td>
+                    <td class="py-2 text-center">{{ arrear.loan.approved_at | naturalday}}</td>
+                    <td class="py-2 text-center">{{ arrear.loan.demanded_amount | floatformat:0 | intcomma}}/=</td>
+                    <td class="py-2 text-center">{{ arrear.loan.payment_frequency }}</td>
+                    <td class="py-2 text-center">{{ arrear.loan.loan_term }} {{loan.loan_term_type_of_period}}</td>
+                    <td class="py-2 text-center">{{ arrear.loan.arrear_days }}</td>
+                    <td class="py-2 text-center">{{ arrear.loan.arrear_date | naturalday}}</td>
                 </tr>
                 {% endfor %}
             </tbody>

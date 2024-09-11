@@ -8,6 +8,10 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from django.utils import timezone
 from accounting.models import Account
+from loan.views import (
+    calculate_total_interest_balance,
+    calculate_total_principal_balance,
+)
 from utilities.enums import AccountGroup, UserRoles
 from django.db.models import Q
 
@@ -23,7 +27,10 @@ def loans(request):
         loans = Loan.objects.filter(loan_officer=request.user.profile)
     else:
         # disbursment_branch or branch
-        loans = Loan.objects.filter(Q(branch=request.user.profile.branch) | Q(disbursment_branch=request.user.profile.branch))
+        loans = Loan.objects.filter(
+            Q(branch=request.user.profile.branch)
+            | Q(disbursment_branch=request.user.profile.branch)
+        )
     return render(request, "pages/loans.html", {"active": "loans", "loans": loans})
 
 
@@ -42,7 +49,9 @@ def financialstatements(request):
     sum_current_assets = sum([account.balance for account in current_assets])
     fixed_assets = Account.objects.filter(group=AccountGroup.FIXED_ASSETS.value)
     sum_fixed_assets = sum([account.balance for account in fixed_assets])
-    current_liabilities = Account.objects.filter(group=AccountGroup.CURRENT_LIABILITIES.value)
+    current_liabilities = Account.objects.filter(
+        group=AccountGroup.CURRENT_LIABILITIES.value
+    )
     sum_current_liabilities = sum([account.balance for account in current_liabilities])
     long_term_liabilities = Account.objects.filter(
         group=AccountGroup.LONG_TERM_LIABILITIES.value
@@ -74,34 +83,30 @@ def financialstatements(request):
             "sum_equity": sum_equity,
             "total_assets": total_assets,
             "total_liabilities": total_liabilities,
-            "total_equity_and_liabilities": total_equity_and_liabilities
+            "total_equity_and_liabilities": total_equity_and_liabilities,
         },
     )
 
 
 def reports(request):
-    # Get the current date
-    now = timezone.now()
-    current_month = now.month
-    current_year = now.year
-
-    # Fetch the selected month and year from the request
-    selected_month = request.GET.get("month", current_month)
-    selected_year = request.GET.get("year", current_year)
-
-    # Fetch loans based on the selected month and year
-    loans = Loan.objects.filter(
-        created_at__year=selected_year, created_at__month=selected_month
-    )
-
-    # Generate a range of years for the year select dropdown
-    year_range = range(current_year - 10, current_year + 1)
+    if request.user.profile.role == UserRoles.RELATIONSHIP_OFFICER.value:
+        loans = Loan.objects.filter(status="APPROVED")
+    elif request.user.profile.role == UserRoles.LOAN_OFFICER.value:
+        loans = Loan.objects.filter(
+            loan_officer=request.user.profile, status="APPROVED"
+        )
+    else:
+        loans = Loan.objects.filter(
+            Q(branch=request.user.profile.branch)
+            | Q(disbursment_branch=request.user.profile.branch)
+        ).filter(status="APPROVED")
+    for loan in loans:
+        actual_loan = loans.filter(id=loan.id)
+        loan.interest_balance = calculate_total_interest_balance(actual_loan)
+        loan.principal_balance = calculate_total_principal_balance(actual_loan)
 
     context = {
         "loans": loans,
-        "year_range": year_range,
-        "selected_month": selected_month,
-        "selected_year": selected_year,
     }
     return render(request, "pages/reports.html", context)
 
