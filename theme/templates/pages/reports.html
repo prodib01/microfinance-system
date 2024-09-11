@@ -8,11 +8,14 @@
 
 <div class="w-full">
     <div class="flex items-center justify-between w-full max-myMob:flex-col max-myMob:items-start max-myMob:gap-4 max-md:mt-10">
-        <div>
-            <h1 class="text-3xl font-bold">Disbursed Loans</h1>
-        </div>
+
     </div>
     <div class="mt-4" id="loanReport">
+        <div>
+            <img src="{% static "/img/logo.png" %}" alt="" srcset="" class="w-16 pr-1">
+            <h1 class="text-3xl font-bold">MURO MICROFINANCE UGANDA LTD</h1>
+            <h1 class="text-3xl font-bold">Disbursed Loans</h1>
+        </div>
         {% if loans %}
         <table class="min-w-full bg-white border border-gray-400 overflow-x-auto">
             <thead>
@@ -30,14 +33,14 @@
                 </tr>
             </thead>
             <tbody>
-                <style>
-                    table {
-                        font-size: 12px;
-                    }
-                    th, td {
-                        padding: 5px; 
-                    }
-                </style>
+                        <style>
+            table {
+                font-size: 12px;
+            }
+            th, td {
+                padding: 5px; 
+            }
+        </style>
                 {% for loan in loans %}
                 <tr>
                     <td class="py-2 text-center">{{ loan.disbursment_branch }}</td>

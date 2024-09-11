@@ -12,7 +12,9 @@
     </div>
     <div class="mt-4" id="loanReport">
         <div>
-            <h1 class="text-3xl font-bold">Loans In Arrears</h1>
+            <img src="{% static "/img/logo.png" %}" alt="" srcset="" class="w-16 pr-1">
+            <h1 class="text-3xl font-bold">MURO MICROFINANCE UGANDA LTD</h1>
+            <h1 class="text-3xl font-bold">Arrears Report</h1>
         </div>
         <style>
             table {
@@ -61,6 +63,10 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        <div class="mt-4">
+            <p class="text-right text-gray-500">Generated on {% now "Y-m-d" %}</p>
+        </div>
 
         
         {% else %}
