@@ -105,6 +105,7 @@ def reports(request):
         loan.interest_balance = calculate_total_interest_balance(actual_loan)
         loan.principal_balance = calculate_total_principal_balance(actual_loan)
 
+    loans = loans.order_by("-demanded_amount")
     context = {
         "loans": loans,
     }
