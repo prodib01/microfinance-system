@@ -90,22 +90,20 @@ def financialstatements(request):
 
 def reports(request):
     if request.user.profile.role == UserRoles.RELATIONSHIP_OFFICER.value:
-        loans = Loan.objects.filter(status="APPROVED")
+        loans = Loan.objects.filter(status="APPROVED").order_by("-demanded_amount")
     elif request.user.profile.role == UserRoles.LOAN_OFFICER.value:
         loans = Loan.objects.filter(
             loan_officer=request.user.profile, status="APPROVED"
-        )
+        ).order_by("-demanded_amount")
     else:
         loans = Loan.objects.filter(
             Q(branch=request.user.profile.branch)
             | Q(disbursment_branch=request.user.profile.branch)
-        ).filter(status="APPROVED")
+        ).filter(status="APPROVED").order_by("-demanded_amount")
     for loan in loans:
         actual_loan = loans.filter(id=loan.id)
         loan.interest_balance = calculate_total_interest_balance(actual_loan)
         loan.principal_balance = calculate_total_principal_balance(actual_loan)
-
-    loans = loans.order_by("-demanded_amount")
     context = {
         "loans": loans,
     }
