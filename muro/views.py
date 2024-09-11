@@ -96,10 +96,14 @@ def reports(request):
             loan_officer=request.user.profile, status="APPROVED"
         ).order_by("-demanded_amount")
     else:
-        loans = Loan.objects.filter(
-            Q(branch=request.user.profile.branch)
-            | Q(disbursment_branch=request.user.profile.branch)
-        ).filter(status="APPROVED").order_by("-demanded_amount")
+        loans = (
+            Loan.objects.filter(
+                Q(branch=request.user.profile.branch)
+                | Q(disbursment_branch=request.user.profile.branch)
+            )
+            .filter(status="APPROVED")
+            .order_by("-demanded_amount")
+        )
     for loan in loans:
         actual_loan = loans.filter(id=loan.id)
         loan.interest_balance = calculate_total_interest_balance(actual_loan)

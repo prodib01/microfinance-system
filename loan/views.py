@@ -711,7 +711,7 @@ def loans_in_arrears(request):
     arrears = []
     for loan in loans:
         ammortizations = LoanAmortization.objects.filter(loan=loan).order_by(
-            "payment_date"
+            "-payment_date"
         )
         total_arrears_principal = 0
         total_arrears_interest = 0
