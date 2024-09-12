@@ -97,13 +97,16 @@
                                 <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
                                 {% endif %} 
                                 <i class="mr-3 leading-3 fi fi-sr-following"></i> Guarantors</button></a> {% endcomment %}
-                            <a href="/financialstatements" class="w-full">
-                                {% if active == 'financialstatements'%}
-                                <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">
-                                {% else %}
-                                <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
+                                {% if  request.user.profile.role == 'RELATIONSHIP_OFFICER' or request.user.profile.role == 'ACCOUNTANT' %}
+                                    <a href="/financialstatements" class="w-full">
+                                        {% if active == 'financialstatements'%}
+                                        <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">
+                                        {% else %}
+                                        <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
+                                        {% endif %}
+                                        <i class="mr-3 leading-3 fi fi-sr-chart-simple"></i>Statements</button></a>
                                 {% endif %}
-                                <i class="mr-3 leading-3 fi fi-sr-chart-simple"></i>Statements</button></a>
+
                             <a href="/reports" class="w-full">
                                 {% if active == 'active_loans'%}
                                 <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">
