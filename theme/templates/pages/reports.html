@@ -11,23 +11,25 @@
     <div class="flex items-center justify-between w-full mb-6 flex-col md:flex-row md:space-x-4">
         <form method="GET" class="flex space-x-4">
             <!-- Loan Officer Filter -->
-            <div class="flex flex-col">
-                <label for="loan_officer" class="mb-2 font-semibold text-sm">Loan Officer</label>
-                <select name="loan_officer" id="loan_officer" class="border rounded p-2 w-48">
-                    <option value="">All Loan Officers</option>
-                    {% for officer in loan_officers %}
-                        <option value="{{ officer.id }}" {% if request.GET.loan_officer == officer.id|stringformat:"s" %}selected{% endif %}>
-                            {{ officer.user.fullname }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
+            {% if  request.user.profile.role != 'LOAN_OFFICER' %}
+                <div class="flex flex-col">
+                    <label for="loan_officer" class="mb-2 font-semibold text-sm">Loan Officer</label>
+                    <select name="loan_officer" id="loan_officer" class="border rounded p-2 w-48">
+                        <option value="">Loan Officers</option>
+                        {% for officer in loan_officers %}
+                            <option value="{{ officer.id }}" {% if request.GET.loan_officer == officer.id|stringformat:"s" %}selected{% endif %}>
+                                {{ officer.user.fullname }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
 
             <!-- Client Filter -->
             <div class="flex flex-col">
                 <label for="client" class="mb-2 font-semibold text-sm">Client</label>
                 <select name="client" id="client" class="border rounded p-2 w-48">
-                    <option value="">All Clients</option>
+                    <option value="">Clients</option>
                     {% for client in clients %}
                         <option value="{{ client.id }}" {% if request.GET.client == client.id|stringformat:"s" %}selected{% endif %}>
                             {{ client.full_name }}

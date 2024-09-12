@@ -93,28 +93,30 @@ def financialstatements(request):
 def reports(request):
     loans = Loan.objects.filter(status="APPROVED")
 
-    # Filtering by loan officer if provided
     loan_officer_id = request.GET.get("loan_officer")
     if loan_officer_id:
         loans = loans.filter(loan_officer_id=loan_officer_id)
 
-    # Filtering by client if provided
     client_id = request.GET.get("client")
     if client_id:
         loans = loans.filter(client_id=client_id)
 
-    # Role-based filtering
     if request.user.profile.role == UserRoles.RELATIONSHIP_OFFICER.value:
         loans = loans.order_by("-demanded_amount")
+        clients = Person.objects.all()
     elif request.user.profile.role == UserRoles.LOAN_OFFICER.value:
         loans = loans.filter(loan_officer=request.user.profile).order_by(
             "-demanded_amount"
         )
+        clients = Person.objects.filter(loan__loan_officer=request.user.profile)
     else:
         loans = loans.filter(
             Q(branch=request.user.profile.branch)
             | Q(disbursment_branch=request.user.profile.branch)
         ).order_by("-demanded_amount")
+        clients = Person.objects.filter(
+            loan__branch=request.user.profile.branch
+        )
 
     for loan in loans:
         actual_loan = loans.filter(id=loan.id)
@@ -122,12 +124,12 @@ def reports(request):
         loan.principal_balance = calculate_total_principal_balance(actual_loan)
 
     loan_officers = Profile.objects.all()
-    clients = Person.objects.all()
 
     context = {
         "loans": loans,
         "loan_officers": loan_officers,
         "clients": clients,
+        "active": "active_loans",
     }
     return render(request, "pages/reports.html", context)
 

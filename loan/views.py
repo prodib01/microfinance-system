@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 import datetime
 from dateutil.relativedelta import relativedelta
+
+from users.models import Profile
 from .models import (
     Loan,
     LoanProduct,
@@ -692,15 +694,28 @@ def calculate_total_interest_balance(loans_queryset):
 def loans_in_arrears(request):
     if request.user.profile.role == UserRoles.RELATIONSHIP_OFFICER.value:
         loans = Loan.objects.filter(status="APPROVED")
+        clients = Person.objects.all()
+
     elif request.user.profile.role == UserRoles.LOAN_OFFICER.value:
         loans = Loan.objects.filter(
             status="APPROVED", loan_officer=request.user.profile
         )
+        clients = Person.objects.filter(loan__loan_officer=request.user.profile)
+
     else:
         loans = Loan.objects.filter(
             Q(branch=request.user.profile.branch)
             | Q(disbursment_branch=request.user.profile.branch)
         ).filter(status="APPROVED")
+        clients = Person.objects.filter(loan__branch=request.user.profile.branch)
+
+    loan_officer_id = request.GET.get("loan_officer")
+    if loan_officer_id:
+        loans = loans.filter(loan_officer_id=loan_officer_id)
+
+    client_id = request.GET.get("client")
+    if client_id:
+        loans = loans.filter(client_id=client_id)
 
     arrears = []
     for loan in loans:
@@ -737,6 +752,7 @@ def loans_in_arrears(request):
             )
 
     arrears = sorted(arrears, key=lambda x: x["loan"].arrear_days)
+    loan_officers = Profile.objects.all()
 
     return render(
         request,
@@ -744,5 +760,7 @@ def loans_in_arrears(request):
         {
             "arrears": arrears,
             "active": "arrears",
+            "loan_officers": loan_officers,
+            "clients": clients,
         },
     )

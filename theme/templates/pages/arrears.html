@@ -8,7 +8,43 @@
 
 <div class="w-full">
     <div class="flex items-center justify-between w-full max-myMob:flex-col max-myMob:items-start max-myMob:gap-4 max-md:mt-10">
+        <form method="GET" class="flex space-x-4">
+            <!-- Loan Officer Filter -->
+             {% if  request.user.profile.role != 'LOAN_OFFICER' %}
+             <div class="flex flex-col">
+                <label for="loan_officer" class="mb-2 font-semibold text-sm">Loan Officer</label>
+                <select name="loan_officer" id="loan_officer" class="border rounded p-2 w-48">
+                    <option value="">Loan Officers</option>
+                    {% for officer in loan_officers %}
+                        <option value="{{ officer.id }}" {% if request.GET.loan_officer == officer.id|stringformat:"s" %}selected{% endif %}>
+                            {{ officer.user.fullname }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div> 
+             {% endif %}
+            
 
+            <!-- Client Filter -->
+            <div class="flex flex-col">
+                <label for="client" class="mb-2 font-semibold text-sm">Client</label>
+                <select name="client" id="client" class="border rounded p-2 w-48">
+                    <option value="">Clients</option>
+                    {% for client in clients %}
+                        <option value="{{ client.id }}" {% if request.GET.client == client.id|stringformat:"s" %}selected{% endif %}>
+                            {{ client.full_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex items-end">
+                <button type="submit" class="rounded bg-myGreen text-white px-4 py-2">
+                    Filter
+                </button>
+            </div>
+        </form>
     </div>
     <div class="mt-4" id="loanReport">
         <div>
