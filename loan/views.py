@@ -599,16 +599,10 @@ def loanview(request, loan_id):
         else:
             arreas = 0
             break
-    if loan.status != "PENDING":
-        loan_inrement_by_interest_today = loan.given_amount * loan.interest_rate / 100
-    else:
-        arreas = 0
-        loan_inrement_by_interest_today = None
     deposits = Deposit.objects.filter(loan=loan)
 
     loan_image = LoanImage.objects.filter(loan=loan).first()
     loan_image_url = loan_image.image.url if loan_image else None
-    # add demanded amount to the loan
     demanded_amount = calculate_loans_demanded_amount(Loan.objects.filter(id=loan_id))
     loan.demanded_amount = demanded_amount
 

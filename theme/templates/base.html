@@ -44,7 +44,7 @@
                     </a>
                 </div>
             </div>
-            <div class="flex items-start gap-11 mt-14">
+            <div class="flex items-start gap-9 mt-14">
                 <div id="menu" class="sticky flex flex-col justify-between w-1/5 px-5 py-8 text-white myNav h-[470px] bg-myBlack rounded-3xl top-3 max-md:hidden max-md:z-10 max-md:w-[90%] max-md:fixed max-md:top-28 max-md:h-4/5 max-myMob:w-[90%]">
                     <div class="flex flex-col items-start justify-around space-y-2">
                         <a href="/home/" class="w-full">
@@ -90,20 +90,20 @@
                                     <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
                                     {% endif %} 
                                     <i class="mr-3 leading-3 fi fi-sr-user-crown"></i> Staff</button></a>
-                            <a href="{% url "guarantor" %}" class="w-full">
+                            {% comment %} <a href="{% url "guarantor" %}" class="w-full">
                                 {% if active == 'guarantors'%}
                                 <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">
                                 {% else %}
                                 <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
                                 {% endif %} 
-                                <i class="mr-3 leading-3 fi fi-sr-following"></i> Guarantors</button></a>
+                                <i class="mr-3 leading-3 fi fi-sr-following"></i> Guarantors</button></a> {% endcomment %}
                             <a href="/financialstatements" class="w-full">
                                 {% if active == 'financialstatements'%}
                                 <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">
                                 {% else %}
                                 <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
                                 {% endif %}
-                                <i class="mr-3 leading-3 fi fi-sr-chart-simple"></i> Financial Statements</button></a>
+                                <i class="mr-3 leading-3 fi fi-sr-chart-simple"></i>Statements</button></a>
                             <a href="/reports" class="w-full">
                                 {% if active == 'rep'%}
                                 <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">

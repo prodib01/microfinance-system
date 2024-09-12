@@ -7,64 +7,100 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <div class="w-full">
-    <div class="flex items-center justify-between w-full max-myMob:flex-col max-myMob:items-start max-myMob:gap-4 max-md:mt-10">
+    <!-- Filters Section -->
+    <div class="flex items-center justify-between w-full mb-6 flex-col md:flex-row md:space-x-4">
+        <form method="GET" class="flex space-x-4">
+            <!-- Loan Officer Filter -->
+            <div class="flex flex-col">
+                <label for="loan_officer" class="mb-2 font-semibold text-sm">Loan Officer</label>
+                <select name="loan_officer" id="loan_officer" class="border rounded p-2 w-48">
+                    <option value="">All Loan Officers</option>
+                    {% for officer in loan_officers %}
+                        <option value="{{ officer.id }}" {% if request.GET.loan_officer == officer.id|stringformat:"s" %}selected{% endif %}>
+                            {{ officer.user.fullname }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
+            <!-- Client Filter -->
+            <div class="flex flex-col">
+                <label for="client" class="mb-2 font-semibold text-sm">Client</label>
+                <select name="client" id="client" class="border rounded p-2 w-48">
+                    <option value="">All Clients</option>
+                    {% for client in clients %}
+                        <option value="{{ client.id }}" {% if request.GET.client == client.id|stringformat:"s" %}selected{% endif %}>
+                            {{ client.full_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex items-end">
+                <button type="submit" class="rounded bg-myGreen text-white px-4 py-2">
+                    Filter
+                </button>
+            </div>
+        </form>
     </div>
-    <div class="mt-4" id="loanReport">
-        <div>
-            <img src="{% static "/img/logo.png" %}" alt="" srcset="" class="w-16 pr-1">
-            <h1 class="text-3xl font-bold">MURO MICROFINANCE UGANDA LTD</h1>
-            <h1 class="text-3xl font-bold">Disbursed Loans</h1>
-        </div>
-        {% if loans %}
-        <table class="min-w-full bg-white border border-gray-400 overflow-x-auto">
-            <thead>
-                <tr>
-                    <th class="py-2">Disbursment Branch</th>
-                    <th class="py-2">Loan Officer</th>
-                    <th class="py-2">Client</th>
-                    <th class="py-2">Amount</th>
-                    <th class="py-2">Interest Bal</th>
-                    <th class="py-2">Principal Bal</th>
-                    <th class="py-2">Disbursed At</th>
-                    <th class="py-2">Balance</th>
-                    <th class="py-2">Payment Frequency</th>
-                    <th class="py-2">Loan Term</th>
-                </tr>
-            </thead>
-            <tbody>
-                        <style>
-            table {
-                font-size: 12px;
-            }
-            th, td {
-                padding: 5px; 
-            }
-        </style>
-                {% for loan in loans %}
-                <tr>
-                    <td class="py-2 text-center">{{ loan.disbursment_branch }}</td>
-                    <td class="py-2 text-center">{{ loan.loan_officer.user.fullname }}</td>
-                    <td class="py-2 text-center">{{ loan.client.full_name }}</td>
-                    <td class="py-2 text-center">{{ loan.given_amount | floatformat:0 | intcomma}}/=</td>
-                    <td class="py-2 text-center">{{ loan.interest_balance | floatformat:0 | intcomma}}/=</td>
-                    <td class="py-2 text-center">{{ loan.principal_balance | floatformat:0 | intcomma}}/=</td>
-                    <td class="py-2 text-center">{{ loan.approved_at | naturalday}}</td>
-                    <td class="py-2 text-center">{{ loan.demanded_amount | floatformat:0 | intcomma}}/=</td>
-                    <td class="py-2 text-center">{{ loan.payment_frequency }}</td>
-                    <td class="py-2 text-center">{{ loan.loan_term }} {{loan.loan_term_type_of_period}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
 
-        
+    <!-- Report Header -->
+     <div id="loanReport">
+        <div class="mb-6 text-center">
+            <img src="{% static 'img/logo.png' %}" alt="Logo" class="w-16 mx-auto mb-2">
+            <h1 class="text-2xl font-bold">MURO MICROFINANCE UGANDA LTD</h1>
+            <h2 class="text-xl font-bold">Disbursed Loans</h2>
+        </div>
+    
+        <!-- Loans Table -->
+        {% if loans %}
+        <div >
+            <table class="min-w-full bg-white border border-gray-400 overflow-x-auto text-sm">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="py-2 px-4 text-left">Disbursement Branch</th>
+                        <th class="py-2 px-4 text-left">Loan Officer</th>
+                        <th class="py-2 px-4 text-left">Client</th>
+                        <th class="py-2 px-4 text-right">Amount</th>
+                        <th class="py-2 px-4 text-right">Interest Bal</th>
+                        <th class="py-2 px-4 text-right">Principal Bal</th>
+                        <th class="py-2 px-4 text-center">Disbursed At</th>
+                        <th class="py-2 px-4 text-right">Balance</th>
+                        <th class="py-2 px-4 text-left">Payment Frequency</th>
+                        <th class="py-2 px-4 text-left">Loan Term</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for loan in loans %}
+                    <tr class="border-t">
+                        <td class="py-2 px-4">{{ loan.disbursment_branch }}</td>
+                        <td class="py-2 px-4">{{ loan.loan_officer.user.fullname }}</td>
+                        <td class="py-2 px-4">{{ loan.client.full_name }}</td>
+                        <td class="py-2 px-4 text-right">{{ loan.given_amount | floatformat:0 | intcomma }}/=</td>
+                        <td class="py-2 px-4 text-right">{{ loan.interest_balance | floatformat:0 | intcomma }}/=</td>
+                        <td class="py-2 px-4 text-right">{{ loan.principal_balance | floatformat:0 | intcomma }}/=</td>
+                        <td class="py-2 px-4 text-center">{{ loan.approved_at | naturalday }}</td>
+                        <td class="py-2 px-4 text-right">{{ loan.demanded_amount | floatformat:0 | intcomma }}/=</td>
+                        <td class="py-2 px-4">{{ loan.payment_frequency }}</td>
+                        <td class="py-2 px-4">{{ loan.loan_term }} {{ loan.loan_term_type_of_period }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         {% else %}
         <p class="text-center text-gray-500">No loan reports available.</p>
         {% endif %}
-    </div>
-    <div class="mt-4">
-        <button onclick="printDiv('loanReport')" class="rounded bg-blue-500 text-white px-4 py-2">Print Report</button>
+    
+     </div>
+
+    <!-- Print Button -->
+    <div class="mt-6 text-center">
+        <button onclick="printDiv('loanReport')" class="rounded bg-blue-500 text-white px-4 py-2">
+            Print Report
+        </button>
     </div>
 </div>
+
 {% endblock %}

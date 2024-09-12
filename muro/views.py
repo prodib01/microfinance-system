@@ -1,6 +1,7 @@
 from datetime import datetime
 import io
 from django.shortcuts import render
+from clientApp.models import Person
 from loan.models import Loan, LoanAmortization
 from django.utils.dateparse import parse_date
 from django.http import FileResponse
@@ -12,6 +13,7 @@ from loan.views import (
     calculate_total_interest_balance,
     calculate_total_principal_balance,
 )
+from users.models import Profile
 from utilities.enums import AccountGroup, UserRoles
 from django.db.models import Q
 
@@ -89,27 +91,43 @@ def financialstatements(request):
 
 
 def reports(request):
+    loans = Loan.objects.filter(status="APPROVED")
+
+    # Filtering by loan officer if provided
+    loan_officer_id = request.GET.get("loan_officer")
+    if loan_officer_id:
+        loans = loans.filter(loan_officer_id=loan_officer_id)
+
+    # Filtering by client if provided
+    client_id = request.GET.get("client")
+    if client_id:
+        loans = loans.filter(client_id=client_id)
+
+    # Role-based filtering
     if request.user.profile.role == UserRoles.RELATIONSHIP_OFFICER.value:
-        loans = Loan.objects.filter(status="APPROVED").order_by("-demanded_amount")
+        loans = loans.order_by("-demanded_amount")
     elif request.user.profile.role == UserRoles.LOAN_OFFICER.value:
-        loans = Loan.objects.filter(
-            loan_officer=request.user.profile, status="APPROVED"
-        ).order_by("-demanded_amount")
-    else:
-        loans = (
-            Loan.objects.filter(
-                Q(branch=request.user.profile.branch)
-                | Q(disbursment_branch=request.user.profile.branch)
-            )
-            .filter(status="APPROVED")
-            .order_by("-demanded_amount")
+        loans = loans.filter(loan_officer=request.user.profile).order_by(
+            "-demanded_amount"
         )
+    else:
+        loans = loans.filter(
+            Q(branch=request.user.profile.branch)
+            | Q(disbursment_branch=request.user.profile.branch)
+        ).order_by("-demanded_amount")
+
     for loan in loans:
         actual_loan = loans.filter(id=loan.id)
         loan.interest_balance = calculate_total_interest_balance(actual_loan)
         loan.principal_balance = calculate_total_principal_balance(actual_loan)
+
+    loan_officers = Profile.objects.all()
+    clients = Person.objects.all()
+
     context = {
         "loans": loans,
+        "loan_officers": loan_officers,
+        "clients": clients,
     }
     return render(request, "pages/reports.html", context)
 
