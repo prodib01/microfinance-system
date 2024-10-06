@@ -40,7 +40,9 @@
                                     <tbody>
                                         {% for account in accounts %}
                                             <tr>
-                                                <td class="px-4 py-3">{{ account.name }}</td>
+                                                <td class="px-4 py-3">
+                                                    <a href="{% url 'journalentries' account.id %}" class="text-blue-600 hover:underline">{{ account.name }}</a> 
+                                                </td>                                               
                                                 <td class="px-4 py-3">{{ account.group }}</td>
                                                 <td class="px-4 py-3">{{ account.account_type }}</td>
                                                 <td class="px-4 py-3">{{ account.balance }}</td>

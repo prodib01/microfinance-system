@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+{% load humanize %}
+
+<div class="w-full">
+    <div class="flex items-center justify-between w-full flex-col md:flex-row md:items-center md:gap-4 mb-6">
+        <div class="text-center md:text-left">
+            <h1 class="text-3xl font-bold text-gray-800"> Journal Entries -  {{ account.name }} </h1>
+        </div>
+        <!-- Balance -->
+        <div class="text-center md:text-right">
+            <h1 class="text-2xl font-bold text-gray-800">Balance: {{ account.balance | floatformat:0 | intcomma }}/=</h1>
+        </div>
+    </div>
+
+    <!-- Transaction Table -->
+    <div class="w-full overflow-x-auto">
+        <table class="w-full table-auto mx-auto border-collapse">
+            <thead>
+                <tr class="text-left text-white bg-gray-800">
+                    <th class="px-6 py-3">Date</th>
+                    <th class="px-6 py-3">Title</th>
+                    <th class="px-6 py-3">Description</th>
+                    <th class="px-6 py-3">Debit</th>
+                    <th class="px-6 py-3">Credit</th>
+                    <th class="px-6 py-3">Balance</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white">
+                {% for entry in journalentries %}
+                <tr class="border-b border-gray-200 hover:bg-gray-100 transition ease-in-out duration-150">
+                    <td class="px-6 py-4">{{ entry.created_at | naturalday }}</td>
+                    <td class="px-6 py-4">{{ entry.transaction.title }}</td>
+                    <td class="px-6 py-4">{{ entry.narration }}</td>
+                    <td class="px-6 py-4">
+                        {% if entry.entry_type == "DEBIT" %}
+                            {{ entry.amount | floatformat:0 | intcomma }}/=
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if entry.entry_type == "CREDIT" %}
+                            {{ entry.amount | floatformat:0 | intcomma }}/=
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">{{ entry.account_balance_after_transaction | floatformat:0 | intcomma }}/=</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

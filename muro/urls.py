@@ -19,6 +19,7 @@ urlpatterns = [
     path('clients/', include('clientApp.urls')),
     path('users/', include('users.urls')),
     path('api/v1/', include('api.v1.urls')),
+    path('accounts/', include('accounting.urls')),
     path('test/', test, name='test'),
     path('search-loan/', search_loan, name='search-loan'),
     path('sec-page/', sec_page, name='sec-page'),

@@ -252,40 +252,41 @@ def make_deposit(request):
                                         raise Exception("Amount is less than 0")
                                 else:
                                     penalty_paid = penalty_amount
-                                # use 2 decimal places
-                                narration = f"Penalty of {penalty_paid.__round__(2)} was paid for {days_in_arreas} days of arrears"
-                                Payments.objects.create(
-                                    amount=penalty_paid,
-                                    payment_date=deposit_made_at,
-                                    ammortization=loan_amortization,
-                                    payment_type="PENALTY",
-                                    narration=narration,
-                                    deposit=deposit,
-                                )
-                                total_balance -= penalty_paid
-                                loan_amortization.penalty_date = deposit_made_at_dtime
 
-                                penalty_debit_account = get_account(
-                                    "PENALTY_DEBIT_ACCOUNT"
-                                )
-                                penalty_credit_account = get_account(
-                                    "PENALTY_CREDIT_ACCOUNT"
-                                )
-                                narration = f"Penalty of {penalty_paid.__round__(2)} was paid for {days_in_arreas} days of arrears"
-                                record_journal_entry(
-                                    transaction=transaction,
-                                    account=penalty_debit_account,
-                                    amount=penalty_paid,
-                                    entry_type=TransactionType.DEBIT.value,
-                                    narration=narration,
-                                )
-                                record_journal_entry(
-                                    transaction=transaction,
-                                    account=penalty_credit_account,
-                                    amount=penalty_paid,
-                                    entry_type=TransactionType.CREDIT.value,
-                                    narration=narration,
-                                )
+                                if penalty_paid > 0:
+                                    narration = f"Penalty of {penalty_paid.__round__(2)} was paid for {days_in_arreas} days of arrears"
+                                    Payments.objects.create(
+                                        amount=penalty_paid,
+                                        payment_date=deposit_made_at,
+                                        ammortization=loan_amortization,
+                                        payment_type="PENALTY",
+                                        narration=narration,
+                                        deposit=deposit,
+                                    )
+                                    total_balance -= penalty_paid
+                                    loan_amortization.penalty_date = deposit_made_at_dtime
+
+                                    penalty_debit_account = get_account(
+                                        "PENALTY_DEBIT_ACCOUNT"
+                                    )
+                                    penalty_credit_account = get_account(
+                                        "PENALTY_CREDIT_ACCOUNT"
+                                    )
+                                    narration = f"Penalty of {penalty_paid.__round__(2)} was paid for {days_in_arreas} days of arrears"
+                                    record_journal_entry(
+                                        transaction=transaction,
+                                        account=penalty_debit_account,
+                                        amount=penalty_paid,
+                                        entry_type=TransactionType.DEBIT.value,
+                                        narration=narration,
+                                    )
+                                    record_journal_entry(
+                                        transaction=transaction,
+                                        account=penalty_credit_account,
+                                        amount=penalty_paid,
+                                        entry_type=TransactionType.CREDIT.value,
+                                        narration=narration,
+                                    )
 
                             if total_balance > 0:
                                 if loan_amortization.interest_balance > 0:
@@ -390,3 +391,8 @@ def make_deposit(request):
             else:
                 raise Exception("Penalty not set")
     return redirect("/home")
+
+
+def calculate_demanded_penalty(loan: Loan) -> float:
+    pass
+
