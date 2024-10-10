@@ -97,7 +97,7 @@
                                 <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn">
                                 {% endif %} 
                                 <i class="mr-3 leading-3 fi fi-sr-following"></i> Guarantors</button></a> {% endcomment %}
-                                {% if  request.user.profile.role == 'RELATIONSHIP_OFFICER' or request.user.profile.role == 'ACCOUNTANT' %}
+                                {% if  request.user.profile.role == 'RELATIONSHIP_OFFICER' or request.user.profile.role == 'ACCOUNTANT' or request.user.profile.role == 'BUSINESS_SUPERVISOR'%}
                                     <a href="/financialstatements" class="w-full">
                                         {% if active == 'financialstatements'%}
                                         <button type="button" class="flex items-center w-full h-10 px-3 rounded-3xl navBtn active">
