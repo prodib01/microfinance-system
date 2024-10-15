@@ -141,14 +141,30 @@
                 <script>
                     function printDiv(divId) {
                         var originalContent = document.body.innerHTML;
-                
                         var content = document.getElementById(divId).innerHTML;
+                
+                        // Create a temporary DOM element to manipulate the content
+                        var tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = content;
+                
+                        // Find all <a> tags and replace them with their text content
+                        var links = tempDiv.getElementsByTagName('a');
+                        while (links.length > 0) {
+                            var link = links[0];
+                            var text = document.createTextNode(link.textContent || link.innerText);
+                            link.parentNode.replaceChild(text, link);
+                        }
+                
+                        // Get the processed content without <a> tags
+                        var processedContent = tempDiv.innerHTML;
                 
                         var myWindow = window.open('', '', 'width=800,height=600');
                         myWindow.document.write('<html><head><title>Print Report</title>');
                 
+                        // Include Flatpickr CSS if needed
                         myWindow.document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">'); 
                 
+                        // Custom Styles
                         myWindow.document.write('<style>');
                         myWindow.document.write('body { font-family: Arial, sans-serif; font-size: 10px; margin: 20px; }'); 
                         myWindow.document.write('table { width: 100%; border-collapse: collapse; }');
@@ -158,7 +174,7 @@
                         myWindow.document.write('</style>');
                 
                         myWindow.document.write('</head><body>');
-                        myWindow.document.write(content); 
+                        myWindow.document.write(processedContent); 
                         myWindow.document.write('</body></html>');
                         myWindow.document.close(); 
                         myWindow.focus();  
@@ -171,6 +187,7 @@
                         document.body.innerHTML = originalContent;
                     }
                 </script>
+                
                             
 
             </body>

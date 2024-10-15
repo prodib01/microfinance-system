@@ -20,38 +20,51 @@
                     </div>
                     <div class="w-full mt-7">
                             <!-- accounts start  -->
-
-                        <div id="content1" class="w-full mt-4 tabContent">
-                            <div class="my-8 text-center">
-                                <p class="text-xl font-bold">Muro Finance LTD</p>
-                                <p>Charts Of Accounts</p>
-                                {% comment %} <button type="button" id="addAccountBtn" class="text-blue-500">Add Account</button> {% endcomment %}
-                            </div>
-                            <div class="w-full">
-                                <table class="w-9/12 mx-auto">
-                                    <thead>
-                                        <tr class="text-left text-white bg-myBlack">
-                                            <th class="px-4 py-3">Account</th>
-                                            <th class="px-4 py-3">Group </th>
-                                            <th class="px-4 py-3">Type</th>
-                                            <th class="px-4 py-3">Balance</th>
-                                        </trb>
-                                    </thead>
-                                    <tbody>
-                                        {% for account in accounts %}
-                                            <tr>
-                                                <td class="px-4 py-3">
-                                                    <a href="{% url 'journalentries' account.id %}" class="text-blue-600 hover:underline">{{ account.name }}</a> 
-                                                </td>                                               
-                                                <td class="px-4 py-3">{{ account.group }}</td>
-                                                <td class="px-4 py-3">{{ account.account_type }}</td>
-                                                <td class="px-4 py-3">{{ account.balance }}</td>
+                        <div id="">
+                            <div id="content1" class="w-full mt-4 tabContent">
+                                <div class="my-8 text-center">
+                                    <img src="{% static 'img/logo.png' %}" alt="Logo" class="w-16 mx-auto mb-2">
+                                    <p class="text-xl font-bold">MURO FINANCE UGANDA LTD</p>
+                                    <p>Charts Of Accounts</p>
+                                    {% comment %} <button type="button" id="addAccountBtn" class="text-blue-500">Add Account</button> {% endcomment %}
+                                </div>
+                                <div class="w-full">
+                                    <table class="w-9/12 mx-auto">
+                                        <thead>
+                                            <tr class="text-left text-white bg-myBlack">
+                                                <th class="px-4 py-3">Account</th>
+                                                <th class="px-4 py-3">Group </th>
+                                                <th class="px-4 py-3">Type</th>
+                                                <th class="px-4 py-3">Balance</th>
                                             </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {% for account in accounts %}
+                                                <tr>
+                                                    <td class="px-4 py-3">
+                                                        <a href="{% url 'journalentries' account.id %}" class="text-blue-600 hover:underline">{{ account.name }}</a> 
+                                                    </td>                                               
+                                                    <td class="px-4 py-3">{{ account.group }}</td>
+                                                    <td class="px-4 py-3">{{ account.account_type }}</td>
+                                                    <td class="px-4 py-3">{{ account.balance }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+
+                                                                
+                                    <div class="mt-4 text-right">
+                                        <p class="text-right text-gray-500">Generated on {% now "Y-m-d h:i A" %}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <button onclick="printDiv('content1')" class="rounded bg-blue-500 text-white px-4 py-2">
+                                    Print Report
+                                </button>
                             </div>
                         </div>
+
 
                         <!-- trail balance starts here  -->
 
