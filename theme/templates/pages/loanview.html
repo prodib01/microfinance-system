@@ -226,130 +226,175 @@
 
     <!-- full laon details popup -->
     <div id="popup2" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
-        <div class="relative w-[595px] overflow-y-auto bg-white h-4/5 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
-            <button id="closePopup2" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
-            <div class="w-full p-6">
+        <div class="relative w-full max-w-3xl overflow-y-auto bg-white h-4/5 rounded-2xl p-6">
+            <button id="closePopup2" class="absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack">
+                <i class="leading-3 fi fi-rr-cross-small"></i>
+            </button>
+            <div id="loanDetails">
                 <div>
-                    <div class="flex flex-wrap items-end justify-between">
-                        <div class="flex items-center gap-4"> 
-                            <span class="flex items-center justify-center text-2xl text-white rounded-full w-14 h-14 bg-myBlack">
-                                <i class="leading-3 fi fi-rr-user"></i>
-                            </span>
-                            <span>
-                                <h1 class="text-xl font-bold">{{loan.client.full_name}}</h1>
-                                <p>{{loan.client.nin}}</p>
-                            </span>
-                        </div>
-                        <div>
-                            <p>{{loan.client.nationality}}</p>
-                        </div>
-                    </div>
-                    <div class="p-2 mt-6 text-center bg-gray-200 rounded-full text-myBlack">
-                        <p class="font-myMono">{{loan.client.client_code}}</p>
-                    </div>
-                    <div class="flex items-center justify-center gap-2 mt-6">
-                        <i class="leading-3 fi fi-sr-marker"></i>
-                        <p>{{loan.client.address}}</p>
-                    </div>
-                    <div class="flex items-start justify-between mt-6 divide-x-2 divide-white max-md:overflow-x-auto max-md:gap-6">
-                        <div>
-                            <h1 class="font-bold">D.O.B</h1>
-                            <p>{{loan.client.dob}}</p>
-                        </div>
-                        <div class="pl-3">
-                            <h1 class="font-bold">Gender</h1>
-                            <p>{{loan.client.gender}}</p>
-                        </div>
-                        <div class="pl-3">
-                            <h1 class="font-bold">Business</h1>
-                            <p>{{loan.client.business}}</p>
-                        </div>
-                        <div class="pl-3">
-                            <h1 class="font-bold">Phone No</h1>
-                            <p>{{loan.client.phone}}</p>
-                        </div>
-                    </div>
+                    <img src="{% static "/img/logo.png" %}" alt="" srcset="" class="w-16 pr-1">
+                    <h1 class="text-3xl font-bold">MURO FINANCE UGANDA LTD</h1>
+                </div>
+                <h1 class="text-2xl font-bold text-center mb-4">Loan Details</h1>
+                <table class="w-full mb-6">
+                    <tr>
+                        <td class="font-bold" colspan="2">{{loan.client.full_name}}</td>
+                    </tr>
+                    <tr>
+                        <td>NIN:</td>
+                        <td>{{loan.client.nin}}</td>
+                    </tr>
+                    <tr>
+                        <td>Nationality:</td>
+                        <td>{{loan.client.nationality}}</td>
+                    </tr>
+                    <tr>
+                        <td>Client Code:</td>
+                        <td class="font-myMono">{{loan.client.client_code}}</td>
+                    </tr>
+                    <tr>
+                        <td>Address:</td>
+                        <td><i class="leading-3 fi fi-sr-marker"></i> {{loan.client.address}}</td>
+                    </tr>
+                </table>
+                <br>
+                <table class="w-full mb-6">
+                    <tr>
+                        <th class="text-left">Personal Details</th>
+                        <th class="text-left">Value</th>
+                    </tr>
+                    <tr>
+                        <td>D.O.B:</td>
+                        <td>{{loan.client.dob}}</td>
+                    </tr>
+                    <tr>
+                        <td>Gender:</td>
+                        <td>{{loan.client.gender}}</td>
+                    </tr>
+                    <tr>
+                        <td>Business:</td>
+                        <td>{{loan.client.business}}</td>
+                    </tr>
+                    <tr>
+                        <td>Phone No:</td>
+                        <td>{{loan.client.phone}}</td>
+                    </tr>
                     {% if loan.client.spouse_name %}
-                        <div class="flex items-end gap-6 mt-6">
-                            <div>
-                                <h1 class="font-bold">Maried to</h1>
-                                <p>{{loan.client.spouse_name}}</p>
-                            </div>
-                            <p>{{loan.client.spouse_phone}}</p>
-                        </div>
+                        <tr>
+                            <td>Married to:</td>
+                            <td>{{loan.client.spouse_name}} ({{loan.client.spouse_phone}})</td>
+                        </tr>
                     {% endif %}
-                </div>
+                </table>
+                <br>
+        
+                <table class="w-full mb-6">
+                    <thead>
+                        <tr>
+                            <th class="text-left">Loan Information</th>
+                            <th class="text-left">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Loan Product:</td>
+                            <td>{{loan.loan_product}}</td>
+                        </tr>
+                        <tr>
+                            <td>Given Amount:</td>
+                            <td>UGX {{loan.given_amount}}/=</td>
+                        </tr>
+                        <tr>
+                            <td>Interest Rate:</td>
+                            <td>{{loan.interest_rate}}%</td>
+                        </tr>
+                        <tr>
+                            <td>Loan Term:</td>
+                            <td>{{loan.loan_term}} {{loan.loan_term_type_of_period}} ({{loan.payment_frequency}})</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br>
+        
+                <table class="w-full mb-6">
+                    <thead>
+                        <tr>
+                            <th class="text-left">Financial Summary</th>
+                            <th class="text-left">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Total Interest:</td>
+                            <td class="font-bold">UGX {{loan.account_interest}}/=</td>
+                        </tr>
+                        <tr>
+                            <td>Total Principal:</td>
+                            <td class="font-bold">UGX {{loan.given_amount}}/=</td>
+                        </tr>
+                        <tr>
+                            <td>Total Loan:</td>
+                            <td class="font-bold">UGX {{ loan.account_interest|add:loan.given_amount }} /=</td>
+                        </tr>
+                        <tr>
+                            <td>Demanded Amount:</td>
+                            <td class="font-bold">UGX {{ loan.demanded_amount }} /=</td>
+                        </tr>
+                        <tr>
+                            <td>Installment:</td>
+                            <td class="font-bold">UGX {{loan.installment}}/=</td>
+                        </tr>
+                        <tr>
+                            <td>Amount on Loan Deposit:</td>
+                            <td class="font-bold">UGX {{loan.client_loan_account_balance | floatformat:0}}/=</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br>
+        
+                <table class="w-full mb-6">
+                    <thead>
+                        <tr>
+                            <th class="text-left">Loan Officer</th>
+                            <th class="text-left">Disbursed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{loan.loan_officer}}</td>
+                            <td><i class="mr-2 leading-3 fi fi-rr-calendar-lines-pen"></i>{{ loan.approved_at | naturalday}} </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br>
+        
+                <table class="w-full mb-6">
+                    <thead>
+                        <tr>
+                            <th class="text-left">Referees</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for guarantor in loan.loanguarantor_set.all %}
+                            <tr>
+                                <td>{{ guarantor.guarantor.full_name }} <span>({{ guarantor.guarantor.phone }})</span></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+        
                 <div class="mt-6">
-                    <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
-                        <div>
-                            <h1>{{loan.loan_product}}</h1>
-                            {% comment %} <p class="text-xl font-bold">UGX {{loan.given_amount}}/=</p> {% endcomment %}
-                        </div>
-                        <div>
-                            <p>{{loan.interest_rate}}%</p>
-                        </div>
-                        <div>
-                            <p>{{loan.loan_term}} {{loan.loan_term_type_of_period}} ({{loan.payment_frequency}})</p>
-                        </div>
-                    </div>
-                    <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
-                        <div>
-                            <h1>Total Interest</h1>
-                            <p class="text-xl font-bold">UGX {{loan.account_interest}}/=</p>
-                        </div>
-                         <div>
-                            <h1>Total Principal</h1>
-                            <p class="text-xl font-bold">{{ loan.given_amount }}/=</p> 
-                        </div> 
-
-                    </div>
-                    <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
-                        <div>
-                            <h1>Total Loan</h1>
-                            <p class="text-xl font-bold">UGX {{ loan.account_interest|add:loan.given_amount }}/=</p>
-                        </div>
-                        <div>
-                            <h1>Demanded Amount</h1>
-                            <p class="text-xl font-bold">UGX {{ loan.demanded_amount }}/=</p>
-                        </div>
-                    </div>
-                    <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
-                        <div>
-                            <h1>Installment</h1>
-                            <p class="text-xl font-bold">UGX {{loan.installment}}/=</p>
-                        </div>
-                        <div>
-                            <h1>Amount on Loan Deposit</h1>
-                            <p class="text-xl font-bold">UGX {{loan.client_loan_account_balance | floatformat:0}}/=</p>
-                        </div>
-                    </div> 
-                    <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
-                        <div>
-                            <strong><h1>Loan Officer</h1></strong>
-                           <p>{{loan.loan_officer}}</p>
-                        </div>
-                        <div>
-                            <strong><h1>Disbursed</h1></strong>
-                            <p><i class="mr-2 leading-3 fi fi-rr-calendar-lines-pen"></i>{{ loan.approved_at | naturalday}} </p>
-                        </div> 
-                    </div>
-                </div>
-                <div class="flex items-end gap-8 mt-6">
-                      <div>
-                          <p class="font-bold">Referees</p>
-                            {% for guarantor in loan.loanguarantor_set.all %}
-                                <p>{{ guarantor.guarantor.full_name }} <span>({{ guarantor.guarantor.phone }})</span></p>
-                            {% endfor %}
-                      </div>
-                </div>
-                <div class="mt-6">
-                    <h1 class="font-bold">Security</h1>
+                    <h2 class="font-bold">Security</h2>
                     <p>{{loan.security_description}}</p>
                 </div>
             </div>
-
+        </div>
+        <div class="mt-4">
+            <button onclick="printDiv('loanDetails')" class="rounded bg-blue-500 text-white px-4 py-2">Print</button>
         </div>
     </div>
+    
+    
 
     <!-- add document popup -->
     <div id="popup3" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
