@@ -206,6 +206,8 @@ def calculate_loan_request(request):
                 "total_payments": total_payments,
                 "total_interest": round(total_interest),
                 "periodic_interest_rate": round(periodic_interest_rate),
+                "loan_term_number": loan_term_number,
+                "loan_term_type_of_period": loan_term_type_of_period,
             }
         )
 

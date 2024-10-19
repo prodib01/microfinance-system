@@ -381,39 +381,62 @@
         <div class="relative w-8/12 overflow-y-auto bg-white h-5/6 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
             <button id="closePopup5" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
             <div class="w-full p-6">
-                <h1 class="mb-6 text-2xl font-bold">Loan Schedule</h1>
-                <div>
-                    <div class="grid grid-cols-4 gap-4">
-                        <div>
-                            <p class="">Loan Amount</p>
-                            <p class="font-bold">UGX {{loan.given_amount}}/=</p>
-                        </div>
-                        <div>
-                            <p>Interest Rate</p>
-                            <p class="font-bold">{{loan.interest_rate | floatformat:2}}%</p>
-                        </div>
-                        <div>
-                            <p>Period</p>
-                            <p class="font-bold">{{loan.loan_term }} {{loan.loan_term_type_of_period}} ({{loan.payment_frequency}})</p>
-                        </div>
-                        <div>
-                            <p>Start Date</p>
-                            {% comment %} date in format 2024-03-17 {% endcomment %}
-                            <p class="font-bold">{{ ammortizations.0.payment_date|date:"Y-m-d" | naturalday}}</p>
-                        </div>
-                        <div>
-                            <p>Installment</p>
-                            <p class="font-bold">UGX {{loan.installment}}/=</p>
-                        </div>
-                        <div>
-                            <p>No of payments</p>
-                            <p class="font-bold">{{ ammortizations|length }}</p>
-                        </div>
-                        <div>
-                            <p>Total Interest</p>
-                            <p class="font-bold">UGX {{loan.account_interest}}/=</p>
-                        </div>
+
+                <div id="loanDetails">
+                    <div>
+                        <img src="{% static "/img/logo.png" %}" alt="" srcset="" class="w-16 pr-1">
+                        <h1 class="text-3xl font-bold">MURO FINANCE UGANDA LTD</h1>
+                        <br>
+                        <h1 class="mb-6 text-2xl font-bold">Loan Details</h1>
                     </div>
+                    <style>
+                        table {
+                            font-size: 12px;
+                        }
+                        th, td {
+                            padding: 5px; 
+                        }
+                    </style>
+                    <table class="min-w-full border-collapse border border-gray-300">
+                        <thead>
+                            <tr>
+                                <th class="border border-gray-300 text-left p-2">Description</th>
+                                <th class="border border-gray-300 text-left p-2">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border border-gray-300 p-2">Loan Amount</td>
+                                <td class="border border-gray-300 p-2 font-bold">UGX {{loan.given_amount}}/=</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 p-2">Interest Rate</td>
+                                <td class="border border-gray-300 p-2 font-bold">{{loan.interest_rate | floatformat:2}}%</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 p-2">Period</td>
+                                <td class="border border-gray-300 p-2 font-bold">{{loan.loan_term}} {{loan.loan_term_type_of_period}} ({{loan.payment_frequency}})</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 p-2">Start Date</td>
+                                <td class="border border-gray-300 p-2 font-bold">{{ ammortizations.0.payment_date|date:"Y-m-d" | naturalday}}</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 p-2">Installment</td>
+                                <td class="border border-gray-300 p-2 font-bold">UGX {{loan.installment}}/=</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 p-2">No of payments</td>
+                                <td class="border border-gray-300 p-2 font-bold">{{ ammortizations|length }}</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 p-2">Total Interest</td>
+                                <td class="border border-gray-300 p-2 font-bold">UGX {{loan.account_interest}}/=</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br><br>
+                    <h1 class="text-2xl font-bold">Amortization Schedule</h1>
                     <div class="mt-8 w-full">
                         <table class="w-full">
                             <thead class="  bg-gray-300 ">
@@ -502,21 +525,27 @@
 
                         <div class="mt-6">
                             <p>Borrower’s Name:</p>
-                            <div class="h-16 border-b border-black w-64"></div>
+                            <br>
+                            <p>_______________________________________________________</p>
                         </div>
                         
                         <div class="mt-6">
                             <p>Borrower’s Signature:</p>
-                            <div class="h-16 border-b border-black w-64"></div>
+                            <br>
+                            <p>_______________________________________________________</p>
                         </div>
                         
                         <div class="mt-6">
                             <p>FOR AUTHORIZED STAMP:</p>
-                            <div class="h-16 border-b border-black w-64"></div>
+                            <br><br>
+                            <p>_______________________________________________________</p>
                         </div>
                         
                         
                     </div>
+                </div>
+                <div class="mt-4">
+                    <button onclick="printDiv('loanDetails')" class="rounded bg-blue-500 text-white px-4 py-2">Print</button>
                 </div>
             </div>
 

@@ -578,41 +578,63 @@
                     </div>
                 </form>
                 <div class="mt-12" id="loan-calculator-results">
-                    <div class="grid grid-cols-4 gap-4">
-                        <div>
-                            <p class="">Loan Amount</p>
-                            <p class="font-bold loan-amount"></p>
-                        </div>
-                        <div>
-                            <p>Interest Rate</p>
-                            <p class="font-bold interest-rate"></p>
-                        </div>
-                        <div>
-                            <p>Period</p>
-                            <p class="font-bold loan-period"></p>
-                        </div>
-                        <div>
-                            <p>Start Date</p>
-                            <p class="font-bold loan-start-date"></p>
-                        </div>
-                        <div>
-                            <p>Installment</p>
-                            <p class="font-bold loan-installments"></p>
-                        </div>
-                        <div>
-                            <p>No of payments</p>
-                            <p class="font-bold loan-number-of-payments"></p>
-                        </div>
-                        <div>
-                            <p>Total Interest</p>
-                            <p class="font-bold total-loan-interest"></p>
-                        </div>
-                        <div>
-                            <p>Total Loan Cost</p>
-                            <p class="font-bold total-loan-cost"></p>
-                        </div>
+                    <div>
+                        <img src="{% static "/img/logo.png" %}" alt="" srcset="" class="w-16 pr-1">
+                        <h1 class="text-3xl font-bold">MURO FINANCE UGANDA LTD</h1>
+                        <h1 class="text-3xl font-bold">Loan Details</h1>
                     </div>
+                    <style>
+                        table {
+                            font-size: 12px;
+                        }
+                        th, td {
+                            padding: 5px; 
+                        }
+                    </style>
+                    <table class="table-auto w-full border-0">
+                        <tbody>
+                            <tr class="border-0">
+                                <td class="p-2 border-0">Principal</td>
+                                <td class="p-2 font-bold border-0 loan-amount"></td>
+                            </tr>
+                            <tr class="border-0">
+                                <td class="p-2 border-0">Interest Rate</td>
+                                <td class="p-2 font-bold border-0 interest-rate"></td>
+                            </tr>
+                            <tr class="border-0">
+                                <td class="p-2 border-0">Period</td>
+                                <td class="p-2 font-bold border-0 loan-period"></td>
+                            </tr>
+                            <tr class="border-0">
+                                <td class="p-2 border-0">Start Date</td>
+                                <td class="p-2 font-bold border-0 loan-start-date"></td>
+                            </tr>
+                            <tr class="border-0">
+                                <td class="p-2 border-0">Installment</td>
+                                <td class="p-2 font-bold border-0 loan-installments"></td>
+                            </tr>
+                            <tr class="border-0">
+                                <td class="p-2 border-0">Payment Frequency</td>
+                                <td class="p-2 font-bold border-0 loan-payment-frequency"></td>
+                            </tr>
+                            <tr class="border-0">
+                                <td class="p-2 border-0">No of payments</td>
+                                <td class="p-2 font-bold border-0 loan-number-of-payments"></td>
+                            </tr>
+                            <tr class="border-0">
+                                <td class="p-2 border-0">Total Interest</td>
+                                <td class="p-2 font-bold border-0 total-loan-interest"></td>
+                            </tr>
+                            <tr class="border-0">
+                                <td class="p-2 border-0">Total Loan Cost</td>
+                                <td class="p-2 font-bold border-0 total-loan-cost"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <br><br>
                     <div class="w-full mt-8 results-table">
+                        <h1 class="text-2xl font-bold">Amortization Schedule</h1>
                         <table class="w-full">
                             <thead class="w-full bg-gray-300">
                                 <tr class="">
@@ -626,8 +648,12 @@
                             <tbody class="w-full">
                             </tbody>
                         </table>
+                        <br><br>
                     </div>
                 </div>
+            </div>
+            <div class="mt-4">
+                <button onclick="printDiv('loan-calculator-results')" class="rounded bg-blue-500 text-white px-4 py-2">Print</button>
             </div>
         </div>
 
@@ -919,13 +945,13 @@
     const calcForm = document.querySelector('.loan-calculator form');
 calcForm.addEventListener('submit', (e) => {
     e.preventDefault();
+    const formData = new FormData(calcForm);
     fetch('/loan/calculate', {
         method: 'POST',
-        body: new FormData(calcForm),
+        body: formData
     })
         .then(response => response.json())
         .then(data => {
-            console.log(data);
             const loanAmount = document.querySelector('.loan-amount');
             const interestRate = document.querySelector('.interest-rate');
             const loanPeriod = document.querySelector('.loan-period');
@@ -934,15 +960,17 @@ calcForm.addEventListener('submit', (e) => {
             const loanNumberOfPayments = document.querySelector('.loan-number-of-payments');
             const totalLoanInterest = document.querySelector('.total-loan-interest');
             const totalLoanCost = document.querySelector('.total-loan-cost');
+            const paymentFrequency = document.querySelector('.loan-payment-frequency');
 
-            loanAmount.textContent = `UGX ${data.principal.toLocaleString()}`;
+            loanAmount.textContent = `UGX ${data.principal.toLocaleString()}/=`;
             interestRate.textContent = `${data.annual_interest_rate.toLocaleString()}% PM (Reducing)`;
-            loanPeriod.textContent = `${data.loan_term_years} years`;
+            loanPeriod.textContent = data.loan_term_number + ' ' + data.loan_term_type_of_period;
             loanStartDate.textContent = `${data.start_date}`;
-            loanInstallments.textContent = `UGX ${data.installment.toLocaleString()}`;
+            loanInstallments.textContent = `UGX ${data.installment.toLocaleString()}/=`;
             loanNumberOfPayments.textContent = `${data.total_payments.toLocaleString()}`;
-            totalLoanInterest.textContent = `UGX ${data.total_interest.toLocaleString()}`;
-            totalLoanCost.textContent = `UGX ${(data.principal + data.total_interest).toLocaleString()}`;
+            totalLoanInterest.textContent = `UGX ${data.total_interest.toLocaleString()}/=`;
+            totalLoanCost.textContent = `UGX ${(data.principal + data.total_interest).toLocaleString()}/=`;
+            paymentFrequency.textContent = data.payment_frequency.charAt(0).toUpperCase() + data.payment_frequency.slice(1);
 
 
             const table = document.querySelector('.results-table tbody');
@@ -1017,17 +1045,20 @@ calcForm.addEventListener('submit', (e) => {
 
                 <div class="mt-6">
                     <p>Borrower’s Name:</p>
-                    <div class="h-16 border-b border-black w-64"></div>
+                    <br>
+                    <p>_______________________________________________________</p>
                 </div>
-
+                
                 <div class="mt-6">
                     <p>Borrower’s Signature:</p>
-                    <div class="h-16 border-b border-black w-64"></div>
+                    <br>
+                    <p>_______________________________________________________</p>
                 </div>
-
+                
                 <div class="mt-6">
                     <p>FOR AUTHORIZED STAMP:</p>
-                    <div class="h-16 border-b border-black w-64"></div>
+                    <br><br><br><br>
+                    <p>_______________________________________________________</p>
                 </div>
             `;
 
