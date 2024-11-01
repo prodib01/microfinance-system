@@ -214,6 +214,7 @@ def make_deposit(request):
                 amount_deposited=amount_brought,
                 deposited_at=deposit_made_at,
                 amount_found_on_account=loan.client_loan_account_balance,
+                loan_balance_at_time_of_deposit=loan.demanded_amount,
             )
             deposit_made_at_dtime = datetime.datetime.strptime(
                 deposit_made_at, "%Y-%m-%d"
@@ -388,6 +389,8 @@ def make_deposit(request):
 
                 loan.client_loan_account_balance = total_balance
                 loan.save()
+                deposit.loan_balance_after_deposit = loan.demanded_amount
+                deposit.save()
             else:
                 raise Exception("Penalty not set")
     return redirect("/home")

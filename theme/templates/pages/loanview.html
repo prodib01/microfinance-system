@@ -124,73 +124,123 @@
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-1 gap-5 mt-4">
+                                    <table class="min-w-full border-collapse border border-gray-300">
+                                        <thead>
+                                            <tr>
+                                                <th class="border border-gray-300 text-left p-2">Date</th>
+                                                <th class="border border-gray-300 text-left p-2">Amount</th>
+                                                <th class="border border-gray-300 text-left p-2">Balance Before</th>
+                                                <th class="border border-gray-300 text-left p-2">Balance After</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
                                     {% for deposit in deposits%}
-                                    <div onclick="showPaymentPopup('{{deposit.id}}')" class="py-4 border-b-2 border-dashed cursor-pointer border-b-gray-300">
-                                        <p class="mb-2 italic">{{deposit.deposited_at | naturalday}}</p>
-                                        <div class="flex flex-wrap items-center justify-between">
-                                         <div class="">
-                                             <h1 class="text-2xl font-bold">UGX {{deposit.amount_deposited | floatformat:0}}/=</h1>
-                                         </div>
+                                        <div onclick="showPaymentPopup('{{deposit.id}}')" class="border-b-2 cursor-pointer border-b-gray-300">
+                                           <table>
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="border border-gray-300 text-left p-2">{{deposit.deposited_at | naturalday}}</td>
+                                                        <td class="border border-gray-300 text-left p-2 font-bold">UGX {{deposit.amount_deposited | floatformat:0}}/=</td>
+                                                        <td class="border border-gray-300 text-left p-2 font-bold">{{deposit.loan_balance_at_time_of_deposit | floatformat:0}}/=</td>
+                                                        <td class="border border-gray-300 text-left p-2 font-bold">{{deposit.loan_balance_after_deposit | floatformat:0}}/=</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
-                                     </div>
 
-                                     <!--loan payment details popup-->
-                                    <div id="popup_{{deposit.id}}" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
-                                        <div class="relative w-[595px] overflow-y-auto bg-white h-4/5 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
-                                            <button onclick="hidePaymentPopup('{{deposit.id}}')" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
-                                            <div class="w-full p-6">
-                                                <div>
-                                                    <h1 class="text-xl font-bold">{{loan.client.full_name}}</h1>
-                                                    <p>{{loan.nin}}</p>
-                                                </div>
-                                                <div class="flex flex-wrap items-center justify-between mt-6 space-y-2">
-                                                    <div class="">
-                                                        <h1 class="">Total Loan Value</h1>
-                                                        <h1 class="text-xl font-bold">UGX {{loan.given_amount}}/=</h1>
+
+
+                                        <!--loan payment details popup-->
+                                        <div id="popup_{{deposit.id}}" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+                                            <div class="relative w-[595px] overflow-y-auto bg-white h-4/5 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+                                                <button onclick="hidePaymentPopup('{{deposit.id}}')" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+                                                <div class="w-full p-6">
+                                                    <div id="paymentsReport">
+                                                        <div>
+                                                            <img src="{% static "/img/logo.png" %}" alt="" srcset="" class="w-16 pr-1">
+                                                            <h1 class="text-3xl font-bold">MURO FINANCE UGANDA LTD</h1>
+                                                            <h1 class="text-3xl font-bold">Payments Report</h1>
+                                                        </div>
+                                                        <hr> <br> <br>
+
+                                                        <style>
+                                                            table {
+                                                                font-size: 12px;
+                                                            }
+                                                            th, td {
+                                                                padding: 5px; 
+                                                            }
+                                                        </style>
+                                                        <h1 class="text-xl font-bold">Details</h1>
+                                                        <table class="min-w-full border-collapse border border-gray-300">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td class="border border-gray-300 text-left p-2">{{loan.client.full_name}}</td>
+                                                                    <td class="border border-gray-300 text-left p-2">{{loan.nin}}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="border border-gray-300 text-left p-2">Total Loan Value</td>
+                                                                    <td class="border border-gray-300 text-left p-2 font-bold">UGX {{loan.given_amount}}/=</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="border border-gray-300 text-left p-2">Paid</td>
+                                                                    <td class="border border-gray-300 text-left p-2 font-bold"><h1 class="text-xl font-bold">UGX {{deposit.amount_deposited | floatformat:0}}/=</h1></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="border border-gray-300 text-left p-2">Date Of Payment</td>
+                                                                    <td class="border border-gray-300 text-left p-2 font-bold">{{deposit.deposited_at | naturalday | capfirst}}</td>
+                                                                </tr>
+
+                                                            </tbody>
+                                                        </table>
+                                                        <hr><br><br>
+
+                                                        <div class="mt-6">
+                                                            <h1 class="text-xl font-bold">Distributions</h1>
+                                                            <table class="min-w-full border-collapse border border-gray-300">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="border border-gray-300 text-left p-2">Type</th>
+                                                                        <th class="border border-gray-300 text-left p-2">Amount</th>
+                                                                        <th class="border border-gray-300 text-left p-2">Ammortization Date</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {% for payment in deposit.payments.all  %}
+                                                                        <tr>
+                                                                            <td class="border border-gray-300 p-2">{{payment.payment_type}}</td>
+                                                                            <td class="border border-gray-300 p-2 font-bold">{{payment.amount | floatformat:0 | intcomma }}/=</td>
+                                                                            <td class="border border-gray-300 p-2">{{payment.ammortization.payment_date | naturalday | capfirst}}</td>
+                                                                        </tr>
+                                                                    {% endfor %} 
+                                                                </tbody>
+                                                            </table>
+                                                            <hr>
+                                                            <br>
+
+                                                            <table class="min-w-full border-collapse border border-gray-300">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="border border-gray-300 text-left p-2">Balance Before</th>
+                                                                        <th class="border border-gray-300 text-left p-2">Balance After</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td class="border border-gray-300 p-2 font-bold">{{deposit.loan_balance_at_time_of_deposit | floatformat:0 | intcomma }}/=</td>
+                                                                        <td class="border border-gray-300 p-2 font-bold">{{deposit.loan_balance_after_deposit | floatformat:0 | intcomma }}/=</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+        
+                                                        </div>
                                                     </div>
-
-                                                    <div class="">
-                                                        <h1 class="italic">Date Of Payment</h1>
-                                                        <h1 class="">{{deposit.deposited_at | naturalday}}</h1>
-                                                    </div>
-                                   
                                                 </div>
-                                                <div class="mt-6 space-y-4">
-                                           
-
-                                                    <div class="">
-                                                        <h1 class="">Paid</h1>
-                                                        <h1 class="text-xl font-bold">UGX {{deposit.amount_deposited | floatformat:0}}/=</h1>
-                                                    </div>
-                                                </div>
-
-<!--                                                payments -->
-                                                <div class="mt-6">
-                                                    <h1 class="text-xl font-bold">Payments</h1>
-<!--                                                    A list payments with their payment type-->
-                                                        {% for payment in deposit.payments.all  %}
-                                                            <div class="py-4 border-b-2 border-b-gray-300">
-                                                                <p class="mb-2 italic">{{payment.amount | floatformat:0 | intcomma }}/=</p>
-                                                                <div class="flex items-center justify-between">
-                                                                    <div class="">
-                                                                        <h1 class="">Payment Type</h1>
-                                                                        <h1 class="text-xl font-bold">{{payment.payment_type}}</h1>
-                                                                    </div>
-                                                                    <div class="">
-                                                                        <h1 class="">Ammortization Payment Date</h1>
-                                                                        <h1 class="text-xl font-bold">{{payment.ammortization.payment_date | naturalday}}</h1>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        {% endfor %}
-                                                </div>
-
+                                                <div class="mt-4">
+                                                    <button onclick="printDiv('paymentsReport')" class="rounded bg-blue-500 text-white px-4 py-2">Print Report</button>
                                                 </div>
                                             </div>
-
                                         </div>
-                                    </div>
-
                                      {% endfor %}
 
                                 </div>
@@ -427,7 +477,7 @@
             <button id="closePopup5" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
             <div class="w-full p-6">
 
-                <div id="loanDetails">
+                <div id="loanArmmotization">
                     <div>
                         <img src="{% static "/img/logo.png" %}" alt="" srcset="" class="w-16 pr-1">
                         <h1 class="text-3xl font-bold">MURO FINANCE UGANDA LTD</h1>
@@ -450,6 +500,10 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <tr>
+                                <td class="border border-gray-300 p-2">Customer's Name</td>
+                                <td class="border border-gray-300 p-2 font-bold">{{loan.client.full_name}}</td>
+                            </tr>
                             <tr>
                                 <td class="border border-gray-300 p-2">Loan Amount</td>
                                 <td class="border border-gray-300 p-2 font-bold">UGX {{loan.given_amount}}/=</td>
@@ -477,6 +531,10 @@
                             <tr>
                                 <td class="border border-gray-300 p-2">Total Interest</td>
                                 <td class="border border-gray-300 p-2 font-bold">UGX {{loan.account_interest}}/=</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 p-2">Total Loan</td>
+                                <td class="border border-gray-300 p-2 font-bold">UGX {{loan.account_interest|add:loan.given_amount}}/=</td>
                             </tr>
                         </tbody>
                     </table>
@@ -590,7 +648,7 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    <button onclick="printDiv('loanDetails')" class="rounded bg-blue-500 text-white px-4 py-2">Print</button>
+                    <button onclick="printDiv('loanArmmotization')" class="rounded bg-blue-500 text-white px-4 py-2">Print</button>
                 </div>
             </div>
 

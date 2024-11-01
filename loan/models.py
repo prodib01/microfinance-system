@@ -198,6 +198,12 @@ class Deposit(models.Model):
     )
     loan = models.ForeignKey(Loan, on_delete=models.CASCADE)
     deposited_at = models.DateTimeField(null=True, blank=True)
+    loan_balance_at_time_of_deposit = models.DecimalField(
+        default=0, max_digits=10, decimal_places=2
+    )
+    loan_balance_after_deposit = models.DecimalField(
+        default=0, max_digits=10, decimal_places=2
+    )
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     amount_found_on_account = models.DecimalField(
         default=0, max_digits=10, decimal_places=2
