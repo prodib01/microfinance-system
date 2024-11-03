@@ -180,7 +180,7 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <td class="border border-gray-300 text-left p-2">Total Loan Value</td>
-                                                                    <td class="border border-gray-300 text-left p-2 font-bold">UGX {{loan.given_amount}}/=</td>
+                                                                    <td class="border border-gray-300 text-left p-2 font-bold">UGX {{loan.given_amount|add:loan.account_interest | floatformat:0}}/=</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td class="border border-gray-300 text-left p-2">Paid</td>
