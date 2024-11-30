@@ -90,8 +90,9 @@ def financialstatements(request):
     )
 
 
-def reports(request):
-    loans = Loan.objects.filter(status="APPROVED")
+def loans_active(request):
+    # approved loans and there demanded_amount is greater than 0
+    loans = Loan.objects.filter(status="APPROVED", demanded_amount__gt=0)
 
     loan_officer_id = request.GET.get("loan_officer")
     if loan_officer_id:

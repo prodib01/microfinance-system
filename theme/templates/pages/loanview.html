@@ -155,7 +155,7 @@
                                             <div class="relative w-[595px] overflow-y-auto bg-white h-4/5 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
                                                 <button onclick="hidePaymentPopup('{{deposit.id}}')" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
                                                 <div class="w-full p-6">
-                                                    <div id="paymentsReport">
+                                                    <div id="paymentsReport-{{deposit.id}}">
                                                         <div>
                                                             <img src="{% static "/img/logo.png" %}" alt="" srcset="" class="w-16 pr-1">
                                                             <h1 class="text-3xl font-bold">MURO FINANCE UGANDA LTD</h1>
@@ -237,7 +237,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="mt-4">
-                                                    <button onclick="printDiv('paymentsReport')" class="rounded bg-blue-500 text-white px-4 py-2">Print Report</button>
+                                                    <button onclick="printDiv('paymentsReport-{{deposit.id}}')" class="rounded bg-blue-500 text-white px-4 py-2">Print Report</button>
                                                 </div>
                                             </div>
                                         </div>
