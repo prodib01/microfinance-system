@@ -80,7 +80,7 @@
                                             <button id="closePopup_{{doc.id}}" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
                                             <div class="w-full p-6">
                                                 <h1 class="mb-4 text-2xl font-bold">{{doc.title}}</h1>
-                                                <iframe src="https://web-production-12a9c.up.railway.app/{{doc.document.url}}" frameborder="0" class="w-full h-screen"></iframe>
+                                                <iframe src="{{doc.document.url}}" frameborder="0" class="w-full h-screen"></iframe>
                                             </div>
                                         </div>
                                     </div>
@@ -98,11 +98,6 @@
                             </div>
                         </div>
                         <div class="w-5/12 max-md:w-full max-md:mt-8">
-                            <h1 class="text-2xl font-bold">Payments</h1>
-                            {% comment %} <div class="flex items-center gap-3 overflow-x-scroll mt-7">
-                                <button id="tab1" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn active">History</button>
-                                <button id="tab2" class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn">Plans</button>
-                            </div>  {% endcomment %}
                             <div id="content1" class="tabContent">
                                 <div class="mt-4 space-y-2">
                                     {% if arreas != 0%}
@@ -124,6 +119,8 @@
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-1 gap-5 mt-4">
+                            <h1 class="text-2xl font-bold">Payments</h1> 
+
                                     <table class="min-w-full border-collapse border border-gray-300">
                                         <thead>
                                             <tr>
