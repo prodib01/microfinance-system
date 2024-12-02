@@ -64,11 +64,11 @@
                         <th class="py-2 px-4 text-left">Disbursement Branch</th>
                         <th class="py-2 px-4 text-left">Loan Officer</th>
                         <th class="py-2 px-4 text-left">Client</th>
-                        <th class="py-2 px-4 text-right">Amount</th>
-                        <th class="py-2 px-4 text-right">Interest Bal</th>
-                        <th class="py-2 px-4 text-right">Principal Bal</th>
+                        <th class="py-2 px-4 text-right">Amount (UGX)</th>
+                        <th class="py-2 px-4 text-right">Interest Bal (UGX)</th>
+                        <th class="py-2 px-4 text-right">Principal Bal (UGX)</th>
                         <th class="py-2 px-4 text-center">Disbursed At</th>
-                        <th class="py-2 px-4 text-right">Balance</th>
+                        <th class="py-2 px-4 text-right">Balance (UGX)</th>
                         <th class="py-2 px-4 text-left">Payment Frequency</th>
                         <th class="py-2 px-4 text-left">Loan Term</th>
                     </tr>
@@ -79,11 +79,11 @@
                         <td class="py-2 px-4">{{ loan.disbursment_branch }}</td>
                         <td class="py-2 px-4">{{ loan.loan_officer.user.fullname }}</td>
                         <td class="py-2 px-4">{{ loan.client.full_name }}</td>
-                        <td class="py-2 px-4 text-right">{{ loan.given_amount | floatformat:0 | intcomma }}/=</td>
-                        <td class="py-2 px-4 text-right">{{ loan.interest_balance | floatformat:0 | intcomma }}/=</td>
-                        <td class="py-2 px-4 text-right">{{ loan.principal_balance | floatformat:0 | intcomma }}/=</td>
+                        <td class="py-2 px-4 text-right">{{ loan.given_amount | floatformat:0 | intcomma }}</td>
+                        <td class="py-2 px-4 text-right">{{ loan.interest_balance | floatformat:0 | intcomma }}</td>
+                        <td class="py-2 px-4 text-right">{{ loan.principal_balance | floatformat:0 | intcomma }}</td>
                         <td class="py-2 px-4 text-center">{{ loan.approved_at | naturalday }}</td>
-                        <td class="py-2 px-4 text-right">{{ loan.demanded_amount | floatformat:0 | intcomma }}/=</td>
+                        <td class="py-2 px-4 text-right">{{ loan.demanded_amount | floatformat:0 | intcomma }}</td>
                         <td class="py-2 px-4">{{ loan.payment_frequency }}</td>
                         <td class="py-2 px-4">{{ loan.loan_term }} {{ loan.loan_term_type_of_period }}</td>
                     </tr>
