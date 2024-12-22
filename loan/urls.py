@@ -13,4 +13,5 @@ urlpatterns = [
     path('search-loan/', views.search_loan, name='search-loan'),   
     path('add-doc/<int:loan_id>', views.add_doc, name='add-doc'), 
     path('arrears', views.loans_in_arrears, name='arrears'),
+    path('loan-payments/<int:loan_id>', views.loan_payments, name='loan-payments'),
 ]

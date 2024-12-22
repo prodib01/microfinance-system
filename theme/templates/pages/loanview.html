@@ -3,697 +3,696 @@
 {% load static %}
 {% load custom_filters %}
 {% load humanize %}
-                <div class="w-full">
-                    <div class="w-full max-myMob:flex-col max-myMob:items-start max-myMob:gap-4 max-md:mt-10">
-                        <div class="flex items-center gap-4">
-                            <!-- <button type="button" class="p-2 text-2xl text-white rounded-full bg-myBlack"><i class="flex justify-center fi fi-rr-arrow-small-left"></i></button> -->
-                            <h1 class="text-3xl font-bold">Loan Details</h1>
-                        </div>
-                    </div>
-                    <div class="flex items-start w-full gap-8 mt-7 max-md:flex-col max-myMob:flex-col ">
-                        <div class="w-7/12 max-md:w-full">
-                            <div id="openPopup2" class="cursor-pointer p-6 text-white bg-[#475C6C] rounded-3xl">
-                                <div class="flex flex-wrap items-end justify-between space-y-2">
-                                    <div class=""> 
-                                        <h1 class="text-xl font-bold">{{loan.client.full_name}}</h1>
-                                    </div>
-                                    <div>
-                                        <p>{{loan.client.nin}}</p>
-                                    </div>
-                                </div>
-                                <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
-                                    <div>
-                                        <h1>{{loan.loan_product}}</h1>
-                                        <p class="text-xl font-bold">{{loan.given_amount}}/=</p>
-                                    </div>
-                                    <div>
-                                        <p>{{loan.demanded_amount | floatformat:2 | intcomma}}/=</p>
-                                    </div>
-                                    <div>
-                                        <p>{{loan.loan_term}} {{loan.loan_term_type_of_period}} ({{loan.payment_frequency}})</p>
-                                    </div>
-                                </div>
-                                <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
-                                    <div>
-                                        <h1>Total Loan Value</h1>
-                                       <p class="text-xl font-bold">{{ loan.account_interest|add:loan.given_amount |floatformat:0}}/=</p>
-
-                                    </div>
-                                    <div>
-                                        <h1>Acc Interest</h1>
-                                        <p class="text-xl font-bold">{{loan.account_interest | floatformat:0}}/=</p>
-                                    </div>
-                                    <div>
-                                        <h1>Installment</h1>
-                                        <p class="text-xl font-bold">{{loan.installment | floatformat:0}}/=</p>
-                                    </div>
-                                </div>
-                                
-                            </div>
-                            <div class="mt-8">
-                                <h1 class="text-xl font-bold">Security</h1>
-                                <h2 class="text-xl">{{loan.security_type}}</h2>
-                                <h1> {{loan.security_description}} </h1>
-                                {% comment %} <div class="grid w-full grid-cols-5 gap-4 mt-4">
-                                    <img src="{% static '/img/bg.png' %}" alt="" srcset="" class="object-cover bg-cover w-28 h-28 rounded-xl" onclick="openPopup('{% static "/img/bg.png" %}')">
-                                    <img src="{% static '/img/shot.png' %}" alt="" srcset="" class="object-cover h-28 w-28 rounded-xl" onclick="openPopup('{% static "/img/shot.png" %}')">
-                                </div>
-                                <div id="imagePopup" class="z-50 hidden fixed top-0 left-0 w-full h-full bg-black backdrop-blur-sm bg-opacity-75 items-center justify-center">
-                                    <img id="popupImage" class="mx-auto h-screen max-md:w-full max-md:h-auto" src="" alt="Popup Image">
-                                    <button class="absolute top-2 right-2 text-white" onclick="closePopup()">Close</button>
-                                  </div> {% endcomment %}
-                            </div>
-                            <div class="mt-8 space-y-6">
-                                <div class="flex items-center justify-between">
-                                    <h1 class="text-xl font-bold">Documents</h1>
-                                    <button type="button" id="openPopup3" class="p-2 text-xs text-white rounded-full bg-myBlack"><i class="flex justify-center fi fi-sr-plus"></i></button>
-                                </div>
-                                <div class="space-y-2">
-                                    {% for doc in docs%}
-                                    <div onclick="showDocument('{{ doc.id }}')" class="flex items-center gap-2 p-4 bg-gray-200 rounded-lg cursor-pointer">
-                                        <i class="text-2xl leading-3 text-blue-500 fi fi-sr-document"></i>
-                                        <p>{{doc.title}}</p>
-                                    </div>
-                                    <!-- view document popup  -->
-                                    <div id="popup_{{ doc.id }}" onclick="hideDocument('{{ doc.id }}')" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
-                                        <div class="relative w-10/12 overflow-y-auto bg-white h-5/6 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
-                                            <button id="closePopup_{{doc.id}}" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
-                                            <div class="w-full p-6">
-                                                <h1 class="mb-4 text-2xl font-bold">{{doc.title}}</h1>
-                                                <iframe src="{{doc.document.url}}" frameborder="0" class="w-full h-screen"></iframe>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                    {% comment %} <div id="openPopup4" class="flex items-center gap-2 p-4 bg-gray-200 rounded-lg cursor-pointer">
-                                        <i class="text-2xl leading-3 text-blue-500 fi fi-sr-document"></i>
-                                        <p>This is the document title</p>
-                                    </div>
-                                    <div class="flex items-center gap-2 p-4 bg-gray-200 rounded-lg">
-                                        <i class="text-2xl leading-3 text-blue-500 fi fi-sr-document"></i>
-                                        <p>This is the document title</p>
-                                    </div> {% endcomment %}
-                                </div>
-                                
-                            </div>
-                        </div>
-                        <div class="w-5/12 max-md:w-full max-md:mt-8">
-                            <div id="content1" class="tabContent">
-                                <div class="mt-4 space-y-2">
-                                    {% if arreas != 0%}
-                                    <div class="text-center text-white bg-myRed">
-                                        <p class="italic flex items-center justify-center"><i class="fi fi-sr-triangle-warning leading-3 mr-2"></i> Loan has arrears of {{arreas}} days</p>
-                                    </div>
-                                    {% endif %}
-                                    <div id="openPopup5" class="flex items-center justify-between p-3 bg-gray-200 cursor-pointer rounded-xl">
-                                        <div>
-                                            <p class="tetx-gray-700">Total Loan:</p>
-                                            {% comment %} <p class="tetx-gray-700">Month's Accumulated Increment:</p>
-                                            <p class="tetx-gray-700">Total Accumulated:</p> {% endcomment %}
-                                        </div>
-                                        <div class="">
-                                            <p class="font-bold">UGX {{loan.given_amount|add:loan.account_interest | floatformat:0}}/=</p>
-                                            {% comment %} <p class="font-bold">UGX 750,000</p> {% endcomment %}
-                                            {% comment %} <p class="font-bold">UGX 14,000,000</p> {% endcomment %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="grid grid-cols-1 gap-5 mt-4">
-                            <h1 class="text-2xl font-bold">Payments</h1> 
-
-                                    <table class="min-w-full border-collapse border border-gray-300">
-                                        <thead>
-                                            <tr>
-                                                <th class="border border-gray-300 text-left p-2">Date</th>
-                                                <th class="border border-gray-300 text-left p-2">Amount</th>
-                                                <th class="border border-gray-300 text-left p-2">Balance Before</th>
-                                                <th class="border border-gray-300 text-left p-2">Balance After</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                    {% for deposit in deposits%}
-                                        <div onclick="showPaymentPopup('{{deposit.id}}')" class="border-b-2 cursor-pointer border-b-gray-300">
-                                           <table>
-                                                <tbody>
-                                                    <tr>
-                                                        <td class="border border-gray-300 text-left p-2">{{deposit.deposited_at | naturalday}}</td>
-                                                        <td class="border border-gray-300 text-left p-2 font-bold">UGX {{deposit.amount_deposited | floatformat:0}}/=</td>
-                                                        <td class="border border-gray-300 text-left p-2 font-bold">{{deposit.loan_balance_at_time_of_deposit | floatformat:0}}/=</td>
-                                                        <td class="border border-gray-300 text-left p-2 font-bold">{{deposit.loan_balance_after_deposit | floatformat:0}}/=</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-
-
-
-                                        <!--loan payment details popup-->
-                                        <div id="popup_{{deposit.id}}" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
-                                            <div class="relative w-[595px] overflow-y-auto bg-white h-4/5 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
-                                                <button onclick="hidePaymentPopup('{{deposit.id}}')" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
-                                                <div class="w-full p-6">
-                                                    <div id="paymentsReport-{{deposit.id}}">
-                                                        <div>
-                                                            <img src="{% static "/img/logo.png" %}" alt="" srcset="" class="w-16 pr-1">
-                                                            <h1 class="text-3xl font-bold">MURO FINANCE UGANDA LTD</h1>
-                                                            <h1 class="text-3xl font-bold">Payments Report</h1>
-                                                        </div>
-                                                        <hr> <br> <br>
-
-                                                        <style>
-                                                            table {
-                                                                font-size: 12px;
-                                                            }
-                                                            th, td {
-                                                                padding: 5px; 
-                                                            }
-                                                        </style>
-                                                        <h1 class="text-xl font-bold">Details</h1>
-                                                        <table class="min-w-full border-collapse border border-gray-300">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td class="border border-gray-300 text-left p-2">{{loan.client.full_name}}</td>
-                                                                    <td class="border border-gray-300 text-left p-2">{{loan.nin}}</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td class="border border-gray-300 text-left p-2">Total Loan Value</td>
-                                                                    <td class="border border-gray-300 text-left p-2 font-bold">UGX {{loan.given_amount|add:loan.account_interest | floatformat:0}}/=</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td class="border border-gray-300 text-left p-2">Paid</td>
-                                                                    <td class="border border-gray-300 text-left p-2 font-bold"><h1 class="text-xl font-bold">UGX {{deposit.amount_deposited | floatformat:0}}/=</h1></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td class="border border-gray-300 text-left p-2">Date Of Payment</td>
-                                                                    <td class="border border-gray-300 text-left p-2 font-bold">{{deposit.deposited_at | naturalday | capfirst}}</td>
-                                                                </tr>
-
-                                                            </tbody>
-                                                        </table>
-                                                        <hr><br><br>
-
-                                                        <div class="mt-6">
-                                                            <h1 class="text-xl font-bold">Distributions</h1>
-                                                            <table class="min-w-full border-collapse border border-gray-300">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th class="border border-gray-300 text-left p-2">Type</th>
-                                                                        <th class="border border-gray-300 text-left p-2">Amount</th>
-                                                                        <th class="border border-gray-300 text-left p-2">Ammortization Date</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {% for payment in deposit.payments.all  %}
-                                                                        <tr>
-                                                                            <td class="border border-gray-300 p-2">{{payment.payment_type}}</td>
-                                                                            <td class="border border-gray-300 p-2 font-bold">{{payment.amount | floatformat:0 | intcomma }}/=</td>
-                                                                            <td class="border border-gray-300 p-2">{{payment.ammortization.payment_date | naturalday | capfirst}}</td>
-                                                                        </tr>
-                                                                    {% endfor %} 
-                                                                </tbody>
-                                                            </table>
-                                                            <hr>
-                                                            <br>
-
-                                                            <table class="min-w-full border-collapse border border-gray-300">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th class="border border-gray-300 text-left p-2">Balance Before</th>
-                                                                        <th class="border border-gray-300 text-left p-2">Balance After</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td class="border border-gray-300 p-2 font-bold">{{deposit.loan_balance_at_time_of_deposit | floatformat:0 | intcomma }}/=</td>
-                                                                        <td class="border border-gray-300 p-2 font-bold">{{deposit.loan_balance_after_deposit | floatformat:0 | intcomma }}/=</td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-        
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="mt-4">
-                                                    <button onclick="printDiv('paymentsReport-{{deposit.id}}')" class="rounded bg-blue-500 text-white px-4 py-2">Print Report</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                     {% endfor %}
-
-                                </div>
-                            </div>
-                            <div id="content2" class="grid hidden grid-cols-1 gap-5 mt-7 tabContent">
-                                <div class="py-4 border-b-2 border-b-gray-300">
-                                   <p class="mb-2 italic">28 jan 2024</p> 
-                                   <div class="flex items-center justify-between">
-                                    <div class="">
-                                        <h1 class="">To pay</h1>
-                                        <h1 class="text-2xl font-bold">UGX 350,000</h1>
-                                    </div>
-                                    
-                                   </div>
-                                </div>
-                                <div class="py-4 border-b-2 border-b-gray-300">
-                                    <p class="mb-2 italic">28 jan 2024</p> 
-                                    <div class="flex items-center justify-between">
-                                     <div class="">
-                                         <h1 class="">To pay</h1>
-                                         <h1 class="text-2xl font-bold">UGX 350,000</h1>
-                                     </div>
-                                     
-                                    </div>
-                                 </div>
-                            </div>
-                        </div>
-                    </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
-                </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
-            </div>
-        </div>
-    </div>                                                                                                                                                                                          
-
-    <!-- full laon details popup -->
-    <div id="popup2" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
-        <div class="relative w-full max-w-3xl overflow-y-auto bg-white h-4/5 rounded-2xl p-6">
-            <button id="closePopup2" class="absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack">
-                <i class="leading-3 fi fi-rr-cross-small"></i>
-            </button>
-            <div id="loanDetails">
-                <div>
-                    <img src="{% static "/img/logo.png" %}" alt="" srcset="" class="w-16 pr-1">
-                    <h1 class="text-3xl font-bold">MURO FINANCE UGANDA LTD</h1>
-                </div>
-                <h1 class="text-2xl font-bold text-center mb-4">Loan Details</h1>
-                <table class="w-full mb-6">
-                    <tr>
-                        <td class="font-bold" colspan="2">{{loan.client.full_name}}</td>
-                    </tr>
-                    <tr>
-                        <td>NIN:</td>
-                        <td>{{loan.client.nin}}</td>
-                    </tr>
-                    <tr>
-                        <td>Nationality:</td>
-                        <td>{{loan.client.nationality}}</td>
-                    </tr>
-                    <tr>
-                        <td>Client Code:</td>
-                        <td class="font-myMono">{{loan.client.client_code}}</td>
-                    </tr>
-                    <tr>
-                        <td>Address:</td>
-                        <td><i class="leading-3 fi fi-sr-marker"></i> {{loan.client.address}}</td>
-                    </tr>
-                </table>
-                <br>
-                <table class="w-full mb-6">
-                    <tr>
-                        <th class="text-left">Personal Details</th>
-                        <th class="text-left">Value</th>
-                    </tr>
-                    <tr>
-                        <td>D.O.B:</td>
-                        <td>{{loan.client.dob}}</td>
-                    </tr>
-                    <tr>
-                        <td>Gender:</td>
-                        <td>{{loan.client.gender}}</td>
-                    </tr>
-                    <tr>
-                        <td>Business:</td>
-                        <td>{{loan.client.business}}</td>
-                    </tr>
-                    <tr>
-                        <td>Phone No:</td>
-                        <td>{{loan.client.phone}}</td>
-                    </tr>
-                    {% if loan.client.spouse_name %}
-                        <tr>
-                            <td>Married to:</td>
-                            <td>{{loan.client.spouse_name}} ({{loan.client.spouse_phone}})</td>
-                        </tr>
-                    {% endif %}
-                </table>
-                <br>
-        
-                <table class="w-full mb-6">
-                    <thead>
-                        <tr>
-                            <th class="text-left">Loan Information</th>
-                            <th class="text-left">Value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Loan Product:</td>
-                            <td>{{loan.loan_product}}</td>
-                        </tr>
-                        <tr>
-                            <td>Given Amount:</td>
-                            <td>UGX {{loan.given_amount}}/=</td>
-                        </tr>
-                        <tr>
-                            <td>Interest Rate:</td>
-                            <td>{{loan.interest_rate}}%</td>
-                        </tr>
-                        <tr>
-                            <td>Loan Term:</td>
-                            <td>{{loan.loan_term}} {{loan.loan_term_type_of_period}} ({{loan.payment_frequency}})</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <br>
-        
-                <table class="w-full mb-6">
-                    <thead>
-                        <tr>
-                            <th class="text-left">Financial Summary</th>
-                            <th class="text-left">Value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Total Interest:</td>
-                            <td class="font-bold">UGX {{loan.account_interest}}/=</td>
-                        </tr>
-                        <tr>
-                            <td>Total Principal:</td>
-                            <td class="font-bold">UGX {{loan.given_amount}}/=</td>
-                        </tr>
-                        <tr>
-                            <td>Total Loan:</td>
-                            <td class="font-bold">UGX {{ loan.account_interest|add:loan.given_amount }} /=</td>
-                        </tr>
-                        <tr>
-                            <td>Demanded Amount:</td>
-                            <td class="font-bold">UGX {{ loan.demanded_amount }} /=</td>
-                        </tr>
-                        <tr>
-                            <td>Installment:</td>
-                            <td class="font-bold">UGX {{loan.installment}}/=</td>
-                        </tr>
-                        <tr>
-                            <td>Amount on Loan Deposit:</td>
-                            <td class="font-bold">UGX {{loan.client_loan_account_balance | floatformat:0}}/=</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <br>
-        
-                <table class="w-full mb-6">
-                    <thead>
-                        <tr>
-                            <th class="text-left">Loan Officer</th>
-                            <th class="text-left">Disbursed</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{{loan.loan_officer}}</td>
-                            <td><i class="mr-2 leading-3 fi fi-rr-calendar-lines-pen"></i>{{ loan.approved_at | naturalday}} </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <br>
-        
-                <table class="w-full mb-6">
-                    <thead>
-                        <tr>
-                            <th class="text-left">Referees</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for guarantor in loan.loanguarantor_set.all %}
-                            <tr>
-                                <td>{{ guarantor.guarantor.full_name }} <span>({{ guarantor.guarantor.phone }})</span></td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-        
-                <div class="mt-6">
-                    <h2 class="font-bold">Security</h2>
-                    <p>{{loan.security_description}}</p>
-                </div>
-            </div>
-        </div>
-        <div class="mt-4">
-            <button onclick="printDiv('loanDetails')" class="rounded bg-blue-500 text-white px-4 py-2">Print</button>
+<div class="w-full">
+    <div class="w-full max-myMob:flex-col max-myMob:items-start max-myMob:gap-4 max-md:mt-10">
+        <div class="flex items-center gap-4">
+            <!-- <button type="button" class="p-2 text-2xl text-white rounded-full bg-myBlack"><i class="flex justify-center fi fi-rr-arrow-small-left"></i></button> -->
+            <h1 class="text-3xl font-bold">Loan Details</h1>
         </div>
     </div>
-    
-    
-
-    <!-- add document popup -->
-    <div id="popup3" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
-        <div class="relative w-3/12 py-4 overflow-y-auto bg-white rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
-            <button id="closePopup3" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
-            <div class="w-full p-6">
-                <h1 class="mb-10 text-2xl font-bold">Add Document</h1>
-                <form action="/loan/add-doc/{{loan.id}}" method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="flex flex-col mb-4">
-                        <label for="name">Title</label>
-                        <input required type="text" name="title" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+    <div class="flex items-start w-full gap-8 mt-7 max-md:flex-col max-myMob:flex-col ">
+        <div class="w-7/12 max-md:w-full">
+            <div id="openPopup2" class="cursor-pointer p-6 text-white bg-[#475C6C] rounded-3xl">
+                <div class="flex flex-wrap items-end justify-between space-y-2">
+                    <div class=""> 
+                        <h1 class="text-xl font-bold">{{loan.client.full_name}}</h1>
                     </div>
-                    <div class="flex flex-col mb-4">
-                        <label for="client" class="font-bold">Add Documents</label>
-                        <input type="file" name="file" id="fileInput" accept=".pdf" class="my-2">
-                        {% comment %} <button onclick="addFile()" class="w-10/12 h-10 text-white rounded-full bg-myBlack">Add Document</button> {% endcomment %}
-                        <ul id="fileList" class="mt-4 truncate"></ul>
-                    </div>
-                    <button type="submit" class="w-10/12 h-10 mt-10 text-white rounded-full bg-myBlack">Add</button>
-                </form>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- loan calc view popup  -->
-    <div id="popup5" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
-        <div class="relative w-8/12 overflow-y-auto bg-white h-5/6 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
-            <button id="closePopup5" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
-            <div class="w-full p-6">
-
-                <div id="loanArmmotization">
                     <div>
-                        <img src="{% static "/img/logo.png" %}" alt="" srcset="" class="w-16 pr-1">
-                        <h1 class="text-3xl font-bold">MURO FINANCE UGANDA LTD</h1>
-                        <br>
-                        <h1 class="mb-6 text-2xl font-bold">Loan Details</h1>
+                        <p>{{loan.client.nin}}</p>
                     </div>
-                    <style>
-                        table {
-                            font-size: 12px;
-                        }
-                        th, td {
-                            padding: 5px; 
-                        }
-                    </style>
+                </div>
+                <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
+                    <div>
+                        <h1>{{loan.loan_product}}</h1>
+                        <p class="text-xl font-bold">{{loan.given_amount}}/=</p>
+                    </div>
+                    <div>
+                        <p>{{loan.demanded_amount | floatformat:2 | intcomma}}/=</p>
+                    </div>
+                    <div>
+                        <p>{{loan.loan_term}} {{loan.loan_term_type_of_period}} ({{loan.payment_frequency}})</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-end justify-between mt-6 space-y-2">
+                    <div>
+                        <h1>Total Loan Value</h1>
+                        <p class="text-xl font-bold">{{ loan.account_interest|add:loan.given_amount |floatformat:0}}/=</p>
+
+                    </div>
+                    <div>
+                        <h1>Acc Interest</h1>
+                        <p class="text-xl font-bold">{{loan.account_interest | floatformat:0}}/=</p>
+                    </div>
+                    <div>
+                        <h1>Installment</h1>
+                        <p class="text-xl font-bold">{{loan.installment | floatformat:0}}/=</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8">
+                <h1 class="text-xl font-bold">Security</h1>
+                <h2 class="text-xl">{{loan.security_type}}</h2>
+                <h1> {{loan.security_description}} </h1>
+                {% comment %} <div class="grid w-full grid-cols-5 gap-4 mt-4">
+                    <img src="{% static '/img/bg.png' %}" alt="" srcset="" class="object-cover bg-cover w-28 h-28 rounded-xl" onclick="openPopup('{% static "/img/bg.png" %}')">
+                    <img src="{% static '/img/shot.png' %}" alt="" srcset="" class="object-cover h-28 w-28 rounded-xl" onclick="openPopup('{% static "/img/shot.png" %}')">
+                </div>
+                <div id="imagePopup" class="z-50 hidden fixed top-0 left-0 w-full h-full bg-black backdrop-blur-sm bg-opacity-75 items-center justify-center">
+                    <img id="popupImage" class="mx-auto h-screen max-md:w-full max-md:h-auto" src="" alt="Popup Image">
+                    <button class="absolute top-2 right-2 text-white" onclick="closePopup()">Close</button>
+                    </div> {% endcomment %}
+            </div>
+            <div class="mt-8 space-y-6">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-xl font-bold">Documents</h1>
+                    <button type="button" id="openPopup3" class="p-2 text-xs text-white rounded-full bg-myBlack"><i class="flex justify-center fi fi-sr-plus"></i></button>
+                </div>
+                <div class="space-y-2">
+                    {% for doc in docs%}
+                    <div onclick="showDocument('{{ doc.id }}')" class="flex items-center gap-2 p-4 bg-gray-200 rounded-lg cursor-pointer">
+                        <i class="text-2xl leading-3 text-blue-500 fi fi-sr-document"></i>
+                        <p>{{doc.title}}</p>
+                    </div>
+                    <!-- view document popup  -->
+                    <div id="popup_{{ doc.id }}" onclick="hideDocument('{{ doc.id }}')" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+                        <div class="relative w-10/12 overflow-y-auto bg-white h-5/6 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+                            <button id="closePopup_{{doc.id}}" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+                            <div class="w-full p-6">
+                                <h1 class="mb-4 text-2xl font-bold">{{doc.title}}</h1>
+                                <iframe src="{{doc.document.url}}" frameborder="0" class="w-full h-screen"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% comment %} <div id="openPopup4" class="flex items-center gap-2 p-4 bg-gray-200 rounded-lg cursor-pointer">
+                        <i class="text-2xl leading-3 text-blue-500 fi fi-sr-document"></i>
+                        <p>This is the document title</p>
+                    </div>
+                    <div class="flex items-center gap-2 p-4 bg-gray-200 rounded-lg">
+                        <i class="text-2xl leading-3 text-blue-500 fi fi-sr-document"></i>
+                        <p>This is the document title</p>
+                    </div> {% endcomment %}
+                </div>
+                
+            </div>
+        </div>
+        <div class="w-5/12 max-md:w-full max-md:mt-8">
+            <div id="content1" class="tabContent">
+                <div class="mt-4 space-y-2">
+                    {% if arreas != 0%}
+                    <div class="text-center text-white bg-myRed">
+                        <p class="italic flex items-center justify-center"><i class="fi fi-sr-triangle-warning leading-3 mr-2"></i> Loan has arrears of {{arreas}} days</p>
+                    </div>
+                    {% endif %}
+                    <div id="openPopup5" class="flex items-center justify-between p-3 bg-gray-200 cursor-pointer rounded-xl">
+                        <div>
+                            <p class="tetx-gray-700">Total Loan:</p>
+                            {% comment %} <p class="tetx-gray-700">Month's Accumulated Increment:</p>
+                            <p class="tetx-gray-700">Total Accumulated:</p> {% endcomment %}
+                        </div>
+                        <div class="">
+                            <p class="font-bold">UGX {{loan.given_amount|add:loan.account_interest | floatformat:0}}/=</p>
+                            {% comment %} <p class="font-bold">UGX 750,000</p> {% endcomment %}
+                            {% comment %} <p class="font-bold">UGX 14,000,000</p> {% endcomment %}
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-5 mt-4">
+                    <h1 class="text-2xl font-bold">Payments</h1>
+                    <a 
+                        href="{% url 'loan-payments' loan.id %}"
+                        target="_blank" 
+                        class="ml-auto px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-center"
+                    >
+                        Print All
+                    </a>
+                
+
                     <table class="min-w-full border-collapse border border-gray-300">
                         <thead>
                             <tr>
-                                <th class="border border-gray-300 text-left p-2">Description</th>
-                                <th class="border border-gray-300 text-left p-2">Value</th>
+                                <th class="border border-gray-300 text-left p-2">Date</th>
+                                <th class="border border-gray-300 text-left p-2">Amount</th>
+                                <th class="border border-gray-300 text-left p-2">Balance Before</th>
+                                <th class="border border-gray-300 text-left p-2">Balance After</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    {% for deposit in deposits%}
+                        <div onclick="showPaymentPopup('{{deposit.id}}')" class="border-b-2 cursor-pointer border-b-gray-300">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td class="border border-gray-300 text-left p-2">{{deposit.deposited_at | naturalday}}</td>
+                                        <td class="border border-gray-300 text-left p-2 font-bold">UGX {{deposit.amount_deposited | floatformat:0}}/=</td>
+                                        <td class="border border-gray-300 text-left p-2 font-bold">{{deposit.loan_balance_at_time_of_deposit | floatformat:0}}/=</td>
+                                        <td class="border border-gray-300 text-left p-2 font-bold">{{deposit.loan_balance_after_deposit | floatformat:0}}/=</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!--loan payment details popup-->
+                        <div id="popup_{{deposit.id}}" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+                            <div class="relative w-[595px] overflow-y-auto bg-white h-4/5 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+                                <button onclick="hidePaymentPopup('{{deposit.id}}')" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+                                <div class="w-full p-6">
+                                    <div id="paymentsReport-{{deposit.id}}">
+                                        <div>
+                                            <img src="{% static "/img/logo.png" %}" alt="" srcset="" class="w-16 pr-1">
+                                            <h1 class="text-3xl font-bold">MURO FINANCE UGANDA LTD</h1>
+                                            <h1 class="text-3xl font-bold">Payments Report</h1>
+                                        </div>
+                                        <hr> <br> <br>
+
+                                        <style>
+                                            table {
+                                                font-size: 12px;
+                                            }
+                                            th, td {
+                                                padding: 5px; 
+                                            }
+                                        </style>
+                                        <h1 class="text-xl font-bold">Details</h1>
+                                        <table class="min-w-full border-collapse border border-gray-300">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="border border-gray-300 text-left p-2">{{loan.client.full_name}}</td>
+                                                    <td class="border border-gray-300 text-left p-2">{{loan.nin}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="border border-gray-300 text-left p-2">Total Loan Value</td>
+                                                    <td class="border border-gray-300 text-left p-2 font-bold">UGX {{loan.given_amount|add:loan.account_interest | floatformat:0}}/=</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="border border-gray-300 text-left p-2">Paid</td>
+                                                    <td class="border border-gray-300 text-left p-2 font-bold"><h1 class="text-xl font-bold">UGX {{deposit.amount_deposited | floatformat:0}}/=</h1></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="border border-gray-300 text-left p-2">Date Of Payment</td>
+                                                    <td class="border border-gray-300 text-left p-2 font-bold">{{deposit.deposited_at | naturalday | capfirst}}</td>
+                                                </tr>
+
+                                            </tbody>
+                                        </table>
+                                        <hr><br><br>
+
+                                        <div class="mt-6">
+                                            <h1 class="text-xl font-bold">Distributions</h1>
+                                            <table class="min-w-full border-collapse border border-gray-300">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="border border-gray-300 text-left p-2">Type</th>
+                                                        <th class="border border-gray-300 text-left p-2">Amount</th>
+                                                        <th class="border border-gray-300 text-left p-2">Ammortization Date</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for payment in deposit.payments.all  %}
+                                                        <tr>
+                                                            <td class="border border-gray-300 p-2">{{payment.payment_type}}</td>
+                                                            <td class="border border-gray-300 p-2 font-bold">{{payment.amount | floatformat:0 | intcomma }}/=</td>
+                                                            <td class="border border-gray-300 p-2">{{payment.ammortization.payment_date | naturalday | capfirst}}</td>
+                                                        </tr>
+                                                    {% endfor %} 
+                                                </tbody>
+                                            </table>
+                                            <hr>
+                                            <br>
+
+                                            <table class="min-w-full border-collapse border border-gray-300">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="border border-gray-300 text-left p-2">Balance Before</th>
+                                                        <th class="border border-gray-300 text-left p-2">Balance After</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="border border-gray-300 p-2 font-bold">{{deposit.loan_balance_at_time_of_deposit | floatformat:0 | intcomma }}/=</td>
+                                                        <td class="border border-gray-300 p-2 font-bold">{{deposit.loan_balance_after_deposit | floatformat:0 | intcomma }}/=</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <button onclick="printDiv('paymentsReport-{{deposit.id}}')" class="rounded bg-blue-500 text-white px-4 py-2">Print Report</button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div id="content2" class="grid hidden grid-cols-1 gap-5 mt-7 tabContent">
+                <div class="py-4 border-b-2 border-b-gray-300">
+                    <p class="mb-2 italic">28 jan 2024</p> 
+                    <div class="flex items-center justify-between">
+                        <div class="">
+                            <h1 class="">To pay</h1>
+                            <h1 class="text-2xl font-bold">UGX 350,000</h1>
+                        </div>
+                    
+                    </div>
+                </div>
+                <div class="py-4 border-b-2 border-b-gray-300">
+                    <p class="mb-2 italic">28 jan 2024</p> 
+                    <div class="flex items-center justify-between">
+                        <div class="">
+                            <h1 class="">To pay</h1>
+                            <h1 class="text-2xl font-bold">UGX 350,000</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+    </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+</div>                                                                                                                                                                                      
+
+<!-- full laon details popup -->
+<div id="popup2" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+    <div class="relative w-full max-w-3xl overflow-y-auto bg-white h-4/5 rounded-2xl p-6">
+        <button id="closePopup2" class="absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack">
+            <i class="leading-3 fi fi-rr-cross-small"></i>
+        </button>
+        <div id="loanDetails">
+            <div>
+                <img src="{% static "/img/logo.png" %}" alt="" srcset="" class="w-16 pr-1">
+                <h1 class="text-3xl font-bold">MURO FINANCE UGANDA LTD</h1>
+            </div>
+            <h1 class="text-2xl font-bold text-center mb-4">Loan Details</h1>
+            <table class="w-full mb-6">
+                <tr>
+                    <td class="font-bold" colspan="2">{{loan.client.full_name}}</td>
+                </tr>
+                <tr>
+                    <td>NIN:</td>
+                    <td>{{loan.client.nin}}</td>
+                </tr>
+                <tr>
+                    <td>Nationality:</td>
+                    <td>{{loan.client.nationality}}</td>
+                </tr>
+                <tr>
+                    <td>Client Code:</td>
+                    <td class="font-myMono">{{loan.client.client_code}}</td>
+                </tr>
+                <tr>
+                    <td>Address:</td>
+                    <td><i class="leading-3 fi fi-sr-marker"></i> {{loan.client.address}}</td>
+                </tr>
+            </table>
+            <br>
+            <table class="w-full mb-6">
+                <tr>
+                    <th class="text-left">Personal Details</th>
+                    <th class="text-left">Value</th>
+                </tr>
+                <tr>
+                    <td>D.O.B:</td>
+                    <td>{{loan.client.dob}}</td>
+                </tr>
+                <tr>
+                    <td>Gender:</td>
+                    <td>{{loan.client.gender}}</td>
+                </tr>
+                <tr>
+                    <td>Business:</td>
+                    <td>{{loan.client.business}}</td>
+                </tr>
+                <tr>
+                    <td>Phone No:</td>
+                    <td>{{loan.client.phone}}</td>
+                </tr>
+                {% if loan.client.spouse_name %}
+                    <tr>
+                        <td>Married to:</td>
+                        <td>{{loan.client.spouse_name}} ({{loan.client.spouse_phone}})</td>
+                    </tr>
+                {% endif %}
+            </table>
+            <br>
+    
+            <table class="w-full mb-6">
+                <thead>
+                    <tr>
+                        <th class="text-left">Loan Information</th>
+                        <th class="text-left">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Loan Product:</td>
+                        <td>{{loan.loan_product}}</td>
+                    </tr>
+                    <tr>
+                        <td>Given Amount:</td>
+                        <td>UGX {{loan.given_amount}}/=</td>
+                    </tr>
+                    <tr>
+                        <td>Interest Rate:</td>
+                        <td>{{loan.interest_rate}}%</td>
+                    </tr>
+                    <tr>
+                        <td>Loan Term:</td>
+                        <td>{{loan.loan_term}} {{loan.loan_term_type_of_period}} ({{loan.payment_frequency}})</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+    
+            <table class="w-full mb-6">
+                <thead>
+                    <tr>
+                        <th class="text-left">Financial Summary</th>
+                        <th class="text-left">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Total Interest:</td>
+                        <td class="font-bold">UGX {{loan.account_interest}}/=</td>
+                    </tr>
+                    <tr>
+                        <td>Total Principal:</td>
+                        <td class="font-bold">UGX {{loan.given_amount}}/=</td>
+                    </tr>
+                    <tr>
+                        <td>Total Loan:</td>
+                        <td class="font-bold">UGX {{ loan.account_interest|add:loan.given_amount }} /=</td>
+                    </tr>
+                    <tr>
+                        <td>Demanded Amount:</td>
+                        <td class="font-bold">UGX {{ loan.demanded_amount }} /=</td>
+                    </tr>
+                    <tr>
+                        <td>Installment:</td>
+                        <td class="font-bold">UGX {{loan.installment}}/=</td>
+                    </tr>
+                    <tr>
+                        <td>Amount on Loan Deposit:</td>
+                        <td class="font-bold">UGX {{loan.client_loan_account_balance | floatformat:0}}/=</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+    
+            <table class="w-full mb-6">
+                <thead>
+                    <tr>
+                        <th class="text-left">Loan Officer</th>
+                        <th class="text-left">Disbursed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{loan.loan_officer}}</td>
+                        <td><i class="mr-2 leading-3 fi fi-rr-calendar-lines-pen"></i>{{ loan.approved_at | naturalday}} </td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+    
+            <table class="w-full mb-6">
+                <thead>
+                    <tr>
+                        <th class="text-left">Referees</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for guarantor in loan.loanguarantor_set.all %}
+                        <tr>
+                            <td>{{ guarantor.guarantor.full_name }} <span>({{ guarantor.guarantor.phone }})</span></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+    
+            <div class="mt-6">
+                <h2 class="font-bold">Security</h2>
+                <p>{{loan.security_description}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="mt-4">
+        <button onclick="printDiv('loanDetails')" class="rounded bg-blue-500 text-white px-4 py-2">Print</button>
+    </div>
+</div>
+    
+    
+
+<!-- add document popup -->
+<div id="popup3" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+    <div class="relative w-3/12 py-4 overflow-y-auto bg-white rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+        <button id="closePopup3" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+        <div class="w-full p-6">
+            <h1 class="mb-10 text-2xl font-bold">Add Document</h1>
+            <form action="/loan/add-doc/{{loan.id}}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="flex flex-col mb-4">
+                    <label for="name">Title</label>
+                    <input required type="text" name="title" id="" class="w-10/12 h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus:border-myBlack">
+                </div>
+                <div class="flex flex-col mb-4">
+                    <label for="client" class="font-bold">Add Documents</label>
+                    <input type="file" name="file" id="fileInput" accept=".pdf" class="my-2">
+                    {% comment %} <button onclick="addFile()" class="w-10/12 h-10 text-white rounded-full bg-myBlack">Add Document</button> {% endcomment %}
+                    <ul id="fileList" class="mt-4 truncate"></ul>
+                </div>
+                <button type="submit" class="w-10/12 h-10 mt-10 text-white rounded-full bg-myBlack">Add</button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<!-- loan calc view popup  -->
+<div id="popup5" class="hidden fixed inset-0 bg-opacity-75 flex items-center justify-center w-full h-screen bg-[#0000007e] backdrop-blur-sm z-50">
+    <div class="relative w-8/12 overflow-y-auto bg-white h-5/6 rounded-2xl max-md:w-7/12 max-myMob:w-10/12">
+        <button id="closePopup5" class="fixed absolute flex items-center justify-center text-lg text-white rounded-full top-2 right-2 w-7 h-7 bg-myBlack"><i class="leading-3 fi fi-rr-cross-small"></i></button>
+        <div class="w-full p-6">
+
+            <div id="loanArmmotization">
+                <div>
+                    <img src="{% static "/img/logo.png" %}" alt="" srcset="" class="w-16 pr-1">
+                    <h1 class="text-3xl font-bold">MURO FINANCE UGANDA LTD</h1>
+                    <br>
+                    <h1 class="mb-6 text-2xl font-bold">Loan Details</h1>
+                </div>
+                <style>
+                    table {
+                        font-size: 12px;
+                    }
+                    th, td {
+                        padding: 5px; 
+                    }
+                </style>
+                <table class="min-w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr>
+                            <th class="border border-gray-300 text-left p-2">Description</th>
+                            <th class="border border-gray-300 text-left p-2">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border border-gray-300 p-2">Customer's Name</td>
+                            <td class="border border-gray-300 p-2 font-bold">{{loan.client.full_name}}</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-gray-300 p-2">Loan Amount</td>
+                            <td class="border border-gray-300 p-2 font-bold">UGX {{loan.given_amount}}/=</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-gray-300 p-2">Interest Rate</td>
+                            <td class="border border-gray-300 p-2 font-bold">{{loan.interest_rate | floatformat:2}}%</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-gray-300 p-2">Period</td>
+                            <td class="border border-gray-300 p-2 font-bold">{{loan.loan_term}} {{loan.loan_term_type_of_period}} ({{loan.payment_frequency}})</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-gray-300 p-2">Start Date</td>
+                            <td class="border border-gray-300 p-2 font-bold">{{ ammortizations.0.payment_date|date:"Y-m-d" | naturalday}}</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-gray-300 p-2">Installment</td>
+                            <td class="border border-gray-300 p-2 font-bold">UGX {{loan.installment}}/=</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-gray-300 p-2">No of payments</td>
+                            <td class="border border-gray-300 p-2 font-bold">{{ ammortizations|length }}</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-gray-300 p-2">Total Interest</td>
+                            <td class="border border-gray-300 p-2 font-bold">UGX {{loan.account_interest}}/=</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-gray-300 p-2">Total Loan</td>
+                            <td class="border border-gray-300 p-2 font-bold">UGX {{loan.account_interest|add:loan.given_amount}}/=</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br><br>
+                <h1 class="text-2xl font-bold">Amortization Schedule</h1>
+                <div class="mt-8 w-full">
+                    <table class="w-full">
+                        <thead class="  bg-gray-300 ">
+                            <tr class="">
+                                <th class="px-6 py-3 text-left">No</th>
+                                <th class="px-6 py-3 text-left">Ammortization Date</th>
+                                <th class="py-3 px-5 text-left">Total Interest</th>
+                                <th class="py-3 px-5 text-left">Interest Balance</th>
+                                <th class="px-6 py-3 text-left">Total Principal</th>
+                                <th class="px-6 py-3 text-left">Principal Balance</th>
+                                <th class="px-6 py-3 text-left">Ending Balance</th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody>
+                            {% for ammortization in ammortizations %}
+                            <tr class="border-b dark:bg-gray-800 dark:border-gray-700">
+                                <td class="py-3 px-5">{{ forloop.counter }}</td>
+                                <td class="py-3 px-5">{{ammortization.payment_date | date:"Y-m-d" }}</td>
+                                <td class="py-3 px-5">{{ammortization.interest | intcomma }}/=</td>
+                                <td class="py-3 px-5">{{ammortization.interest_balance | intcomma }}/=</td>
+                                <td class="py-3 px-5">{{ammortization.principal | intcomma }}/=</td>
+                                <td class="py-3 px-5">{{ammortization.principal_balance | intcomma }}/=</td>
+                                <td class="py-3 px-5">{{ammortization.ending_balance | intcomma }}/=</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+
+                    </table>
+                    <br>
+                    
+                    <h1 class="text-xl font-bold mb-4">
+                        List Of Preferred Payment Methods
+                    </h1>
+                    <table class="min-w-full border-collapse mb-6">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="text-left px-4 py-2 border">Bank</th>
+                                <th class="text-left px-4 py-2 border">MM A/c Name</th>
+                                <th class="text-left px-4 py-2 border">A/c Number</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td class="border border-gray-300 p-2">Customer's Name</td>
-                                <td class="border border-gray-300 p-2 font-bold">{{loan.client.full_name}}</td>
+                            <tr class="border-t">
+                                <td class="px-4 py-2 border">Equity Bank</td>
+                                <td class="px-4 py-2 border">Ronald Muwanika</td>
+                                <td class="px-4 py-2 border">1000102292684</td>
                             </tr>
-                            <tr>
-                                <td class="border border-gray-300 p-2">Loan Amount</td>
-                                <td class="border border-gray-300 p-2 font-bold">UGX {{loan.given_amount}}/=</td>
+                            <tr class="border-t">
+                                <td class="px-4 py-2 border">Centenary Bank</td>
+                                <td class="px-4 py-2 border">Ronald Muwanika</td>
+                                <td class="px-4 py-2 border">3204730219</td>
                             </tr>
-                            <tr>
-                                <td class="border border-gray-300 p-2">Interest Rate</td>
-                                <td class="border border-gray-300 p-2 font-bold">{{loan.interest_rate | floatformat:2}}%</td>
+                            <tr class="border-t">
+                                <td class="px-4 py-2 border">MTN-MoMo Pay</td>
+                                <td class="px-4 py-2 border">Ronald Muwanika</td>
+                                <td class="px-4 py-2 border">969183</td>
                             </tr>
-                            <tr>
-                                <td class="border border-gray-300 p-2">Period</td>
-                                <td class="border border-gray-300 p-2 font-bold">{{loan.loan_term}} {{loan.loan_term_type_of_period}} ({{loan.payment_frequency}})</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-gray-300 p-2">Start Date</td>
-                                <td class="border border-gray-300 p-2 font-bold">{{ ammortizations.0.payment_date|date:"Y-m-d" | naturalday}}</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-gray-300 p-2">Installment</td>
-                                <td class="border border-gray-300 p-2 font-bold">UGX {{loan.installment}}/=</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-gray-300 p-2">No of payments</td>
-                                <td class="border border-gray-300 p-2 font-bold">{{ ammortizations|length }}</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-gray-300 p-2">Total Interest</td>
-                                <td class="border border-gray-300 p-2 font-bold">UGX {{loan.account_interest}}/=</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-gray-300 p-2">Total Loan</td>
-                                <td class="border border-gray-300 p-2 font-bold">UGX {{loan.account_interest|add:loan.given_amount}}/=</td>
+                            <tr class="border-t">
+                                <td class="px-4 py-2 border">Airtel Money Pay</td>
+                                <td class="px-4 py-2 border">Goldener Kredit Uganda</td>
+                                <td class="px-4 py-2 border">6399321</td>
                             </tr>
                         </tbody>
                     </table>
-                    <br><br>
-                    <h1 class="text-2xl font-bold">Amortization Schedule</h1>
-                    <div class="mt-8 w-full">
-                        <table class="w-full">
-                            <thead class="  bg-gray-300 ">
-                                <tr class="">
-                                    <th class="px-6 py-3 text-left">No</th>
-                                    <th class="px-6 py-3 text-left">Ammortization Date</th>
-                                    <th class="py-3 px-5 text-left">Total Interest</th>
-                                    <th class="py-3 px-5 text-left">Interest Balance</th>
-                                    <th class="px-6 py-3 text-left">Total Principal</th>
-                                    <th class="px-6 py-3 text-left">Principal Balance</th>
-                                    <th class="px-6 py-3 text-left">Ending Balance</th>
-                                </tr>
-                            </thead>
-                            
-                            <tbody>
-                                {% for ammortization in ammortizations %}
-                                <tr class="border-b dark:bg-gray-800 dark:border-gray-700">
-                                    <td class="py-3 px-5">{{ forloop.counter }}</td>
-                                    <td class="py-3 px-5">{{ammortization.payment_date | date:"Y-m-d" }}</td>
-                                    <td class="py-3 px-5">{{ammortization.interest | intcomma }}/=</td>
-                                    <td class="py-3 px-5">{{ammortization.interest_balance | intcomma }}/=</td>
-                                    <td class="py-3 px-5">{{ammortization.principal | intcomma }}/=</td>
-                                    <td class="py-3 px-5">{{ammortization.principal_balance | intcomma }}/=</td>
-                                    <td class="py-3 px-5">{{ammortization.ending_balance | intcomma }}/=</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
+                    
+                    <h2 class="text-lg font-semibold mb-4">Key Notes</h2>
+                    <ul class="list-disc ml-6 space-y-2">
+                        <li>Every payment reduces your loan balance.</li>
+                        <li>Pay just in time to increase your loan limit in the future.</li>
+                        <li>Make a self-payment at any agent banking nearby or use your phone to pay.</li>
+                        <li>Make payment within banking hours, i.e., as early as 10:30 AM and as late as 1:30 PM.</li>
+                        <li>Use your name while banking.</li>
+                        <li>Any delayed payment will attract a penalty of 10% on loan balances.</li>
+                        <li>Use only authorized accounts to pay for the loan.</li>
+                        <li>A customer is responsible for their loan. Kindly use our recommended methods while paying for your loan.</li>
+                        <li>Do not leave the point of banking without the receipt.</li>
+                        <li>Share and keep the receipt after payment.</li>
+                        <li>Always ask for a statement to know your loan details.</li>
+                        <li>Recommend a new loan applicant to become the best customer of the year.</li>
+                    </ul>
+                    
+                    <p class="mt-6">
+                        By signing on this document, the borrower hereby confirms that <strong>ALL</strong> deposits or payments are only recognized by official accounts declared as per this form.
+                    </p>
 
-                        </table>
+                    <div class="mt-6">
+                        <p>Borrower’s Name:</p>
                         <br>
-                        
-                        <h1 class="text-xl font-bold mb-4">
-                            List Of Preferred Payment Methods
-                        </h1>
-                        <table class="min-w-full border-collapse mb-6">
-                            <thead>
-                                <tr class="bg-gray-100">
-                                    <th class="text-left px-4 py-2 border">Bank</th>
-                                    <th class="text-left px-4 py-2 border">MM A/c Name</th>
-                                    <th class="text-left px-4 py-2 border">A/c Number</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="border-t">
-                                    <td class="px-4 py-2 border">Equity Bank</td>
-                                    <td class="px-4 py-2 border">Ronald Muwanika</td>
-                                    <td class="px-4 py-2 border">1000102292684</td>
-                                </tr>
-                                <tr class="border-t">
-                                    <td class="px-4 py-2 border">Centenary Bank</td>
-                                    <td class="px-4 py-2 border">Ronald Muwanika</td>
-                                    <td class="px-4 py-2 border">3204730219</td>
-                                </tr>
-                                <tr class="border-t">
-                                    <td class="px-4 py-2 border">MTN-MoMo Pay</td>
-                                    <td class="px-4 py-2 border">Ronald Muwanika</td>
-                                    <td class="px-4 py-2 border">969183</td>
-                                </tr>
-                                <tr class="border-t">
-                                    <td class="px-4 py-2 border">Airtel Money Pay</td>
-                                    <td class="px-4 py-2 border">Goldener Kredit Uganda</td>
-                                    <td class="px-4 py-2 border">6399321</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        
-                        <h2 class="text-lg font-semibold mb-4">Key Notes</h2>
-                        <ul class="list-disc ml-6 space-y-2">
-                            <li>Every payment reduces your loan balance.</li>
-                            <li>Pay just in time to increase your loan limit in the future.</li>
-                            <li>Make a self-payment at any agent banking nearby or use your phone to pay.</li>
-                            <li>Make payment within banking hours, i.e., as early as 10:30 AM and as late as 1:30 PM.</li>
-                            <li>Use your name while banking.</li>
-                            <li>Any delayed payment will attract a penalty of 10% on loan balances.</li>
-                            <li>Use only authorized accounts to pay for the loan.</li>
-                            <li>A customer is responsible for their loan. Kindly use our recommended methods while paying for your loan.</li>
-                            <li>Do not leave the point of banking without the receipt.</li>
-                            <li>Share and keep the receipt after payment.</li>
-                            <li>Always ask for a statement to know your loan details.</li>
-                            <li>Recommend a new loan applicant to become the best customer of the year.</li>
-                        </ul>
-                        
-                        <p class="mt-6">
-                            By signing on this document, the borrower hereby confirms that <strong>ALL</strong> deposits or payments are only recognized by official accounts declared as per this form.
-                        </p>
-
-                        <div class="mt-6">
-                            <p>Borrower’s Name:</p>
-                            <br>
-                            <p>_______________________________________________________</p>
-                        </div>
-                        
-                        <div class="mt-6">
-                            <p>Borrower’s Signature:</p>
-                            <br>
-                            <p>_______________________________________________________</p>
-                        </div>
-                        
-                        <div class="mt-6">
-                            <p>FOR AUTHORIZED STAMP:</p>
-                            <br><br>
-                            <p>_______________________________________________________</p>
-                        </div>
-                        
-                        
+                        <p>_______________________________________________________</p>
                     </div>
-                </div>
-                <div class="mt-4">
-                    <button onclick="printDiv('loanArmmotization')" class="rounded bg-blue-500 text-white px-4 py-2">Print</button>
+                    
+                    <div class="mt-6">
+                        <p>Borrower’s Signature:</p>
+                        <br>
+                        <p>_______________________________________________________</p>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <p>FOR AUTHORIZED STAMP:</p>
+                        <br><br>
+                        <p>_______________________________________________________</p>
+                    </div>
+                    
+                    
                 </div>
             </div>
-
+            <div class="mt-4">
+                <button onclick="printDiv('loanArmmotization')" class="rounded bg-blue-500 text-white px-4 py-2">Print</button>
+            </div>
         </div>
     </div>
+</div>
       
       
 
-    <script>
-        const closeButton = document.getElementById('closePopup');
-        const popup = document.getElementById('popup');
-        const openButton = document.getElementById('openPopup');
+<script>
+    const closeButton = document.getElementById('closePopup');
+    const popup = document.getElementById('popup');
+    const openButton = document.getElementById('openPopup');
 
-        openButton.addEventListener('click', () => {
-            popup.classList.remove('hidden');
-        });
+    openButton.addEventListener('click', () => {
+        popup.classList.remove('hidden');
+    });
 
-        closeButton.addEventListener('click', () => {
-            popup.classList.add('hidden');
-        });
-    </script>
+    closeButton.addEventListener('click', () => {
+        popup.classList.add('hidden');
+    });
+</script>
 
-    <script>
-        const closeButton2 = document.getElementById('closePopup2');
-        const popup2 = document.getElementById('popup2');
-        const openButton2 = document.getElementById('openPopup2');
+<script>
+    const closeButton2 = document.getElementById('closePopup2');
+    const popup2 = document.getElementById('popup2');
+    const openButton2 = document.getElementById('openPopup2');
 
-        openButton2.addEventListener('click', () => {
-            popup2.classList.remove('hidden');
-        });
+    openButton2.addEventListener('click', () => {
+        popup2.classList.remove('hidden');
+    });
 
-        closeButton2.addEventListener('click', () => {
-            popup2.classList.add('hidden');
-        });
-    </script>
-    <script>
-        const closeButton3 = document.getElementById('closePopup3');
-        const popup3 = document.getElementById('popup3');
-        const openButton3 = document.getElementById('openPopup3');
+    closeButton2.addEventListener('click', () => {
+        popup2.classList.add('hidden');
+    });
+</script>
+<script>
+    const closeButton3 = document.getElementById('closePopup3');
+    const popup3 = document.getElementById('popup3');
+    const openButton3 = document.getElementById('openPopup3');
 
-        openButton3.addEventListener('click', () => {
-            popup3.classList.remove('hidden');
-        });
+    openButton3.addEventListener('click', () => {
+        popup3.classList.remove('hidden');
+    });
 
-        closeButton3.addEventListener('click', () => {
-            popup3.classList.add('hidden');
-        });
-    </script>
+    closeButton3.addEventListener('click', () => {
+        popup3.classList.add('hidden');
+    });
+</script>
 
 <script>
     function showDocument(docId) {
@@ -748,20 +747,18 @@
 
     closeButton5.addEventListener('click', () => {
         popup5.classList.add('hidden');
-    });
+});
 </script>
 
-
-
 <script>
-   function openPopup(imageSrc) {
-  document.getElementById('popupImage').src = imageSrc;
-  document.getElementById('imagePopup').classList.remove('hidden');
-}
+    function openPopup(imageSrc) {
+        document.getElementById('popupImage').src = imageSrc;
+        document.getElementById('imagePopup').classList.remove('hidden');
+    }
 
-function closePopup() {
-  document.getElementById('imagePopup').classList.add('hidden');
-}
+    function closePopup() {
+        document.getElementById('imagePopup').classList.add('hidden');
+    }
 </script>
 
 

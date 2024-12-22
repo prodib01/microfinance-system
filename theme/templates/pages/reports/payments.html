@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Loan Payment Report - MURO FINANCE UGANDA LTD</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo-placeholder {
+            width: 150px;
+            height: 100px;
+            background-color: #f0f0f0;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+        }
+        .company-name {
+            color: #2c3e50;
+            font-size: 24px;
+            margin: 10px 0;
+        }
+        .report-date {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        .borrower-info {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #2c3e50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .amount {
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* Print-specific styles */
+        @media print {
+            body {
+                padding: 0;
+                margin: 20px;
+            }
+            .borrower-info {
+                border: 1px solid #ddd;
+                background-color: transparent;
+            }
+            th {
+                background-color: #ffffff !important;
+                color: #000000;
+                border: 1px solid #000;
+            }
+            tr:nth-child(even) {
+                background-color: transparent;
+            }
+            td, th {
+                border: 1px solid #000;
+            }
+            .logo-placeholder {
+                border: none;
+            }
+            @page {
+                margin: 20mm;
+            }
+        }
+    </style>
+    <script>
+        // Function to trigger print when page loads
+        window.onload = function() {
+            // Small delay to ensure everything is loaded
+            setTimeout(function() {
+                window.print();
+            }, 1000);
+        };
+    </script>
+</head>
+<body>
+    {% load static %}
+    {% load humanize %}
+    <div class="header">
+        <div class="logo-placeholder">
+            <img src="{% static '/img/logo.png' %}" alt="Company Logo" style="width: 100px; height: auto;">
+        </div>        
+        <h1 class="company-name">MURO FINANCE UGANDA LTD</h1>
+        <p class="report-date">Report Generated: December 22, 2024</p>
+    </div>
+
+    <div class="borrower-info">
+        <h2>Loan Information</h2>
+        <p><strong>Borrower Name:</strong> {{loan.client.full_name}}</p>
+        <p><strong>Disbursement Date:</strong> {{ loan.approved_at | naturalday}} </p>
+        <p><strong>Initial Amount:</strong> {{loan.given_amount | intcomma}}</p>
+    </div>
+
+    <h2>Payment History</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Payment Date</th>
+                <th>Balance Before</th>
+                <th>Amount Paid</th>
+                <th>Balance After</th>
+            </tr>
+        </thead>
+        <tbody>            
+            {% for deposit in deposits%}
+                <tr>
+                    <td class="amount">{{deposit.deposited_at | naturalday}}</td>
+                    <td class="amount ">{{deposit.loan_balance_at_time_of_deposit | floatformat:0}}/=</td>
+                    <td class="amount ">UGX {{deposit.amount_deposited | floatformat:0}}/=</td>
+                    <td class="amount ">{{deposit.loan_balance_after_deposit | floatformat:0}}/=</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
