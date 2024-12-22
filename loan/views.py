@@ -766,3 +766,15 @@ def loans_in_arrears(request):
             "clients": clients,
         },
     )
+
+
+def loan_payments(request, loan_id):
+    loan = Loan.objects.filter(id=loan_id).first()
+    deposits = Deposit.objects.filter(loan=loan)
+    return render(
+        request,
+        "pages/reports/payments.html",
+        {
+            "deposits": deposits,
+            "loan": loan}
+    )
