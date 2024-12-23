@@ -771,10 +771,14 @@ def loans_in_arrears(request):
 def loan_payments(request, loan_id):
     loan = Loan.objects.filter(id=loan_id).first()
     deposits = Deposit.objects.filter(loan=loan)
+    # sum of all deposits
+    sum_deposits = deposits.aggregate(Sum("amount_deposited"))["amount_deposited__sum"]
     return render(
         request,
         "pages/reports/payments.html",
         {
             "deposits": deposits,
-            "loan": loan}
+            "loan": loan,
+            "sum_deposits": sum_deposits,
+        },
     )

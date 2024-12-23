@@ -1,142 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Loan Payment Report - MURO FINANCE UGANDA LTD</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .logo-placeholder {
-            width: 150px;
-            height: 100px;
-            background-color: #f0f0f0;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #ddd;
-        }
-        .company-name {
-            color: #2c3e50;
-            font-size: 24px;
-            margin: 10px 0;
-        }
-        .report-date {
-            color: #7f8c8d;
-            margin-bottom: 20px;
-        }
-        .borrower-info {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #2c3e50;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        .amount {
-            font-family: 'Courier New', Courier, monospace;
-        }
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  </head>
+  <body>
+    {% load static %} {% load humanize %} 
+    <div class="container">
+      <br /><br />
+      <div class="row header-section">
+        <div class="col">
+          <img src="{% static '/img/logo.png' %}" alt="Company Logo" class="logo" width="120" />
+        </div>
+        <div class="col business-name">
+          <h4>MURO FINANCE UGANDA LTD</h4>
+        </div>
+        <div class="col statement-title">
+          <p>CUSTOMER STATEMENT</p>
+          <p>DATE/TIME: {% now "Y-m-d H:i" %}</p>
+        </div>
+      </div>
+      <br />
 
-        /* Print-specific styles */
-        @media print {
-            body {
-                padding: 0;
-                margin: 20px;
-            }
-            .borrower-info {
-                border: 1px solid #ddd;
-                background-color: transparent;
-            }
-            th {
-                background-color: #ffffff !important;
-                color: #000000;
-                border: 1px solid #000;
-            }
-            tr:nth-child(even) {
-                background-color: transparent;
-            }
-            td, th {
-                border: 1px solid #000;
-            }
-            .logo-placeholder {
-                border: none;
-            }
-            @page {
-                margin: 20mm;
-            }
-        }
-    </style>
-    <script>
-        // Function to trigger print when page loads
-        window.onload = function() {
-            // Small delay to ensure everything is loaded
-            setTimeout(function() {
-                window.print();
-            }, 1000);
-        };
-    </script>
-</head>
-<body>
-    {% load static %}
-    {% load humanize %}
-    <div class="header">
-        <div class="logo-placeholder">
-            <img src="{% static '/img/logo.png' %}" alt="Company Logo" style="width: 100px; height: auto;">
-        </div>        
-        <h1 class="company-name">MURO FINANCE UGANDA LTD</h1>
-        <p class="report-date">Report Generated: December 22, 2024</p>
-    </div>
+      <div class="row summary-section">
+        <!-- Loan Details Section -->
+        <div class="col loan-details">
+          <h5>Loan Details</h5>
+          <table class="table table-sm table-bordered">
+            <tbody class="">
+              <tr>
+                <td>
+                  <strong>Loan Term</strong>
+                </td>
+                <td>{{ loan.loan_term }} {{ loan.loan_term_type_of_period }}</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Customer Name</strong>
+                </td>
+                <td>{{ loan.client.full_name }}</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Given Amount</strong>
+                </td>
+                <td>{{ loan.given_amount|intcomma }}</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Interest Rate</strong>
+                </td>
+                <td>{{ loan.interest_rate }}%</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Total Loan</strong>
+                </td>
+                <td>{{ loan.account_interest|add:loan.given_amount|floatformat:0|intcomma }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-    <div class="borrower-info">
-        <h2>Loan Information</h2>
-        <p><strong>Borrower Name:</strong> {{loan.client.full_name}}</p>
-        <p><strong>Disbursement Date:</strong> {{ loan.approved_at | naturalday}} </p>
-        <p><strong>Initial Amount:</strong> {{loan.given_amount | intcomma}}</p>
-    </div>
-
-    <h2>Payment History</h2>
-    <table>
-        <thead>
-            <tr>
+        <!-- Payment Summary Section -->
+        <div class="col payment-summary">
+          <h5>Payment Summary</h5>
+          <table class="table table-sm table-bordered">
+            <tbody>
+              <tr>
+                <td>
+                  <strong>Credits:</strong>
+                </td>
+                <td>{{ sum_deposits|floatformat:0|intcomma }}</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Total Balance Due:</strong>
+                </td>
+                <td>{{ loan.demanded_amount|floatformat:0|intcomma }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <hr />
+      <br />
+      <div class="row">
+        <div class="col">
+          <h5>Transaction Details</h5>
+          <table class="table table-sm">
+            <thead>
+              <tr>
                 <th>Payment Date</th>
-                <th>Balance Before</th>
-                <th>Amount Paid</th>
-                <th>Balance After</th>
-            </tr>
-        </thead>
-        <tbody>            
-            {% for deposit in deposits%}
+                <th>Balance Before (UGX)</th>
+                <th>Amount Paid (UGX)</th>
+                <th>Balance After (UGX)</th>
+              </tr>
+            </thead>
+            <tbody class="table-group-divider">
+              {% for deposit in deposits %}
                 <tr>
-                    <td class="amount">{{deposit.deposited_at | naturalday}}</td>
-                    <td class="amount ">{{deposit.loan_balance_at_time_of_deposit | floatformat:0}}/=</td>
-                    <td class="amount ">UGX {{deposit.amount_deposited | floatformat:0}}/=</td>
-                    <td class="amount ">{{deposit.loan_balance_after_deposit | floatformat:0}}/=</td>
+                  <td class="amount">{{ deposit.deposited_at|naturalday }}</td>
+                  <td class="amount">{{ deposit.loan_balance_at_time_of_deposit|floatformat:0|intcomma }}</td>
+                  <td class="amount">{{ deposit.amount_deposited|floatformat:0|intcomma }}</td>
+                  <td class="amount">{{ deposit.loan_balance_after_deposit|floatformat:0|intcomma }}</td>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script>
+    window.onload = function () {
+      setTimeout(function () {
+        window.print()
+      }, 1000)
+    }
+  </script>
 </html>

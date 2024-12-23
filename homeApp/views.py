@@ -115,7 +115,7 @@ def home_view(request):
             ).aggregate(total_amount=models.Sum("given_amount"))["total_amount"]
             or 0
         )
-        notifications = Notification.objects.filter(is_read=False).order_by("-created_at")
+        notifications = Notification.objects.filter(is_read=False).order_by("-created_at")[:10]
         total_loans_approved = Loan.objects.filter(status="APPROVED")
 
     elif request.user.profile.role == UserRoles.LOAN_OFFICER.value:
@@ -142,7 +142,7 @@ def home_view(request):
             ).aggregate(total_amount=models.Sum("given_amount"))["total_amount"]
             or 0
         )
-        notifications = Notification.objects.filter(is_read=False, loan__loan_officer=request.user.profile).order_by("-created_at")
+        notifications = Notification.objects.filter(is_read=False, loan__loan_officer=request.user.profile).order_by("-created_at")[:10]
         total_loans_approved = Loan.objects.filter(status="APPROVED", loan_officer=request.user.profile)
 
     else:
@@ -169,7 +169,7 @@ def home_view(request):
             ).aggregate(total_amount=models.Sum("given_amount"))["total_amount"]
             or 0
         )
-        notifications = Notification.objects.filter(is_read=False, loan__disbursment_branch=request.user.profile.branch).order_by("-created_at")
+        notifications = Notification.objects.filter(is_read=False, loan__disbursment_branch=request.user.profile.branch).order_by("-created_at")[:10]
         total_loans_approved = Loan.objects.filter(status="APPROVED", disbursment_branch=request.user.profile.branch)
     total_amount_demanded = calculate_loans_demanded_amount(total_loans_approved)
     total_principal_balance = calculate_total_principal_balance(total_loans_approved)
