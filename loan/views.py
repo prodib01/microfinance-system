@@ -31,7 +31,8 @@ from utilities.enums import (
     UserRoles,
 )
 from django.db import transaction as django_transaction
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, Count
+from django.core.paginator import Paginator
 
 
 def calculate_loan_payment(
@@ -275,87 +276,67 @@ def add_loan_request(request):
 
 
 def load_requests(request):
-    loan_guarantors = LoanGuarantor.objects.select_related(
-        "guarantor", "guarantee"
-    ).all()
-    if request.user.profile.role == UserRoles.RELATIONSHIP_OFFICER.value:
-        loan_requests = Loan.objects.prefetch_related(
-            Prefetch("loanguarantor_set", queryset=loan_guarantors)
-        ).all()
-        rejected_loans = Loan.objects.filter(status="REJECTED").count() or 0
-        approved_loans = Loan.objects.filter(status="APPROVED").count() or 0
-        pending_loans = Loan.objects.filter(status="PENDING").count() or 0
-    elif request.user.profile.role == UserRoles.LOAN_OFFICER.value:
-        loan_requests = Loan.objects.prefetch_related(
-            Prefetch("loanguarantor_set", queryset=loan_guarantors)
-        ).filter(loan_officer=request.user.profile)
-        rejected_loans = (
-            Loan.objects.filter(
-                status="REJECTED", loan_officer=request.user.profile
-            ).count()
-            or 0
-        )
-        approved_loans = (
-            Loan.objects.filter(
-                status="APPROVED", loan_officer=request.user.profile
-            ).count()
-            or 0
-        )
-        pending_loans = (
-            Loan.objects.filter(
-                status="PENDING", loan_officer=request.user.profile
-            ).count()
-            or 0
-        )
+    user_profile = request.user.profile
+    role = user_profile.role
+    
+    # Base queryset with annotations for counts
+    base_query = Loan.objects.annotate(
+        guarantor_count=Count('loanguarantor'),
+    )
+    
+    # Create filter conditions based on status
+    status_filters = {
+        'rejected_loans': Count('id', filter=Q(status='REJECTED')),
+        'approved_loans': Count('id', filter=Q(status='APPROVED')),
+        'pending_loans': Count('id', filter=Q(status='PENDING'))
+    }
+    
+    # Apply role-specific filters
+    if role == UserRoles.RELATIONSHIP_OFFICER.value:
+        loan_filters = Q()
+    elif role == UserRoles.LOAN_OFFICER.value:
+        loan_filters = Q(loan_officer=user_profile)
     else:
-        loan_requests = Loan.objects.prefetch_related(
-            Prefetch("loanguarantor_set", queryset=loan_guarantors)
-        ).filter(
-            Q(branch=request.user.profile.branch)
-            | Q(disbursment_branch=request.user.profile.branch)
+        loan_filters = (
+            Q(branch=user_profile.branch) |
+            Q(disbursment_branch=user_profile.branch)
         )
-        rejected_loans = (
-            Loan.objects.filter(
-                (
-                    Q(branch=request.user.profile.branch)
-                    | Q(disbursment_branch=request.user.profile.branch)
-                ),
-                status="REJECTED",
-            ).count()
-            or 0
+    
+    # Get loans with counts in a single query
+    loan_stats = base_query.filter(loan_filters).aggregate(
+        **status_filters
+    )
+    
+    # Efficient main query with necessary joins
+    loan_requests = (
+        base_query.filter(loan_filters)
+        .select_related('branch', 'disbursment_branch', 'loan_officer')
+        .prefetch_related(
+            Prefetch(
+                'loanguarantor_set',
+                queryset=LoanGuarantor.objects.select_related(
+                    'guarantor', 'guarantee'
+                )
+            )
         )
-        approved_loans = (
-            Loan.objects.filter(
-                (
-                    Q(branch=request.user.profile.branch)
-                    | Q(disbursment_branch=request.user.profile.branch)
-                ),
-                status="APPROVED",
-            ).count()
-            or 0
-        )
-        pending_loans = (
-            Loan.objects.filter(
-                (
-                    Q(branch=request.user.profile.branch)
-                    | Q(disbursment_branch=request.user.profile.branch)
-                ),
-                status="PENDING",
-            ).count()
-            or 0
-        )
-
-    remarks = Remarks.objects.all()
-    branches = Branch.objects.all()
-    user = request.user
+    )
+    
+    # Fetch other necessary data with minimal fields
+    remarks = Remarks.objects.only('loan', 'remarks', 'created_by', 'created_at').all()
+    branches = Branch.objects.only('id', 'name').all()
+    
     return render(
         request,
         "pages/requests.html",
         {
-            "user": user,
+            "user": request.user,
             "loan_requests": loan_requests,
             "active": "requests",
-            "loan_count": [rejected_loans, pending_loans, approved_loans],
+            "loan_count": [
+                loan_stats['rejected_loans'],
+                loan_stats['pending_loans'],
+                loan_stats['approved_loans']
+            ],
             "remarks": remarks,
             "branches": branches,
         },
