@@ -15,7 +15,8 @@ from loan.views import (
 )
 from users.models import Profile
 from utilities.enums import AccountGroup, UserRoles
-from django.db.models import Q
+from django.db.models import Q, Count
+from django.core.paginator import Paginator
 
 
 def index(request):
@@ -23,17 +24,43 @@ def index(request):
 
 
 def loans(request):
-    if request.user.profile.role == UserRoles.RELATIONSHIP_OFFICER.value:
-        loans = Loan.objects.all()
-    elif request.user.profile.role == UserRoles.LOAN_OFFICER.value:
-        loans = Loan.objects.filter(loan_officer=request.user.profile)
+    user_profile = request.user.profile
+    role = user_profile.role
+    page_number = request.GET.get("page", 1)
+    q = request.GET.get("q")
+    items_per_page = 9
+    if not q:
+        base_query = Loan.objects.all()
     else:
-        # disbursment_branch or branch
-        loans = Loan.objects.filter(
-            Q(branch=request.user.profile.branch)
-            | Q(disbursment_branch=request.user.profile.branch)
+        base_query = Loan.objects.filter(client__full_name__icontains=q)
+
+    if role == UserRoles.RELATIONSHIP_OFFICER.value:
+        loan_filters = Q()
+    elif role == UserRoles.LOAN_OFFICER.value:
+        loan_filters = Q(loan_officer=user_profile)
+    else:
+        loan_filters = Q(branch=user_profile.branch) | Q(
+            disbursment_branch=user_profile.branch
         )
-    return render(request, "pages/loans.html", {"active": "loans", "loans": loans})
+
+    loan_requests = (
+        base_query.filter(loan_filters)
+        .select_related("branch", "disbursment_branch", "loan_officer")
+        .order_by("-approved_at")
+    )
+
+    paginator = Paginator(loan_requests, items_per_page)
+    page_obj = paginator.get_page(page_number)
+
+    return render(
+        request,
+        "pages/loans.html",
+        {
+            "active": "loans",
+            "loans": page_obj,
+            "page_obj": page_obj,
+        },
+    )
 
 
 def search_loan(request):
@@ -115,9 +142,7 @@ def loans_active(request):
             Q(branch=request.user.profile.branch)
             | Q(disbursment_branch=request.user.profile.branch)
         ).order_by("-demanded_amount")
-        clients = Person.objects.filter(
-            loan__branch=request.user.profile.branch
-        )
+        clients = Person.objects.filter(loan__branch=request.user.profile.branch)
 
     for loan in loans:
         actual_loan = loans.filter(id=loan.id)

@@ -2,6 +2,11 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 import datetime
 from dateutil.relativedelta import relativedelta
+from django.db import transaction as django_transaction
+from django.db.models import Q, Sum, Count, Prefetch
+from django.core.paginator import Paginator
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
 from users.models import Profile
 from .models import (
@@ -19,9 +24,6 @@ from clientApp.models import Person
 from branch.models import Branch
 from homeApp.models import Notification
 from .serializers import LoanAmortizationSerializer, LoanSerializer
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from django.db.models import Prefetch
 from utilities.helpers import get_account, record_transaction, record_journal_entry
 from utilities.enums import (
     CashFlowClassification,
@@ -30,9 +32,6 @@ from utilities.enums import (
     TransactionType,
     UserRoles,
 )
-from django.db import transaction as django_transaction
-from django.db.models import Q, Sum, Count
-from django.core.paginator import Paginator
 
 
 def calculate_loan_payment(
@@ -278,20 +277,23 @@ def add_loan_request(request):
 def load_requests(request):
     user_profile = request.user.profile
     role = user_profile.role
-    
-    # Base queryset with annotations for counts
-    base_query = Loan.objects.annotate(
-        guarantor_count=Count('loanguarantor'),
-    )
-    
-    # Create filter conditions based on status
+    page_number = request.GET.get('page', 1)
+    q = request.GET.get('q')
+    items_per_page = 10
+    if not q:
+        base_query = Loan.objects.annotate(
+            guarantor_count=Count('loanguarantor'),
+        )
+    else:
+        base_query = Loan.objects.filter(client__full_name__icontains=q).annotate(
+            guarantor_count=Count('loanguarantor'),
+        )
     status_filters = {
         'rejected_loans': Count('id', filter=Q(status='REJECTED')),
         'approved_loans': Count('id', filter=Q(status='APPROVED')),
         'pending_loans': Count('id', filter=Q(status='PENDING'))
     }
     
-    # Apply role-specific filters
     if role == UserRoles.RELATIONSHIP_OFFICER.value:
         loan_filters = Q()
     elif role == UserRoles.LOAN_OFFICER.value:
@@ -302,12 +304,10 @@ def load_requests(request):
             Q(disbursment_branch=user_profile.branch)
         )
     
-    # Get loans with counts in a single query
     loan_stats = base_query.filter(loan_filters).aggregate(
         **status_filters
     )
     
-    # Efficient main query with necessary joins
     loan_requests = (
         base_query.filter(loan_filters)
         .select_related('branch', 'disbursment_branch', 'loan_officer')
@@ -319,18 +319,26 @@ def load_requests(request):
                 )
             )
         )
+        .order_by("-approved_at")  # Order by approved_at descending
     )
+    paginator = Paginator(loan_requests, items_per_page)
+    page_obj = paginator.get_page(page_number)
+
     
-    # Fetch other necessary data with minimal fields
-    remarks = Remarks.objects.only('loan', 'remarks', 'created_by', 'created_at').all()
-    branches = Branch.objects.only('id', 'name').all()
-    
+    current_loan_ids = [loan.id for loan in page_obj.object_list]
+    remarks = (
+        Remarks.objects.filter(loan_id__in=current_loan_ids)
+        .only('loan_id', 'remarks', 'created_by', 'created_at')
+        .select_related('created_by')
+    )
+
+    branches = Branch.objects.only('id', 'name')
     return render(
         request,
         "pages/requests.html",
         {
             "user": request.user,
-            "loan_requests": loan_requests,
+            "loan_requests": page_obj,
             "active": "requests",
             "loan_count": [
                 loan_stats['rejected_loans'],
@@ -339,6 +347,7 @@ def load_requests(request):
             ],
             "remarks": remarks,
             "branches": branches,
+            "page_obj": page_obj,  # For pagination template
         },
     )
 

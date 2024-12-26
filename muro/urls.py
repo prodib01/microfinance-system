@@ -8,7 +8,6 @@ from django.conf import settings
 urlpatterns = [
     path('admin/logout/', logout_view, name='logout'),
     path('admin/', admin.site.urls),
-    # path("__reload__/", include("django_browser_reload.urls")),
     path('', include('homeApp.urls')),
     path('loans/', loans, name='loans'),
     path('loan/', include('loan.urls')),

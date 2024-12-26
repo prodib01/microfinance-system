@@ -6,16 +6,33 @@
                         <div>
                             <h1 class="text-3xl font-bold">Requests</h1>
                         </div>
-                        <form method="POST" action="/loan/search-loan/">
-                            {% csrf_token %}
-                        <div class="flex items-center gap-4 max-myMob:w-full">
-                            <!-- <button type="button" id="openPopup" class="p-3 text-white rounded-full bg-myBlack"><i class="flex justify-center fi fi-sr-plus"></i></button> -->
-                            <div class="flex items-center justify-between h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus-within:border-myBlack max-myMob:w-full">
-                                <input type="search" name="search" id="" class="w-full h-10 italic bg-transparent outline-none" placeholder="search">
-                                <button type="submit" class="flex items-center justify-center px-1 bg-transparent"><i class="leading-3 fi fi-br-search"></i></button>
+                        <form method="GET" action="">
+                            <div class="flex items-center gap-4 max-myMob:w-full">
+                                <div class="flex items-center justify-between h-10 p-2 border-2 border-gray-300 rounded-full focus:outline-none focus-within:border-myBlack max-myMob:w-full">
+                                    <input
+                                        type="search"
+                                        name="q"
+                                        id="searchInput"
+                                        class="w-full h-10 italic bg-transparent outline-none"
+                                        placeholder="Search by client name"
+                                        value="{{ request.GET.q|default:'' }}"
+                                    >
+                                    <button type="submit" class="flex items-center justify-center px-1 bg-transparent">
+                                        <i class="leading-3 fi fi-br-search"></i>
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    </form>
+                        
+                            {% if request.GET.q %}
+                                <div class="flex items-center gap-2 mt-4">
+                                    <span class="italic text-gray-500">Searching for: "{{ request.GET.q }}"</span>
+                                    <a href="?" class="flex items-center justify-center w-6 h-6 text-white bg-red-500 rounded-full hover:bg-red-600">
+                                        ✖
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </form>
+                        
                     </div>
                     <div class="flex items-center gap-3 overflow-x-scroll mt-7">
                         <button class="h-10 px-5 text-gray-400 border border-gray-400 rounded-full filterBtn active" onclick="showAll()">All</button>
@@ -501,6 +518,24 @@
                                 {% else %}
                                 {% endif%}
                             {% endfor %}
+
+                            {% if page_obj.paginator.num_pages > 1 %}
+                                <div class="flex items-center justify-center gap-2 mt-8 mb-4">
+                                    {% if page_obj.has_previous %}
+                                        <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="px-4 py-2 text-sm text-gray-700 border rounded-lg hover:bg-gray-50">First</a>
+                                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="px-4 py-2 text-sm text-gray-700 border rounded-lg hover:bg-gray-50">Previous</a>
+                                    {% endif %}
+                                    
+                                    <span class="px-4 py-2 text-sm">
+                                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                    </span>
+
+                                    {% if page_obj.has_next %}
+                                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="px-4 py-2 text-sm text-gray-700 border rounded-lg hover:bg-gray-50">Next</a>
+                                        <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="px-4 py-2 text-sm text-gray-700 border rounded-lg hover:bg-gray-50">Last</a>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                         </div>
                         <div class="sticky w-4/12 top-2 max-md:w-full max-md:order-1">
                             <canvas id="polarChart" width="400" height="400"></canvas>
